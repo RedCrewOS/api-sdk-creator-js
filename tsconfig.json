@@ -1,0 +1,35 @@
+{
+	"extends": "./common/temp/node_modules/@tsconfig/recommended/tsconfig.json",
+
+	"compilerOptions": {
+		/* Project options */
+		"declaration": true,
+		"declarationMap": true,
+		"importHelpers": true, // uses tslib at runtime
+
+		"lib": [ "es2015", "dom" ],
+		"module": "commonjs",
+		"removeComments": true,
+		"sourceMap": true,
+		"target": "esnext",
+
+		/* Module Resolution */
+		"baseUrl": "./",
+		"allowSyntheticDefaultImports": true,
+		"moduleResolution": "node",
+
+		/* Experimental */
+		"emitDecoratorMetadata": true,
+		"experimentalDecorators": true,
+
+		/* Advanced */
+		"resolveJsonModule": true
+	},
+
+	"exclude": [
+		"node_modules",
+		"webpack.config.js",
+		"**/*.spec.ts",
+		"**/*.test.ts"
+	]
+}
