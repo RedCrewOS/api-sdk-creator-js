@@ -436,5 +436,9 @@
     //   "projectFolder": "tools/my-toolchain",
     //   "reviewCategory": "tools"
     // }
+    {
+      packageName: "@sdk-creator/http-client",
+      projectFolder: "http-client"
+    }
   ]
 }
