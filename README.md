@@ -20,5 +20,5 @@ $ rush build
 ## Testing
 
 ```shell script
-$ rushx test
+$ cd <project> && rushx test
 ```
