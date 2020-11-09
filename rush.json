@@ -439,6 +439,10 @@
     {
       packageName: "@sdk-creator/http-client",
       projectFolder: "http-client"
+    },
+    {
+      packageName: "@sdk-creator/axios-http-client",
+      projectFolder: "axios-http-client"
     }
   ]
 }

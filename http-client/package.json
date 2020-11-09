@@ -12,17 +12,17 @@
   "author": "Kieran Simpson <kieran@redcrew.com.au>",
   "license": "UNLICENSED",
   "devDependencies": {
-    "typescript": "~4.0.5",
-    "@types/mocha": "~8.0.3",
     "@tsconfig/recommended": "~1.0.1",
+    "@types/mocha": "~8.0.3",
     "@typescript-eslint/eslint-plugin": "~4.6.1",
     "@typescript-eslint/parser": "~4.6.1",
     "eslint": "~7.12.1",
     "hamjest": "~3.7.1",
     "mocha": "~8.2.1",
+    "rimraf": "~3.0.2",
     "ts-loader": "~8.0.9",
     "ts-node": "~9.0.0",
     "tsconfig-paths": "~3.9.0",
-    "rimraf": "~3.0.2"
+    "typescript": "~4.0.5"
   }
 }
