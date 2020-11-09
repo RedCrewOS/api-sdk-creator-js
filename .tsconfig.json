@@ -11,7 +11,7 @@
 		"module": "commonjs",
 		"removeComments": true,
 		"sourceMap": true,
-		"target": "esnext",
+		"target": "es2019",
 
 		/* Module Resolution */
 		"baseUrl": "./",
