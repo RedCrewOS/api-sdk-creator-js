@@ -3,16 +3,19 @@ dependencies:
   '@rush-temp/http-client': 'file:projects/http-client.tgz'
   '@tsconfig/recommended': 1.0.1
   '@types/mocha': 8.0.3
+  '@types/node': 14.14.7
   '@typescript-eslint/eslint-plugin': 4.6.1_ef70842fa77cd1a4abb2a38c98d2a1a7
   '@typescript-eslint/parser': 4.6.1_eslint@7.12.1+typescript@4.0.5
   axios: 0.21.0
   eslint: 7.12.1
   hamjest: 3.7.1
   mocha: 8.2.1
+  nock: 13.0.4
   rimraf: 3.0.2
   ts-loader: 8.0.9_typescript@4.0.5
   ts-node: 9.0.0_typescript@4.0.5
   tsconfig-paths: 3.9.0
+  tslib: 2.0.3
   typescript: 4.0.5
 lockfileVersion: 5.1
 packages:
@@ -91,6 +94,10 @@ packages:
     dev: false
     resolution:
       integrity: sha512-vyxR57nv8NfcU0GZu8EUXZLTbCMupIUwy95LJ6lllN+JRPG25CwMHoB1q5xKh8YKhQnHYRAn4yW2yuHbf/5xgg==
+  /@types/node/14.14.7:
+    dev: false
+    resolution:
+      integrity: sha512-Zw1vhUSQZYw+7u5dAwNbIA9TuTotpzY/OF7sJM9FqPOF3SPjKnxrjoTktXDZgUjybf4cWVBP7O8wvKdSaGHweg==
   /@typescript-eslint/eslint-plugin/4.6.1_ef70842fa77cd1a4abb2a38c98d2a1a7:
     dependencies:
       '@typescript-eslint/experimental-utils': 4.6.1_eslint@7.12.1+typescript@4.0.5
@@ -980,6 +987,10 @@ packages:
     dev: false
     resolution:
       integrity: sha1-nbe1lJatPzz+8wp1FC0tkwrXJlE=
+  /json-stringify-safe/5.0.1:
+    dev: false
+    resolution:
+      integrity: sha1-Epai1Y/UXxmg9s4B1lcB4sc1tus=
   /json5/1.0.1:
     dependencies:
       minimist: 1.2.5
@@ -1023,6 +1034,10 @@ packages:
       node: '>=10'
     resolution:
       integrity: sha512-iPZK6eYjbxRu3uB4/WZ3EsEIMJFMqAoopl3R+zuq0UjcAm/MO6KCweDgPfP3elTztoKP3KtnVHxTn2NHBSDVUw==
+  /lodash.set/4.3.2:
+    dev: false
+    resolution:
+      integrity: sha1-2HV7HagH3eJIFrDWqEvqGnYjCyM=
   /lodash/4.17.20:
     dev: false
     resolution:
@@ -1128,6 +1143,17 @@ packages:
     dev: false
     resolution:
       integrity: sha1-Sr6/7tdUHywnrPspvbvRXI1bpPc=
+  /nock/13.0.4:
+    dependencies:
+      debug: 4.2.0
+      json-stringify-safe: 5.0.1
+      lodash.set: 4.3.2
+      propagate: 2.0.1
+    dev: false
+    engines:
+      node: '>= 10.13'
+    resolution:
+      integrity: sha512-alqTV8Qt7TUbc74x1pKRLSENzfjp4nywovcJgi/1aXDiUxXdt7TkruSTF5MDWPP7UoPVgea4F9ghVdmX0xxnSA==
   /normalize-path/3.0.0:
     dev: false
     engines:
@@ -1251,6 +1277,12 @@ packages:
       node: '>=0.4.0'
     resolution:
       integrity: sha512-7PiHtLll5LdnKIMw100I+8xJXR5gW2QwWYkT6iJva0bXitZKa/XMrSbdmg3r2Xnaidz9Qumd0VPaMrZlF9V9sA==
+  /propagate/2.0.1:
+    dev: false
+    engines:
+      node: '>= 8'
+    resolution:
+      integrity: sha512-vGrhOavPSTz4QVNuBNdcNXePNdNMaO1xj9yBeH1ScQPjk/rhg9sSlCXPhMkFuaNNW/syTvYqsnbIJxMBfRbbag==
   /prr/1.0.1:
     dev: false
     resolution:
@@ -1561,6 +1593,10 @@ packages:
     dev: false
     resolution:
       integrity: sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg==
+  /tslib/2.0.3:
+    dev: false
+    resolution:
+      integrity: sha512-uZtkfKblCEQtZKBF6EBXVZeQNl82yqtDQdv+eck8u7tdPxjLu2/lp5/uPW+um2tpuxINHWy3GhiccY7QgEaVHQ==
   /tsutils/3.17.1_typescript@4.0.5:
     dependencies:
       tslib: 1.14.1
@@ -1705,27 +1741,31 @@ packages:
     dependencies:
       '@tsconfig/recommended': 1.0.1
       '@types/mocha': 8.0.3
+      '@types/node': 14.14.7
       '@typescript-eslint/eslint-plugin': 4.6.1_ef70842fa77cd1a4abb2a38c98d2a1a7
       '@typescript-eslint/parser': 4.6.1_eslint@7.12.1+typescript@4.0.5
       axios: 0.21.0
       eslint: 7.12.1
       hamjest: 3.7.1
       mocha: 8.2.1
+      nock: 13.0.4
       rimraf: 3.0.2
       ts-loader: 8.0.9_typescript@4.0.5
       ts-node: 9.0.0_typescript@4.0.5
       tsconfig-paths: 3.9.0
+      tslib: 2.0.3
       typescript: 4.0.5
     dev: false
     name: '@rush-temp/axios-http-client'
     resolution:
-      integrity: sha512-0pCxDAKtx7KGvmUX0kMTxRjiw5yFQJoAREYJ6UnaV2TNOXYHrt2tN6K39CoSW4cPSI0Kb+LshTTt7E69cg69gQ==
+      integrity: sha512-sbikFcuZzBFmpIgyDd+B+SDWFqG2rtT9mrJx7joMRP/BD2sDmlBddANiyJ/yPzsq1UdluE0ZV8UMEBFRiWTKmQ==
       tarball: 'file:projects/axios-http-client.tgz'
     version: 0.0.0
   'file:projects/http-client.tgz':
     dependencies:
       '@tsconfig/recommended': 1.0.1
       '@types/mocha': 8.0.3
+      '@types/node': 14.14.7
       '@typescript-eslint/eslint-plugin': 4.6.1_ef70842fa77cd1a4abb2a38c98d2a1a7
       '@typescript-eslint/parser': 4.6.1_eslint@7.12.1+typescript@4.0.5
       eslint: 7.12.1
@@ -1735,11 +1775,12 @@ packages:
       ts-loader: 8.0.9_typescript@4.0.5
       ts-node: 9.0.0_typescript@4.0.5
       tsconfig-paths: 3.9.0
+      tslib: 2.0.3
       typescript: 4.0.5
     dev: false
     name: '@rush-temp/http-client'
     resolution:
-      integrity: sha512-64Nn2861hDZtorUvO/EKtDgP6m/oVhaVLEnf1Pz5QYh12PsEAk84bOZcc9t+yY5cKmX+n89wkdxTmTorPydzHA==
+      integrity: sha512-YrKEl46Pnp4c2G04HXx4S76U370YP+5N11EXsSEbFbrXGtDs5Vpwd9eax1tSfixCjv+nfj0xP94NTRGt6SAitw==
       tarball: 'file:projects/http-client.tgz'
     version: 0.0.0
 registry: ''
@@ -1748,14 +1789,17 @@ specifiers:
   '@rush-temp/http-client': 'file:./projects/http-client.tgz'
   '@tsconfig/recommended': ~1.0.1
   '@types/mocha': ~8.0.3
+  '@types/node': ~14.14.7
   '@typescript-eslint/eslint-plugin': ~4.6.1
   '@typescript-eslint/parser': ~4.6.1
   axios: ^0.21.0
   eslint: ~7.12.1
   hamjest: ~3.7.1
   mocha: ~8.2.1
+  nock: ~13.0.4
   rimraf: ~3.0.2
   ts-loader: ~8.0.9
   ts-node: ~9.0.0
   tsconfig-paths: ~3.9.0
+  tslib: ^2.0.3
   typescript: ~4.0.5
