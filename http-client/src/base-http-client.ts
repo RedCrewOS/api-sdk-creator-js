@@ -20,4 +20,16 @@ export class BaseHttpClient {
 			})
 			.join("/");
 	}
+
+	createQueryString(params: Record<string, string>): string {
+		const keys = Object.keys(params);
+
+		if (keys.length > 0) {
+			return `?${keys
+				.map((key) => `${key}=${encodeURIComponent(params[key])}`)
+				.join("&")}`;
+		}
+
+		return "";
+	}
 }
