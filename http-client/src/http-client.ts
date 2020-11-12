@@ -11,14 +11,8 @@ export type UnstructuredData = Buffer | NodeJS.ReadableStream | ReadableStream |
  * data (JSON, XML, etc) consumers of the HttpClient will need to be able to marshal and
  * unmarshal structured data to/from unstructured data types.
  *
- * @see {@link JsonHttpClient}
+ * @returns A request will always return a response regardless of what the response represents (eg: success or failure).
+ *
+ * Errors should only be used to indicate unrecoverable problems like a network being unavailable.
  */
-export interface HttpClient {
-	/**
-	 * A request will always return a response regardless of what the response represents (eg: success or failure).
-	 *
-	 * Errors should only be used to indicate unrecoverable problems like a network being unavailable.
-	 *
-	 */
-	makeRequest(request: HttpRequest<UnstructuredData>): Promise<HttpResponse<UnstructuredData>>;
-}
+export type HttpClient = (request: HttpRequest<UnstructuredData>) => Promise<HttpResponse<UnstructuredData>>;
