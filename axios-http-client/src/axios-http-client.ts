@@ -43,8 +43,13 @@ export function axiosHttpClient(config?: AxiosRequestConfig): HttpClient {
 }
 
 function toAxiosRequest(request: HttpRequest): AxiosRequestConfig {
-	const url = replacePathParams(request.url?.toString(), request.pathParams);
-	const queryString = createQueryString(request.queryParams);
+	const url = request.pathParams
+		? replacePathParams(request.url.toString(), request.pathParams)
+		: request.url.toString();
+
+	const queryString = request.queryParams
+		? createQueryString(request.queryParams)
+		: "";
 
 	const axiosRequest: AxiosRequestConfig = {
 		method: request.method?.toString() as Method,

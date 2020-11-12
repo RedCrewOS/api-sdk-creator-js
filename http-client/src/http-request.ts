@@ -23,9 +23,9 @@ export interface HttpRequest<T = any> {
 	headers: Record<string, string>;
 
 	/** Used to replace path parameters/slugs in the request url */
-	pathParams: Record<string, string>;
+	pathParams?: Record<string, string>;
 
-	queryParams: Record<string, string>;
+	queryParams?: Record<string, string>;
 
-	body: T;
+	body?: T;
 }
