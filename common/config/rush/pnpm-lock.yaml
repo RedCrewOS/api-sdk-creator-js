@@ -1,5 +1,6 @@
 dependencies:
   '@rush-temp/axios-http-client': 'file:projects/axios-http-client.tgz'
+  '@rush-temp/example': 'file:projects/example.tgz'
   '@rush-temp/http-client': 'file:projects/http-client.tgz'
   '@tsconfig/recommended': 1.0.1
   '@types/mocha': 8.0.3
@@ -7,10 +8,12 @@ dependencies:
   '@typescript-eslint/eslint-plugin': 4.6.1_ef70842fa77cd1a4abb2a38c98d2a1a7
   '@typescript-eslint/parser': 4.6.1_eslint@7.12.1+typescript@4.0.5
   axios: 0.21.0
+  crocks: 0.12.4
   eslint: 7.12.1
   hamjest: 3.7.1
   mocha: 8.2.1
   nock: 13.0.4
+  rambda: 6.3.1
   rimraf: 3.0.2
   ts-loader: 8.0.9_typescript@4.0.5
   ts-node: 9.0.0_typescript@4.0.5
@@ -445,6 +448,10 @@ packages:
     dev: false
     resolution:
       integrity: sha1-tf1UIgqivFq1eqtxQMlAdUUDwac=
+  /crocks/0.12.4:
+    dev: false
+    resolution:
+      integrity: sha512-paln6xJUrR9e/OWMFsyTi4dLyr+q99C5f7PQbGgSDHtwsfW0sCNZvnpHzvniI2dAE0uoBgeIP1Ukmme8Z0HxxA==
   /cross-spawn/7.0.3:
     dependencies:
       path-key: 3.1.1
@@ -1293,6 +1300,10 @@ packages:
       node: '>=6'
     resolution:
       integrity: sha512-XRsRjdf+j5ml+y/6GKHPZbrF/8p2Yga0JPtdqTIY2Xe5ohJPD9saDJJLPvp9+NSBprVvevdXZybnj2cv8OEd0A==
+  /rambda/6.3.1:
+    dev: false
+    resolution:
+      integrity: sha512-/iUE52vD8cfRcV/4gqcTZFvooLExJavzO9dcNI+vGLIzNU0e/OOi0jztE2OFFF/AvAKLCChgNfbJAFYnj5Lj2Q==
   /randombytes/2.1.0:
     dependencies:
       safe-buffer: 5.2.1
@@ -1761,6 +1772,32 @@ packages:
       integrity: sha512-sbikFcuZzBFmpIgyDd+B+SDWFqG2rtT9mrJx7joMRP/BD2sDmlBddANiyJ/yPzsq1UdluE0ZV8UMEBFRiWTKmQ==
       tarball: 'file:projects/axios-http-client.tgz'
     version: 0.0.0
+  'file:projects/example.tgz':
+    dependencies:
+      '@tsconfig/recommended': 1.0.1
+      '@types/mocha': 8.0.3
+      '@types/node': 14.14.7
+      '@typescript-eslint/eslint-plugin': 4.6.1_ef70842fa77cd1a4abb2a38c98d2a1a7
+      '@typescript-eslint/parser': 4.6.1_eslint@7.12.1+typescript@4.0.5
+      axios: 0.21.0
+      crocks: 0.12.4
+      eslint: 7.12.1
+      hamjest: 3.7.1
+      mocha: 8.2.1
+      nock: 13.0.4
+      rambda: 6.3.1
+      rimraf: 3.0.2
+      ts-loader: 8.0.9_typescript@4.0.5
+      ts-node: 9.0.0_typescript@4.0.5
+      tsconfig-paths: 3.9.0
+      tslib: 2.0.3
+      typescript: 4.0.5
+    dev: false
+    name: '@rush-temp/example'
+    resolution:
+      integrity: sha512-7CHRYaDnW1XFJhvrEJbv/RLnQwizR2zQflvffAYMM8bIsgVdK6Pv8ZgK+T1Nm/kUePGyyVnxdqRgcx5IFuK2pQ==
+      tarball: 'file:projects/example.tgz'
+    version: 0.0.0
   'file:projects/http-client.tgz':
     dependencies:
       '@tsconfig/recommended': 1.0.1
@@ -1786,6 +1823,7 @@ packages:
 registry: ''
 specifiers:
   '@rush-temp/axios-http-client': 'file:./projects/axios-http-client.tgz'
+  '@rush-temp/example': 'file:./projects/example.tgz'
   '@rush-temp/http-client': 'file:./projects/http-client.tgz'
   '@tsconfig/recommended': ~1.0.1
   '@types/mocha': ~8.0.3
@@ -1793,10 +1831,12 @@ specifiers:
   '@typescript-eslint/eslint-plugin': ~4.6.1
   '@typescript-eslint/parser': ~4.6.1
   axios: ^0.21.0
+  crocks: ~0.12.4
   eslint: ~7.12.1
   hamjest: ~3.7.1
   mocha: ~8.2.1
   nock: ~13.0.4
+  rambda: ~6.3.1
   rimraf: ~3.0.2
   ts-loader: ~8.0.9
   ts-node: ~9.0.0

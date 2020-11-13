@@ -443,6 +443,10 @@
     {
       packageName: "@sdk-creator/axios-http-client",
       projectFolder: "axios-http-client"
+    },
+    {
+      packageName: "@sdk-creator/example",
+      projectFolder: "example"
     }
   ]
 }
