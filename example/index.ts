@@ -1,19 +1,11 @@
-const { curry, ifElse, identity, partial, pipe } = require("crocks");
+const { curry, ifElse, partial, Result } = require("crocks");
 
-import {
-	HttpRequest,
-	HttpRequestMethod,
-	HttpResponse,
-} from "@sdk-creator/http-client";
+import { HttpRequest, HttpRequestMethod, HttpResponse } from "@sdk-creator/http-client";
 
 // synchronous for now
-type HttpClient = (request: HttpRequest<string>) => HttpContext<string, string>;
-type Marshaller = (data: any, request: HttpRequest) => HttpRequest<string>;
-type CurriedMarshaller = (data: any) => ( (request: HttpRequest) => HttpRequest<string> );
-type Pipe = (...any: any[]) => any;
-type PipeFactory = (...handlers: ((...args: any[]) => any)[]) => Pipe;
+type HttpClient = (request: HttpRequest<string>) => typeof Result;
 
-interface HttpContext<Request = any, Response = any> {
+interface HttpResult<Request = any, Response = any> {
 	request: HttpRequest<Request>;
 	response: HttpResponse<Response>;
 }
@@ -24,130 +16,134 @@ interface Account {
 	balance: number;
 }
 
-function log(level: string, message: string): void {
+const log = (level: string, message: string): void => {
 	console.log(`${level.toUpperCase()}: ${message}`);
-}
+};
 
 const trace = partial(log, "trace");
 
-function httpClientFactory() {
-	return httpClient;
-}
+// ---
 
-function httpClient(request: HttpRequest<string>): HttpContext<string, string> {
+/*
+ * Simple functions that a SDK dev might have to write.
+ */
+// httpClient : (HttpRequest) -> Result<HttpResponse<string>>
+const httpClient = (request: HttpRequest<string>): typeof Result => {
 	trace(JSON.stringify(request));
 
+	// uncomment to fail on first try.
+	// return Result.Err(new Error("Something went wrong"));
+
 	if (!request.headers.authorization) {
-		return {
-			request,
-			response: {
-				statusCode: 401,
-				statusMessage: "Unauthorized",
-				headers: {}
-			}
-		}
+		return Result.Ok({
+			statusCode: 401,
+			statusMessage: "Unauthorized",
+			headers: {}
+		})
 	}
 
-	return {
-		request,
-		response: {
-			statusCode: 200,
-			statusMessage: "OK",
-			headers: {
-				"content-type": "application/json"
-			},
-			body: JSON.stringify({
-				id: 1,
-				name: "My Account",
-				balance: 0
-			})
-		}
-	};
-}
+	// uncomment to fail on second try.
+	// return Result.Err(new Error("Something went wrong"));
 
-const sendRequest: PipeFactory = pipe;
+	return Result.Ok({
+		statusCode: 200,
+		statusMessage: "OK",
+		headers: {
+			"content-type": "application/json"
+		},
+		body: JSON.stringify({
+			id: 1,
+			name: "My Account",
+			balance: 0
+		})
+	});
+};
 
-const through: (marshaller: Marshaller) => CurriedMarshaller = curry;
+const httpClientFactory = () => httpClient;
 
-function jsonMarshaller(data: any, request: HttpRequest): HttpRequest<string> {
+// jsonMarshaller : (any, HttpRequest) -> Result<HttpRequest<string>>
+const jsonMarshaller = (data: any, request: HttpRequest): typeof Result => {
 	request.headers["content-type"] = "application/json";
 	request.body = JSON.stringify(data);
 
-	return request;
-}
+	return Result.Ok(request as HttpRequest<string>);
+};
 
-function jsonUnmarshaller(response: HttpResponse): Account {
-	return JSON.parse(response.body);
-}
+// jsonUnmarshaller : (HttpResponse) -> Result<any>
+const jsonUnmarshaller = (response: HttpResponse): typeof Result => Result.Ok(JSON.parse(response.body));
 
-function authorisationRetry(context: HttpContext): HttpContext {
-	trace("Reauthorising")
+// ---
+
+/*
+ * Helpers
+ */
+const retry: (result: HttpResult) => typeof Result = Result.Ok;
+
+const returnError = (result: HttpResult) => Result.Ok(result);
+
+const sendRequest: (request: HttpRequest) => typeof Result = Result.Ok;
+
+const through: Function = partial;
+
+// composes the result of the HttpClient into an HttpResult
+const into = curry((client: HttpClient, request: HttpRequest): typeof Result => {
+	return client(request).chain((response: HttpResponse) => Result.Ok({
+		request,
+		response
+	}));
+});
+
+// ---
+
+/*
+ * Handlers
+ */
+
+const then = (handler: ((...args: any[]) => any)): any => ifElse(
+	(context: HttpResult) => context.response.statusCode >= 200 && context.response.statusCode <= 300,
+	// TODO: There's probably a much better way to do this
+	(context: HttpResult) => {
+		return handler(context.response)
+			.chain((result: any) => {
+				context.response.body = result
+
+				return Result.Ok(context)
+			});
+	},
+	Result.Ok
+);
+
+const catching = (policy: Function): any => ifElse(
+	(context: HttpResult) => context.response.statusCode >= 400,
+	policy,
+	Result.Ok
+);
+
+// ---
+
+/*
+ * Policies
+ */
+
+// authorisationRetry : (HttpResult) -> Result<HttpResult>
+const authorisationRetry = (context: HttpResult): typeof Result => {
+	trace("Reauthorising");
 
 	context.request.headers.authorization = "abc123";
 
-	return context;
-}
+	return Result.Ok(context);
+};
 
-function into(client: HttpClient, onSuccess: Pipe, onError: Pipe): Pipe {
-	return pipe(
-		client,
-		ifElse(
-			(context: HttpContext) => context.response.statusCode >= 200 && context.response.statusCode <= 300,
-			onSuccess,
-			onError
-		)
-	);
-}
+// ---
 
-function retry(policies: Pipe, next: Pipe): Pipe {
-	return pipe(
-		policies,
-		// TODO: There's probably a better way to do this
-		(context: HttpContext) => context.request,
-		next
-	)
-}
+/*
+ * Example SDK method
+ */
 
-const withPolicies: PipeFactory = pipe;
-
-const returnError = identity;
-
-const onSuccess: PipeFactory = (...handlers: ((...args: any[]) => any)[]): Pipe => {
-	return pipe(
-		// TODO: There's probably a better way to do this
-		(context: HttpContext) => context.response,
-		...handlers
-	);
-}
-
-const onError: PipeFactory = pipe;
-
-function withdraw(account: Account, amount: number): Account {
+const withdraw = (account: Account, amount: number): Account => {
 	const client = httpClientFactory();
 
-	const successPolicy = onSuccess(jsonUnmarshaller);
-
-	const retryPolicy = retry(
-		withPolicies(
-			authorisationRetry
-		),
-		into(
-			client,
-			successPolicy,
-
-			// do nothing, give up and return the error.
-			onError(returnError)
-		)
-	);
-
-	return sendRequest(
-		through(jsonMarshaller)({ amount }),
-		into(
-			client,
-			successPolicy,
-			onError(retryPolicy)
-		)
-	)({
+	return sendRequest({
 		method: HttpRequestMethod.POST,
 		url: "http://localhost:3000/account/:id/withdraw",
 		headers: {
@@ -156,8 +152,26 @@ function withdraw(account: Account, amount: number): Account {
 		pathParams: {
 			id: account.id.toString()
 		}
-	});
-}
+	})
+	.chain(through(jsonMarshaller, { amount }))
+	.chain(into(client))
+	.chain(then(through(jsonUnmarshaller)))
+	.chain(catching((result: HttpResult) =>
+		retry(result)
+			.chain(authorisationRetry)
+			// FIXME: This is a hack
+			.chain((context: HttpResult) => Result.Ok(context.request))
+			.chain(into(client))
+			.chain(then(through(jsonUnmarshaller)))
+
+			// do nothing, give up and return the error.
+			.chain(catching(returnError))
+	))
+	.either(
+		(err: Error) => ({ message: err.message }),
+		(result: HttpResult) => result.response.body ? result.response.body : result.response
+	);
+};
 
 const account: Account = {
 	id: 1,
