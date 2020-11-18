@@ -1,9 +1,8 @@
-const { curry, ifElse, partial, Result } = require("crocks");
+const { curry, ifElse, partial, Async } = require("crocks");
 
 import { HttpRequest, HttpRequestMethod, HttpResponse } from "@sdk-creator/http-client";
 
-// synchronous for now
-type HttpClient = (request: HttpRequest<string>) => typeof Result;
+type HttpClient = (request: HttpRequest<string>) => typeof Async;
 
 interface HttpResult<Request = any, Response = any> {
 	request: HttpRequest<Request>;
@@ -27,67 +26,71 @@ const trace = partial(log, "trace");
 /*
  * Simple functions that a SDK dev might have to write.
  */
-// httpClient : (HttpRequest) -> Result<HttpResponse<string>>
-const httpClient = (request: HttpRequest<string>): typeof Result => {
-	trace(JSON.stringify(request));
+// httpClient : (HttpRequest) -> Result HttpResponse<string>
+const httpClient = (request: HttpRequest<string>): typeof Async => {
+	return Async((reject: (err: Error) => void, resolve: (data: HttpResponse<string>) => void) => {
+		setTimeout(() => {
+			trace(JSON.stringify(request));
 
-	// uncomment to fail on first try.
-	// return Result.Err(new Error("Something went wrong"));
+			// uncomment to fail on first try.
+			// reject(new Error("Something went wrong"));
 
-	if (!request.headers.authorization) {
-		return Result.Ok({
-			statusCode: 401,
-			statusMessage: "Unauthorized",
-			headers: {}
-		})
-	}
+			if (!request.headers.authorization) {
+				resolve({
+					statusCode: 401,
+					statusMessage: "Unauthorized",
+					headers: {}
+				});
+			}
 
-	// uncomment to fail on second try.
-	// return Result.Err(new Error("Something went wrong"));
+			// uncomment to fail on second try.
+			// reject(new Error("Something went wrong"));
 
-	return Result.Ok({
-		statusCode: 200,
-		statusMessage: "OK",
-		headers: {
-			"content-type": "application/json"
-		},
-		body: JSON.stringify({
-			id: 1,
-			name: "My Account",
-			balance: 0
-		})
+			resolve({
+				statusCode: 200,
+				statusMessage: "OK",
+				headers: {
+					"content-type": "application/json"
+				},
+				body: JSON.stringify({
+					id: 1,
+					name: "My Account",
+					balance: 0
+				})
+			});
+		}, 2000);
 	});
 };
 
 const httpClientFactory = () => httpClient;
 
-// jsonMarshaller : (any, HttpRequest) -> Result<HttpRequest<string>>
-const jsonMarshaller = (data: any, request: HttpRequest): typeof Result => {
+// jsonMarshaller : (any, HttpRequest) -> Async HttpRequest<string>
+const jsonMarshaller = (data: any, request: HttpRequest): typeof Async => {
 	request.headers["content-type"] = "application/json";
 	request.body = JSON.stringify(data);
 
-	return Result.Ok(request as HttpRequest<string>);
+	return Async.of(request as HttpRequest<string>);
 };
 
 // jsonUnmarshaller : (HttpResponse) -> Result<any>
-const jsonUnmarshaller = (response: HttpResponse): typeof Result => Result.Ok(JSON.parse(response.body));
+const jsonUnmarshaller = (response: HttpResponse): typeof Async => Async.of(JSON.parse(response.body));
 
 // ---
 
 /*
  * Helpers
  */
-const retry: (result: HttpResult) => typeof Result = Result.Ok;
+const retry: (result: HttpResult) => typeof Async = Async.Resolved;
 
-const returnError = (result: HttpResult) => Result.Ok(result);
+const returnError = (result: HttpResult) => Async.Resolved(result);
 
-const sendRequest: (request: HttpRequest) => typeof Result = Result.Ok;
+const sendRequest: (request: HttpRequest) => typeof Async = Async.Resolved;
 
 const through: Function = partial;
 
 // composes the result of the HttpClient into an HttpResult
-const into = curry((client: HttpClient, request: HttpRequest): typeof Result => {
-	return client(request).chain((response: HttpResponse) => Result.Ok({
+const into = curry((client: HttpClient, request: HttpRequest): typeof Async => {
+	return client(request).chain((response: HttpResponse) => Async.Resolved({
 		request,
 		response
 	}));
@@ -107,16 +110,16 @@ const then = (handler: ((...args: any[]) => any)): any => ifElse(
 			.chain((result: any) => {
 				context.response.body = result
 
-				return Result.Ok(context)
+				return Async.Resolved(context)
 			});
 	},
-	Result.Ok
+	Async.Resolved
 );
 
 const catching = (policy: Function): any => ifElse(
 	(context: HttpResult) => context.response.statusCode >= 400,
 	policy,
-	Result.Ok
+	Async.Resolved
 );
 
 // ---
@@ -126,12 +129,12 @@ const catching = (policy: Function): any => ifElse(
  */
 
 // authorisationRetry : (HttpResult) -> Result<HttpResult>
-const authorisationRetry = (context: HttpResult): typeof Result => {
+const authorisationRetry = (context: HttpResult): typeof Async => {
 	trace("Reauthorising");
 
 	context.request.headers.authorization = "abc123";
 
-	return Result.Ok(context);
+	return Async.Resolved(context);
 };
 
 // ---
@@ -140,7 +143,8 @@ const authorisationRetry = (context: HttpResult): typeof Result => {
  * Example SDK method
  */
 
-const withdraw = (account: Account, amount: number): Account => {
+// TODO: Think about what's best to return: Promise | Async
+const withdraw = (account: Account, amount: number): Promise<Account> => {
 	const client = httpClientFactory();
 
 	return sendRequest({
@@ -160,17 +164,19 @@ const withdraw = (account: Account, amount: number): Account => {
 		retry(result)
 			.chain(authorisationRetry)
 			// FIXME: This is a hack
-			.chain((context: HttpResult) => Result.Ok(context.request))
+			.chain((context: HttpResult) => Async.Resolved(context.request))
 			.chain(into(client))
 			.chain(then(through(jsonUnmarshaller)))
 
 			// do nothing, give up and return the error.
 			.chain(catching(returnError))
 	))
-	.either(
+	/*.fork(
 		(err: Error) => ({ message: err.message }),
 		(result: HttpResult) => result.response.body ? result.response.body : result.response
-	);
+	);*/
+	.toPromise()
+	.then((result: HttpResult) => result.response.body ? result.response.body : result.response);
 };
 
 const account: Account = {
@@ -179,4 +185,6 @@ const account: Account = {
 	balance: 10
 };
 
-console.log(JSON.stringify(withdraw(account, 10)));
+(async function run() {
+	console.log(JSON.stringify(await withdraw(account, 10)));
+}());
