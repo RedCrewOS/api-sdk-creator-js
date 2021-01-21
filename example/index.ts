@@ -1,13 +1,12 @@
 const { curry, ifElse, partial, Async } = require("crocks");
 
-import { HttpRequest, HttpRequestMethod, HttpResponse } from "@sdk-creator/http-client";
-
-type HttpClient = (request: HttpRequest<string>) => typeof Async;
-
-interface HttpResult<Request = any, Response = any> {
-	request: HttpRequest<Request>;
-	response: HttpResponse<Response>;
-}
+import {
+	HttpClient,
+	HttpRequest,
+	HttpRequestMethod,
+	HttpResponse,
+	HttpResult
+} from "@sdk-creator/http-client";
 
 interface Account {
 	id: number;

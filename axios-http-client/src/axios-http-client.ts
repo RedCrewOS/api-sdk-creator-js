@@ -20,6 +20,7 @@ import {
 	HttpClient,
 	HttpRequest,
 	HttpResponse,
+	HttpResult,
 	UnstructuredData
 } from "@sdk-creator/http-client";
 
@@ -44,6 +45,17 @@ const toHttpResponse = function(resp: AxiosResponse): HttpResponse {
 	};
 }
 
+// toHttpResult :: HttpRequest -> HttpResponse -> HttpResult
+const toHttpResult = curry(
+	(
+		request: HttpRequest<UnstructuredData>,
+		response: HttpResponse<UnstructuredData>
+	): HttpResult<UnstructuredData, UnstructuredData> => ({
+		request,
+		response
+	})
+);
+
 /**
  * Creates a separate Axios instance.
  */
@@ -56,7 +68,8 @@ export function axiosHttpClient(config?: AxiosRequestConfig): HttpClient {
 			map(toAxiosRequest),
 			chain(Async.fromPromise(instance.request.bind(instance))),
 			bichain(extractHttpError, Async.of),
-			map(toHttpResponse)
+			map(toHttpResponse),
+			map(toHttpResult(request))
 		)(Async.of(request));
 	};
 

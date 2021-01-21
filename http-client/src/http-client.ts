@@ -15,8 +15,19 @@ export type UnstructuredData = Buffer | NodeJS.ReadableStream | ReadableStream |
  *
  * Making a request will return the response regardless of what the response represents (ie: success or failure).
  *
- * @returns A resolution of {@link HttpResponse<UnstructuredData>}, or a rejection with the error
+ * @returns A resolution of {@link HttpResult<UnstructuredData, UnstructuredData>}, or a rejection with the error
  *
  * Errors should only be used to indicate unrecoverable problems like a network being unavailable.
  */
 export type HttpClient = (request: HttpRequest<UnstructuredData>) => typeof Async;
+
+/**
+ * The result of sending an {@link HttpRequest} to an endpoint.
+ *
+ * Includes the original request sent to allow handlers to recover after a failure by modifying
+ * the request and trying again.
+ */
+export interface HttpResult<Request = any, Response = any> {
+	request: HttpRequest<Request>;
+	response: HttpResponse<Response>;
+}
