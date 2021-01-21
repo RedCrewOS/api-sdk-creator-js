@@ -1,4 +1,18 @@
-import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, Method } from "axios";
+import axios, {
+	AxiosError,
+	AxiosInstance,
+	AxiosRequestConfig,
+	AxiosResponse,
+	Method
+} from "axios";
+
+const Async = require("crocks/Async");
+
+const bichain = require("crocks/pointfree/bichain");
+const chain = require("crocks/pointfree/chain");
+const curry = require("crocks/helpers/curry");
+const map = require("crocks/pointfree/map");
+const pipe = require("crocks/helpers/pipe");
 
 import {
 	createQueryString,
@@ -9,37 +23,44 @@ import {
 	UnstructuredData
 } from "@sdk-creator/http-client";
 
+/*
+ * Axios embeds the actual HTTP error response in the Error.
+ *
+ * We need to extract the HTTP error response if present, or return the Error as the Error may be
+ * for some other issue like a network failure.
+ */
+// extractHttpError :: AxiosError -> Async
+const extractHttpError = function(e: AxiosError) {
+	return e.response ? Async.Resolved(e.response) : Async.Rejected(e);
+};
+
+// toHttpResponse :: AxiosResponse -> HttpResponse
+const toHttpResponse = function(resp: AxiosResponse): HttpResponse {
+	return {
+		statusCode: resp.status,
+		statusMessage: resp.statusText,
+		headers: resp.headers,
+		body: resp.data
+	};
+}
+
 /**
  * Creates a separate Axios instance.
  */
 export function axiosHttpClient(config?: AxiosRequestConfig): HttpClient {
-	const instance: AxiosInstance = axios.create(config);
-
-	return async function(
+	const axiosClient = function(
+		instance: AxiosInstance,
 		request: HttpRequest<UnstructuredData>
-	): Promise<HttpResponse<UnstructuredData>> {
-		let resp: AxiosResponse;
+	): typeof Async {
+		return pipe(
+			map(toAxiosRequest),
+			chain(Async.fromPromise(instance.request.bind(instance))),
+			bichain(extractHttpError, Async.of),
+			map(toHttpResponse)
+		)(Async.of(request));
+	};
 
-		try {
-			resp = await instance.request(toAxiosRequest(request));
-		}
-		catch (e) {
-			if (e.isAxiosError) {
-				resp = e.response;
-			}
-			else {
-				// TODO: Fix me to return error.
-				throw e;
-			}
-		}
-
-		return {
-			statusCode: resp.status,
-			statusMessage: resp.statusText,
-			headers: resp.headers,
-			body: resp.data
-		};
-	}
+	return curry(axiosClient)(axios.create(config));
 }
 
 function toAxiosRequest(request: HttpRequest): AxiosRequestConfig {

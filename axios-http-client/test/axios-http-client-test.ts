@@ -1,5 +1,13 @@
 import { Readable } from "stream";
-import { assertThat, equalTo, instanceOf, is } from "hamjest";
+import {
+	allOf,
+	assertThat,
+	equalTo, hasProperty,
+	instanceOf,
+	is,
+	isRejectedWith,
+	promiseThat
+} from "hamjest";
 import nock from "nock";
 
 import { HttpClient, HttpRequest, HttpRequestMethod } from "@sdk-creator/http-client";
@@ -39,7 +47,7 @@ describe("Axios HttpClient", function() {
 
 				delete (request as any).method;
 
-				await client(request);
+				await client(request).toPromise();
 
 				assertThat(nock.isDone(), is(true));
 			});
@@ -53,7 +61,7 @@ describe("Axios HttpClient", function() {
 
 						request.method = method as HttpRequestMethod;
 
-						await client(request);
+						await client(request).toPromise();
 
 						assertThat(nock.isDone(), is(true));
 					});
@@ -69,7 +77,7 @@ describe("Axios HttpClient", function() {
 			});
 
 			it("should use URL from URL", async function() {
-				await client(request);
+				await client(request).toPromise();
 
 				assertThat(nock.isDone(), is(true));
 			});
@@ -77,7 +85,7 @@ describe("Axios HttpClient", function() {
 			it("should use URL from string", async function() {
 				request.url = request.url.toString();
 
-				await client(request);
+				await client(request).toPromise();
 
 				assertThat(nock.isDone(), is(true));
 			});
@@ -99,7 +107,7 @@ describe("Axios HttpClient", function() {
 					'content-type': 'text/plain'
 				}
 
-				await client(request);
+				await client(request).toPromise();
 
 				assertThat(nock.isDone(), is(true));
 			});
@@ -118,7 +126,7 @@ describe("Axios HttpClient", function() {
 					.get(`/${id}`)
 					.reply(200, "");
 
-				await client(request);
+				await client(request).toPromise();
 
 				assertThat(nock.isDone(), is(true));
 			});
@@ -135,7 +143,7 @@ describe("Axios HttpClient", function() {
 					x: "foo"
 				};
 
-				await client(request);
+				await client(request).toPromise();
 
 				assertThat(nock.isDone(), is(true));
 			});
@@ -155,7 +163,7 @@ describe("Axios HttpClient", function() {
 
 				request.body = Buffer.from(bytes);
 
-				await client(request);
+				await client(request).toPromise();
 
 				assertThat(nock.isDone(), is(true));
 			});
@@ -169,7 +177,7 @@ describe("Axios HttpClient", function() {
 
 				request.body = Readable.from(body);
 
-				await client(request);
+				await client(request).toPromise();
 
 				assertThat(nock.isDone(), is(true));
 			});
@@ -183,7 +191,7 @@ describe("Axios HttpClient", function() {
 
 				request.body = body;
 
-				await client(request);
+				await client(request).toPromise();
 
 				assertThat(nock.isDone(), is(true));
 			});
@@ -191,11 +199,22 @@ describe("Axios HttpClient", function() {
 	});
 
 	describe("response", function() {
+		describe("errors", function() {
+			it("should reject when non HTTP error occurs", async function() {
+				// not nocking the endpoint should result in a connection refused.
+				await promiseThat(
+					client(request).toPromise(), isRejectedWith(
+						allOf(instanceOf(Error), hasProperty("code", equalTo("ECONNREFUSED")))
+					)
+				);
+			});
+		});
+
 		describe("status", function() {
 			it("should return success status code", async function() {
 				nock(origin).get(pathname).reply(200, "");
 
-				const response = await client(request);
+				const response = await client(request).toPromise();
 
 				assertThat(response.statusCode, is(200));
 			});
@@ -206,7 +225,7 @@ describe("Axios HttpClient", function() {
 			it("should return error status code", async function() {
 				nock(origin).get(pathname).reply(500);
 
-				const response = await client(request);
+				const response = await client(request).toPromise();
 
 				assertThat(response.statusCode, is(500));
 			});
@@ -219,7 +238,7 @@ describe("Axios HttpClient", function() {
 					return "";
 				});
 
-				const response = await client(request);
+				const response = await client(request).toPromise();
 
 				assertThat(response.statusMessage, is("Not Found"));
 			});
@@ -234,7 +253,7 @@ describe("Axios HttpClient", function() {
 
 				nock(origin).get(pathname).reply(200, "", headers);
 
-				const response = await client(request);
+				const response = await client(request).toPromise();
 
 				assertThat(response.headers, is(equalTo(headers)));
 			});
@@ -246,7 +265,7 @@ describe("Axios HttpClient", function() {
 
 				nock(origin).get(pathname).reply(200, "", headers);
 
-				const response = await client(request);
+				const response = await client(request).toPromise();
 
 				assertThat(response.headers, is(equalTo({
 					"x-my-header": "value"
@@ -264,7 +283,7 @@ describe("Axios HttpClient", function() {
 					responseType: "arraybuffer"
 				});
 
-				const response = await client(request);
+				const response = await client(request).toPromise();
 
 				assertThat(response.body, is(equalTo(Buffer.from(bytes))));
 			});
@@ -278,7 +297,7 @@ describe("Axios HttpClient", function() {
 					responseType: "stream"
 				});
 
-				const response = await client(request);
+				const response = await client(request).toPromise();
 				assertThat(response.body, is(instanceOf(Readable)));
 
 				const data = await waitForStream(response.body as Readable);
@@ -294,7 +313,7 @@ describe("Axios HttpClient", function() {
 					responseType: "text"
 				});
 
-				const response = await client(request);
+				const response = await client(request).toPromise();
 				assertThat(response.body, is(body));
 			});
 		});
