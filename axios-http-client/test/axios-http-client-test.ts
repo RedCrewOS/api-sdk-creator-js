@@ -17,7 +17,7 @@ import {
 	HttpResult
 } from "@sdk-creator/http-client";
 
-import { axiosHttpClient } from "../src/axios-http-client";
+import { createAxiosHttpClient } from "../src/axios-http-client";
 
 const origin = "http://localhost:3000";
 const pathname = "/";
@@ -36,7 +36,7 @@ describe("Axios HttpClient", function() {
 			body: ""
 		};
 
-		client = axiosHttpClient();
+		client = createAxiosHttpClient();
 	})
 
 	afterEach(function() {
@@ -284,7 +284,7 @@ describe("Axios HttpClient", function() {
 
 				nock(origin).get(pathname).reply(200, Buffer.from(bytes));
 
-				client = axiosHttpClient({
+				client = createAxiosHttpClient({
 					responseType: "arraybuffer"
 				});
 
@@ -298,7 +298,7 @@ describe("Axios HttpClient", function() {
 
 				nock(origin).get(pathname).reply(200, Readable.from(body));
 
-				client = axiosHttpClient({
+				client = createAxiosHttpClient({
 					responseType: "stream"
 				});
 
@@ -314,7 +314,7 @@ describe("Axios HttpClient", function() {
 
 				nock(origin).get(pathname).reply(200, body);
 
-				client = axiosHttpClient({
+				client = createAxiosHttpClient({
 					responseType: "text"
 				});
 

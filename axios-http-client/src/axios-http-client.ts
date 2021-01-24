@@ -56,14 +56,12 @@ const toHttpResult = curry(
 	})
 );
 
-/**
- * Creates a separate Axios instance.
- */
-export function axiosHttpClient(config?: AxiosRequestConfig): HttpClient {
-	const axiosClient = function(
+// axiosHttpClient :: AxiosInstance -> HttpClient
+const axiosHttpClient = curry(
+	(
 		instance: AxiosInstance,
 		request: HttpRequest<UnstructuredData>
-	): typeof Async {
+	): typeof Async => {
 		return pipe(
 			map(toAxiosRequest),
 			chain(Async.fromPromise(instance.request.bind(instance))),
@@ -71,10 +69,17 @@ export function axiosHttpClient(config?: AxiosRequestConfig): HttpClient {
 			map(toHttpResponse),
 			map(toHttpResult(request))
 		)(Async.of(request));
-	};
+	}
+);
 
-	return curry(axiosClient)(axios.create(config));
-}
+/**
+ * Creates a separate Axios instance.
+ */
+export const createAxiosHttpClient: (config?: AxiosRequestConfig) => HttpClient =
+	pipe(
+		axios.create,
+		axiosHttpClient
+	);
 
 function toAxiosRequest(request: HttpRequest): AxiosRequestConfig {
 	const url = request.pathParams
