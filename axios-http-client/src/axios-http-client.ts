@@ -35,6 +35,28 @@ const extractHttpError = function(e: AxiosError) {
 	return e.response ? Async.Resolved(e.response) : Async.Rejected(e);
 };
 
+const toAxiosRequest = (request: HttpRequest): AxiosRequestConfig => {
+	const url = request.pathParams
+		? replacePathParams(request.url.toString(), request.pathParams)
+		: request.url.toString();
+
+	const queryString = request.queryParams
+		? createQueryString(request.queryParams)
+		: "";
+
+	const axiosRequest: AxiosRequestConfig = {
+		method: request.method?.toString() as Method,
+		url: `${url}${queryString}`,
+		headers: request.headers
+	};
+
+	if (request.body) {
+		axiosRequest.data = request.body;
+	}
+
+	return axiosRequest;
+};
+
 // toHttpResponse :: AxiosResponse -> HttpResponse
 const toHttpResponse = function(resp: AxiosResponse): HttpResponse {
 	return {
@@ -80,26 +102,3 @@ export const createAxiosHttpClient: (config?: AxiosRequestConfig) => HttpClient 
 		axios.create,
 		axiosHttpClient
 	);
-
-function toAxiosRequest(request: HttpRequest): AxiosRequestConfig {
-	const url = request.pathParams
-		? replacePathParams(request.url.toString(), request.pathParams)
-		: request.url.toString();
-
-	const queryString = request.queryParams
-		? createQueryString(request.queryParams)
-		: "";
-
-	const axiosRequest: AxiosRequestConfig = {
-		method: request.method?.toString() as Method,
-		url: `${url}${queryString}`,
-		headers: request.headers
-	};
-
-	if (request.body) {
-		axiosRequest.data = request.body;
-	}
-
-	return axiosRequest;
-}
-
