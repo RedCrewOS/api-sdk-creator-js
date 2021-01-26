@@ -8,6 +8,7 @@
   },
   "main": "build/index.js",
   "scripts": {
+    "run": "node build/index.js",
     "build": "rushx clean && rushx compile",
     "clean": "rimraf build",
     "compile": "tsc -p .",

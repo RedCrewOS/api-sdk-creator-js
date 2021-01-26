@@ -31,3 +31,22 @@ export interface HttpResult<Request = any, Response = any> {
 	request: HttpRequest<Request>;
 	response: HttpResponse<Response>;
 }
+
+/**
+ * Manipulates the HttpRequest to conform to specific requirements of the endpoint
+ *
+ * eg: Adding an access token
+ *
+ * @returns An Async with the modified request.
+ */
+export type HttpRequestPolicy = (request: HttpRequest) => typeof Async;
+
+/**
+ * @returns An Async with the modified result.
+ */
+export type HttpResultHandler = (result: HttpResult) => typeof Async;
+
+/**
+ * @returns An Async with the modified response.
+ */
+export type HttpResponseHandler = (response: HttpResponse) => typeof Async;

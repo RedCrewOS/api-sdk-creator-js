@@ -1,11 +1,26 @@
-const { curry, ifElse, partial, Async } = require("crocks");
+const {
+	chain,
+	compose,
+	defaultProps,
+	ifElse,
+	map,
+	mapProps,
+	partial,
+	pipe,
+	pipeK,
+	Async
+} = require("crocks");
 
 import {
 	HttpClient,
 	HttpRequest,
 	HttpRequestMethod,
+	HttpRequestPolicy,
 	HttpResponse,
-	HttpResult
+	HttpResponseHandler,
+	HttpResult,
+	HttpResultHandler,
+	UnstructuredData
 } from "@sdk-creator/http-client";
 
 interface Account {
@@ -25,75 +40,48 @@ const trace = partial(log, "trace");
 /*
  * Simple functions that a SDK dev might have to write.
  */
-// httpClient : (HttpRequest) -> Result HttpResponse<string>
-const httpClient = (request: HttpRequest<string>): typeof Async => {
-	return Async((reject: (err: Error) => void, resolve: (data: HttpResponse<string>) => void) => {
-		setTimeout(() => {
-			trace(JSON.stringify(request));
+const httpClient: () => HttpClient = () => {
+	return (request: HttpRequest<UnstructuredData>): typeof Async => {
+		return Async((
+			reject: (err: Error) => void,
+			resolve: (result: HttpResult<UnstructuredData>) => void
+		) => {
+			setTimeout(() => {
+				trace(`req: ${JSON.stringify(request)}`);
 
-			// uncomment to fail on first try.
-			// reject(new Error("Something went wrong"));
-
-			if (!request.headers.authorization) {
-				resolve({
+				const unauthorisedResponse = {
 					statusCode: 401,
 					statusMessage: "Unauthorized",
 					headers: {}
-				});
-			}
+				};
 
-			// uncomment to fail on second try.
-			// reject(new Error("Something went wrong"));
+				const successResponse = {
+					statusCode: 200,
+					statusMessage: "OK",
+					headers: {
+						"content-type": "application/json"
+					},
+					body: JSON.stringify({
+						id: 1,
+						name: "My Account",
+						balance: 0
+					})
+				};
 
-			resolve({
-				statusCode: 200,
-				statusMessage: "OK",
-				headers: {
-					"content-type": "application/json"
-				},
-				body: JSON.stringify({
-					id: 1,
-					name: "My Account",
-					balance: 0
-				})
-			});
-		}, 2000);
-	});
+				// uncomment to fail on first try.
+				// reject(new Error("Something went wrong"));
+				if (!request.headers.authorization) {
+					resolve({ request, response: unauthorisedResponse });
+
+				}
+
+				// uncomment to fail on second try.
+				// reject(new Error("Something went wrong"));
+				resolve({ request, response: successResponse });
+			}, 0);
+		});
+	};
 };
-
-const httpClientFactory = () => httpClient;
-
-// jsonMarshaller : (any, HttpRequest) -> Async HttpRequest<string>
-const jsonMarshaller = (data: any, request: HttpRequest): typeof Async => {
-	request.headers["content-type"] = "application/json";
-	request.body = JSON.stringify(data);
-
-	return Async.of(request as HttpRequest<string>);
-};
-
-// jsonUnmarshaller : (HttpResponse) -> Result<any>
-const jsonUnmarshaller = (response: HttpResponse): typeof Async => Async.of(JSON.parse(response.body));
-
-// ---
-
-/*
- * Helpers
- */
-const retry: (result: HttpResult) => typeof Async = Async.Resolved;
-
-const returnError = (result: HttpResult) => Async.Resolved(result);
-
-const sendRequest: (request: HttpRequest) => typeof Async = Async.Resolved;
-
-const through: Function = partial;
-
-// composes the result of the HttpClient into an HttpResult
-const into = curry((client: HttpClient, request: HttpRequest): typeof Async => {
-	return client(request).chain((response: HttpResponse) => Async.Resolved({
-		request,
-		response
-	}));
-});
 
 // ---
 
@@ -101,25 +89,31 @@ const into = curry((client: HttpClient, request: HttpRequest): typeof Async => {
  * Handlers
  */
 
-const then = (handler: ((...args: any[]) => any)): any => ifElse(
-	(context: HttpResult) => context.response.statusCode >= 200 && context.response.statusCode <= 300,
-	// TODO: There's probably a much better way to do this
-	(context: HttpResult) => {
-		return handler(context.response)
-			.chain((result: any) => {
-				context.response.body = result
+const authorisationFailure: (accessToken: HttpRequestPolicy) => HttpResultHandler =
+	(accessToken: HttpRequestPolicy) => {
+		let count = 0;
 
-				return Async.Resolved(context)
-			});
-	},
-	Async.Resolved
-);
+		return (result: HttpResult): typeof Async => {
+			try {
+				if (count === 0) {
+					return accessToken(result.request)
+				}
 
-const catching = (policy: Function): any => ifElse(
-	(context: HttpResult) => context.response.statusCode >= 400,
-	policy,
-	Async.Resolved
-);
+				return Async.of(result);
+			}
+			finally {
+				count++;
+			}
+		};
+	};
+
+const extractHttpResponse: () => HttpResultHandler = () => compose(Async.of, getHttpResponse);
+
+const extractBody: () => HttpResponseHandler = () => compose(Async.of, getHttpBody);
+
+const getHttpResponse: (result: HttpResult) => HttpResponse = (result: HttpResult) => result.response;
+
+const getHttpBody: <T = any>(response: HttpResponse) => T = (response: HttpResponse) => response.body;
 
 // ---
 
@@ -127,14 +121,75 @@ const catching = (policy: Function): any => ifElse(
  * Policies
  */
 
-// authorisationRetry : (HttpResult) -> Result<HttpResult>
-const authorisationRetry = (context: HttpResult): typeof Async => {
-	trace("Reauthorising");
+const defaultHeaders: (accessTokenPolicy: HttpRequestPolicy) => HttpRequestPolicy =
+	(accessTokenPolicy: HttpRequestPolicy) => {
+		return (request: HttpRequest): typeof Async => {
+			return pipe(
+				map(defaultProps({
+					headers: {
+						"x-application-header": "abc123"
+					}
+				})),
+				chain(accessTokenPolicy)
+			)(Async.of(request));
+		};
+	};
 
-	context.request.headers.authorization = "abc123";
+const accessTokenPolicy: () => HttpRequestPolicy = () => {
+	let count = 0;
 
-	return Async.Resolved(context);
+	return (request: HttpRequest): typeof Async => {
+		if (count > 0) {
+			trace("Reauthorising");
+
+			request.headers.authorization = "abc123";
+		}
+		else {
+			trace("No access token");
+		}
+
+		count++;
+
+		return Async.of(request);
+	};
+}
+
+const jsonMarshaller: () => HttpRequestPolicy = () => {
+	return (request: HttpRequest<Record<any, any>>): typeof Async => {
+		const newRequest: HttpRequest<string> = { ...request as Omit<HttpRequest, "body"> };
+
+		if (request.body) {
+			newRequest.headers["content-type"] = "application/json";
+			newRequest.body = JSON.stringify(request.body);
+		}
+
+		return Async.of(newRequest);
+	};
 };
+
+const jsonUnmarshaller: () => HttpResultHandler = () => {
+	return (result: HttpResult): typeof Async => {
+		const mapping = {
+			response: {
+				body: (x: string) => JSON.parse(x)
+			}
+		};
+
+		return Async.of(mapProps(mapping, result));
+	};
+}
+
+// ---
+
+/*
+ * Predicates
+ */
+
+const isSuccessfulResponse: (response: HttpResponse) => boolean =
+	(response: HttpResponse) => response.statusCode >= 200 && response.statusCode < 300;
+
+const isSuccessfulResult: (result: HttpResult) => boolean =
+	compose(isSuccessfulResponse, getHttpResponse);
 
 // ---
 
@@ -144,38 +199,49 @@ const authorisationRetry = (context: HttpResult): typeof Async => {
 
 // TODO: Think about what's best to return: Promise | Async
 const withdraw = (account: Account, amount: number): Promise<Account> => {
-	const client = httpClientFactory();
-
-	return sendRequest({
+	const request: Partial<HttpRequest<Record<any, any>>> = {
 		method: HttpRequestMethod.POST,
 		url: "http://localhost:3000/account/:id/withdraw",
-		headers: {
-			// authorization: "Bearer abc123"
-		},
 		pathParams: {
 			id: account.id.toString()
-		}
-	})
-	.chain(through(jsonMarshaller, { amount }))
-	.chain(into(client))
-	.chain(then(through(jsonUnmarshaller)))
-	.chain(catching((result: HttpResult) =>
-		retry(result)
-			.chain(authorisationRetry)
-			// FIXME: This is a hack
-			.chain((context: HttpResult) => Async.Resolved(context.request))
-			.chain(into(client))
-			.chain(then(through(jsonUnmarshaller)))
+		},
+		body: { amount }
+	}
 
-			// do nothing, give up and return the error.
-			.chain(catching(returnError))
-	))
-	/*.fork(
-		(err: Error) => ({ message: err.message }),
-		(result: HttpResult) => result.response.body ? result.response.body : result.response
-	);*/
-	.toPromise()
-	.then((result: HttpResult) => result.response.body ? result.response.body : result.response);
+	const client =
+		pipeK(
+			httpClient(),
+			jsonUnmarshaller()
+		);
+
+	const tokenPolicy = accessTokenPolicy();
+
+	const createRequest = pipeK(
+		defaultHeaders(tokenPolicy),
+		jsonMarshaller()
+	);
+
+	const returnBody = pipeK(
+		extractHttpResponse(),
+		extractBody()
+	);
+
+	const retryRequest = pipeK(
+		authorisationFailure(tokenPolicy),
+		client,
+		(result: HttpResult) => resultHandler()(result)
+	);
+
+	const resultHandler = (): HttpResultHandler =>
+		ifElse(isSuccessfulResult, returnBody, retryRequest)
+
+	const result: typeof Async = pipeK(
+		createRequest,
+		client,
+		resultHandler()
+	)(request);
+
+	return result.toPromise();
 };
 
 const account: Account = {
