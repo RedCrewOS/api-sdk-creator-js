@@ -39,14 +39,15 @@ export interface HttpResult<Request = any, Response = any> {
  *
  * @returns An Async with the modified request.
  */
-export type HttpRequestPolicy = (request: HttpRequest) => typeof Async;
+export type HttpRequestPolicy<T = any> = (request: HttpRequest<T>) => typeof Async;
 
 /**
  * @returns An Async with the modified result.
  */
-export type HttpResultHandler = (result: HttpResult) => typeof Async;
+export type HttpResultHandler<Request = any, Response = any> =
+	(result: HttpResult<Request, Response>) => typeof Async;
 
 /**
  * @returns An Async with the modified response.
  */
-export type HttpResponseHandler = (response: HttpResponse) => typeof Async;
+export type HttpResponseHandler<T = any> = (response: HttpResponse<T>) => typeof Async;

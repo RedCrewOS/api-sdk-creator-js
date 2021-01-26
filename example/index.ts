@@ -4,7 +4,6 @@ const {
 	defaultProps,
 	ifElse,
 	map,
-	mapProps,
 	partial,
 	pipe,
 	pipeK,
@@ -20,7 +19,9 @@ import {
 	HttpResponseHandler,
 	HttpResult,
 	HttpResultHandler,
-	UnstructuredData
+	UnstructuredData,
+	jsonMarshaller,
+	jsonUnmarshaller
 } from "@sdk-creator/http-client";
 
 interface Account {
@@ -151,31 +152,6 @@ const accessTokenPolicy: () => HttpRequestPolicy = () => {
 		count++;
 
 		return Async.of(request);
-	};
-}
-
-const jsonMarshaller: () => HttpRequestPolicy = () => {
-	return (request: HttpRequest<Record<any, any>>): typeof Async => {
-		const newRequest: HttpRequest<string> = { ...request as Omit<HttpRequest, "body"> };
-
-		if (request.body) {
-			newRequest.headers["content-type"] = "application/json";
-			newRequest.body = JSON.stringify(request.body);
-		}
-
-		return Async.of(newRequest);
-	};
-};
-
-const jsonUnmarshaller: () => HttpResultHandler = () => {
-	return (result: HttpResult): typeof Async => {
-		const mapping = {
-			response: {
-				body: (x: string) => JSON.parse(x)
-			}
-		};
-
-		return Async.of(mapProps(mapping, result));
 	};
 }
 
