@@ -98,6 +98,14 @@ describe("JSON Marshalling", function() {
 			assertThat(result.response.body, is(body));
 		});
 
+		it("should not unmarshall response body when no response body", async function() {
+			result.response.body = undefined;
+
+			const outcome = await unmarshall();
+
+			assertThat(outcome.response.body, is(undefined));
+		});
+
 		it("should reject when error unmarshalling response body", async function() {
 			result.response.body = "undefined";
 

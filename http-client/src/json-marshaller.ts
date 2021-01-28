@@ -8,7 +8,7 @@ const Async = require("crocks/Async");
 
 const chain = require("crocks/pointfree/chain");
 const getPath = require("crocks/Maybe/getPath");
-const hasProp = require("crocks/predicates/hasProp");
+const hasPropPath = require("crocks/predicates/hasPropPath");
 const ifElse = require("crocks/logic/ifElse");
 const flip = require("crocks/combinators/flip");
 const map = require("crocks/pointfree/map");
@@ -47,21 +47,27 @@ const parseResponseBodyToJson: (result: HttpResult<any, string>) => typeof Async
 export function jsonMarshaller(
 	contentType: string = JSON_MIME_TYPE
 ): HttpRequestPolicy<JSONObject> {
+	const path = [ "body" ];
+
 	return ifElse(
-		not(hasProp("body")),
+		not(hasPropPath(path)),
 		Async.of,
 		pipe(
 			setPath([ "headers", "content-type" ], contentType),
 			resultToAsync(tryCatch((request: HttpRequest) =>
-				setPath([ "body" ], JSON.stringify(request.body), request)
+				setPath(path, JSON.stringify(request.body), request)
 			))
 		),
 	) as HttpRequestPolicy<JSONObject>;
 }
 
 export function jsonUnmarshaller(): HttpResultHandler<UnstructuredData, JSONObject> {
-	return pipeK(
-		unstructuredDataBodyToStringBody,
-		parseResponseBodyToJson
+	return ifElse(
+		not(hasPropPath([ "response", "body" ])),
+		Async.of,
+		pipeK(
+			unstructuredDataBodyToStringBody,
+			parseResponseBodyToJson
+		)
 	) as HttpResultHandler<UnstructuredData, JSONObject>;
 }
