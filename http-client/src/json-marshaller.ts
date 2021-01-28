@@ -21,7 +21,7 @@ const resultToAsync = require("crocks/Async/resultToAsync");
 const setPath = require("crocks/helpers/setPath");
 const tryCatch = require("crocks/Result/tryCatch");
 
-import objMerge from "./objMerge";
+import objMerge from "./obj-merge";
 
 // very loose definition what what's convertible to/from JSON
 export type JSONObject = Record<string, any>;
