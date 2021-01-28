@@ -1,14 +1,22 @@
 import { PassThrough, Readable, Transform, TransformCallback } from "stream";
 import { ReadableStream, TransformStream } from "web-streams-polyfill/ponyfill/es2018";
 
-import { assertThat, instanceOf, is, isRejectedWith, promiseThat } from "hamjest";
+import {
+	allOf,
+	assertThat, equalTo,
+	hasProperty,
+	instanceOf,
+	is,
+	isRejectedWith,
+	promiseThat
+} from "hamjest";
 
 import {
 	isReadable,
 	isReadableStream,
-	UnstructuredData,
+	UnstructuredData, unstructuredDataAtPathToString,
 	unstructuredDataToString
-} from "../src/unstructured-data";
+} from "../src";
 
 class ErrorTransform extends Transform {
 	_transform(chunk: any, encoding: BufferEncoding, callback: TransformCallback) {
@@ -92,6 +100,33 @@ describe("Unstructured Data", function() {
 		function convertDataToString(data: UnstructuredData): Promise<string> {
 			return unstructuredDataToString(data).toPromise();
 		}
+	});
+
+	describe("unstructured data body to string body", function() {
+		const data = "Hello World";
+		const body = Buffer.from(data);
+
+		const obj: any = {
+			a: {
+				b: body
+			}
+		};
+
+		it("should convert data to string", async function() {
+			const result = await unstructuredDataAtPathToString([ "a", "b" ], obj).toPromise();
+
+			assertThat(result.a.b, is(data));
+		});
+
+		it("should throw error if no property at path", async function() {
+			await promiseThat(
+				unstructuredDataAtPathToString([ "x", "y" ], obj).toPromise(),
+				isRejectedWith(allOf(
+					instanceOf(Error),
+					hasProperty("message", equalTo("Missing property at x.y"))
+				))
+			);
+		});
 	});
 
 	describe("streams", function() {
