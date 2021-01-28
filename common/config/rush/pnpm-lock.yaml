@@ -10,7 +10,6 @@ dependencies:
   axios: 0.21.0
   crocks: 0.12.4
   deep-freeze: 0.0.1
-  deepmerge: 4.2.2
   eslint: 7.12.1
   hamjest: 3.7.1
   mocha: 8.2.1
@@ -21,6 +20,7 @@ dependencies:
   tsconfig-paths: 3.9.0
   tslib: 2.0.3
   typescript: 4.0.5
+  web-streams-polyfill: 3.0.1
 lockfileVersion: 5.1
 packages:
   /@babel/code-frame/7.10.4:
@@ -1665,6 +1665,12 @@ packages:
     dev: false
     resolution:
       integrity: sha512-gTpR5XQNKFwOd4clxfnhaqvfqMpqEwr4tOtCyz4MtYZX2JYhfr1JvBFKdS+7K/9rfpZR3VLX+YWBbKoxCgS43Q==
+  /web-streams-polyfill/3.0.1:
+    dev: false
+    engines:
+      node: '>= 8'
+    resolution:
+      integrity: sha512-M+EmTdszMWINywOZaqpZ6VIEDUmNpRaTOuizF0ZKPjSDC8paMRe/jBBwFv0Yeyn5WYnM5pMqMQa82vpaE+IJRw==
   /which-module/2.0.0:
     dev: false
     resolution:
@@ -1829,10 +1835,11 @@ packages:
       tsconfig-paths: 3.9.0
       tslib: 2.0.3
       typescript: 4.0.5
+      web-streams-polyfill: 3.0.1
     dev: false
     name: '@rush-temp/http-client'
     resolution:
-      integrity: sha512-sp3g77bIceNDMFDyhRnW8lizGfiE47knT92H3JQH7WZnSCD8+Oe2qkgLYRauNdejGHJt4/vr4ToTh91D21X2hQ==
+      integrity: sha512-TWdIyqHbbEVwfWv4VkEWYCVeIxm84sU1VdTud+k+dHoIqvNF/0I7c0baY3xajaBHy5CMnpBXTMoMAY646csJjw==
       tarball: 'file:projects/http-client.tgz'
     version: 0.0.0
 registry: ''
@@ -1848,7 +1855,6 @@ specifiers:
   axios: ^0.21.0
   crocks: ~0.12.4
   deep-freeze: ~0.0.1
-  deepmerge: ~4.2.2
   eslint: ~7.12.1
   hamjest: ~3.7.1
   mocha: ~8.2.1
@@ -1859,3 +1865,4 @@ specifiers:
   tsconfig-paths: ~3.9.0
   tslib: ^2.0.3
   typescript: ~4.0.5
+  web-streams-polyfill: ~3.0.1

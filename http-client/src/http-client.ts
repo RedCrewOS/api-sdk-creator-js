@@ -1,12 +1,8 @@
 import { HttpRequest } from "./http-request";
 import { HttpResponse } from "./http-response";
+import { UnstructuredData } from "./unstructured-data";
 
 const Async = require("crocks/Async");
-
-/**
- * Data type that does not have a pre-defined data model/type definition.
- */
-export type UnstructuredData = Buffer | NodeJS.ReadableStream | ReadableStream | string;
 
 /**
  * A HttpClient deals strictly with unstructured data types. To use a HttpClient with structured
