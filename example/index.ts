@@ -1,6 +1,5 @@
 const {
 	chain,
-	compose,
 	defaultProps,
 	ifElse,
 	map,
@@ -15,11 +14,12 @@ import {
 	HttpRequest,
 	HttpRequestMethod,
 	HttpRequestPolicy,
-	HttpResponse,
-	HttpResponseHandler,
 	HttpResult,
 	HttpResultHandler,
 	UnstructuredData,
+	getHttpResponse,
+	getHttpBody,
+	isSuccessfulResult,
 	jsonMarshaller,
 	jsonUnmarshaller
 } from "@sdk-creator/http-client";
@@ -108,14 +108,6 @@ const authorisationFailure: (accessToken: HttpRequestPolicy) => HttpResultHandle
 		};
 	};
 
-const extractHttpResponse: () => HttpResultHandler = () => compose(Async.of, getHttpResponse);
-
-const extractBody: () => HttpResponseHandler = () => compose(Async.of, getHttpBody);
-
-const getHttpResponse: (result: HttpResult) => HttpResponse = (result: HttpResult) => result.response;
-
-const getHttpBody: <T = any>(response: HttpResponse) => T = (response: HttpResponse) => response.body;
-
 // ---
 
 /*
@@ -158,18 +150,6 @@ const accessTokenPolicy: () => HttpRequestPolicy = () => {
 // ---
 
 /*
- * Predicates
- */
-
-const isSuccessfulResponse: (response: HttpResponse) => boolean =
-	(response: HttpResponse) => response.statusCode >= 200 && response.statusCode < 300;
-
-const isSuccessfulResult: (result: HttpResult) => boolean =
-	compose(isSuccessfulResponse, getHttpResponse);
-
-// ---
-
-/*
  * Example SDK method
  */
 
@@ -197,9 +177,10 @@ const withdraw = (account: Account, amount: number): Promise<Account> => {
 		jsonMarshaller()
 	);
 
-	const returnBody = pipeK(
-		extractHttpResponse(),
-		extractBody()
+	const returnBody = pipe(
+		getHttpResponse,
+		getHttpBody,
+		Async.of
 	);
 
 	const retryRequest = pipeK(
