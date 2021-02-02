@@ -1,27 +1,28 @@
 const {
-	chain,
-	defaultProps,
+	getProp,
 	ifElse,
-	map,
+	maybeToAsync,
 	partial,
 	pipe,
 	pipeK,
-	Async
+	Async,
 } = require("crocks");
 
 import {
 	HttpClient,
 	HttpRequest,
 	HttpRequestMethod,
-	HttpRequestPolicy,
 	HttpResult,
 	HttpResultHandler,
+	RequestHeaderFactory,
 	UnstructuredData,
+	addHeaders,
+	createHeaders,
 	getHttpResponse,
 	getHttpBody,
 	isSuccessfulResult,
 	jsonMarshaller,
-	jsonUnmarshaller
+	jsonUnmarshaller,
 } from "@sdk-creator/http-client";
 
 interface Account {
@@ -90,14 +91,18 @@ const httpClient: () => HttpClient = () => {
  * Handlers
  */
 
-const authorisationFailure: (accessToken: HttpRequestPolicy) => HttpResultHandler =
-	(accessToken: HttpRequestPolicy) => {
+const authorisationFailure: (accessToken: RequestHeaderFactory) => HttpResultHandler =
+	(accessToken: RequestHeaderFactory) => {
 		let count = 0;
 
 		return (result: HttpResult): typeof Async => {
 			try {
 				if (count === 0) {
-					return accessToken(result.request)
+					return addHeaders(accessToken, result.request)
+						.map((request: HttpRequest) => ({
+							request,
+							response: result.response
+						}));
 				}
 
 				return Async.of(result);
@@ -114,36 +119,25 @@ const authorisationFailure: (accessToken: HttpRequestPolicy) => HttpResultHandle
  * Policies
  */
 
-const defaultHeaders: (accessTokenPolicy: HttpRequestPolicy) => HttpRequestPolicy =
-	(accessTokenPolicy: HttpRequestPolicy) => {
-		return (request: HttpRequest): typeof Async => {
-			return pipe(
-				map(defaultProps({
-					headers: {
-						"x-application-header": "abc123"
-					}
-				})),
-				chain(accessTokenPolicy)
-			)(Async.of(request));
-		};
-	};
-
-const accessTokenPolicy: () => HttpRequestPolicy = () => {
+const accessTokenPolicy: () => RequestHeaderFactory = () => {
 	let count = 0;
 
-	return (request: HttpRequest): typeof Async => {
-		if (count > 0) {
-			trace("Reauthorising");
+	return (): typeof Async => {
+		try {
+			if (count > 0) {
+				trace("Reauthorising");
 
-			request.headers.authorization = "abc123";
+				return Async.of({authorization: "abc123"});
+			}
+			else {
+				trace("No access token");
+
+				return Async.of({});
+			}
 		}
-		else {
-			trace("No access token");
+		finally {
+			count++;
 		}
-
-		count++;
-
-		return Async.of(request);
 	};
 }
 
@@ -172,8 +166,13 @@ const withdraw = (account: Account, amount: number): Promise<Account> => {
 
 	const tokenPolicy = accessTokenPolicy();
 
+	const defaultHeaders = createHeaders([
+		() => Async.of({ "x-application-header": "abc123" }),
+		tokenPolicy
+	]);
+
 	const createRequest = pipeK(
-		defaultHeaders(tokenPolicy),
+		addHeaders(defaultHeaders),
 		jsonMarshaller()
 	);
 
@@ -185,6 +184,7 @@ const withdraw = (account: Account, amount: number): Promise<Account> => {
 
 	const retryRequest = pipeK(
 		authorisationFailure(tokenPolicy),
+		maybeToAsync(null, getProp("request")),
 		client,
 		(result: HttpResult) => resultHandler()(result)
 	);

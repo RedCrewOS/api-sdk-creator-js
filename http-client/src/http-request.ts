@@ -1,6 +1,9 @@
 const Async = require("crocks/Async");
+const Endo = require("crocks/Endo");
 const assign = require("crocks/helpers/assign");
+const concat = require("crocks/pointfree/concat");
 const constant = require("crocks/combinators/constant");
+const chain = require("crocks/pointfree/chain");
 const curry = require("crocks/core/curry");
 const flip = require("crocks/combinators/flip");
 const getPropOr = require("crocks/helpers/getPropOr");
@@ -9,8 +12,10 @@ const ifElse = require("crocks/logic/ifElse");
 const isFunction = require("crocks/core/isFunction");
 const liftA2 = require("crocks/helpers/liftA2");
 const map = require("crocks/pointfree/map");
+const mconcatMap = require("crocks/helpers/mconcatMap");
 const pipe = require("crocks/helpers/pipe");
 const setProp = require("crocks/helpers/setProp");
+const valueOf = require("crocks/pointfree/valueOf");
 
 export enum HttpRequestMethod {
 	GET = "GET",
@@ -24,6 +29,8 @@ export enum HttpRequestMethod {
 	PATCH = "PATCH"
 }
 
+export type RequestHeaders = Record<string, string>;
+
 /**
  * In order to be as generic as possible properties on the request try to align with the
  * underlying structure of an HTTP request.
@@ -34,7 +41,7 @@ export enum HttpRequestMethod {
 export interface HttpRequest<T = any> {
 	method: HttpRequestMethod;
 	url: URL | string;
-	headers: Record<string, string>;
+	headers: RequestHeaders;
 
 	/** Used to replace path parameters/slugs in the request url */
 	pathParams?: Record<string, string>;
@@ -43,6 +50,26 @@ export interface HttpRequest<T = any> {
 
 	body?: T;
 }
+
+/**
+ * Factory definition to create request headers.
+ *
+ * Returns an Async value as creating some headers (eg: Authorization) may require
+ * async work to be done (ie: fetching an access token).
+ *
+ * @param To be used if one header value depends on another. Should not be modified.
+ * @returns A new set of headers that will be merged with existing headers.
+ */
+// RequestHeaderFactory :: RequestHeaders -> Async RequestHeaders
+export type RequestHeaderFactory = (headers: RequestHeaders) => typeof Async;
+
+// concatHeaders :: RequestHeaderFactory -> RequestHeaders -> RequestHeaders
+const concatHeaders = curry((factory: RequestHeaderFactory, headers: RequestHeaders) =>
+	pipe(
+		factory,
+		map(pipe(assign(headers), Object.freeze))
+	)(headers)
+);
 
 /**
  * Creates a {@link HttpRequestPolicy} to add headers to a request
@@ -60,3 +87,11 @@ export const addHeaders = curry(
 			map(flip(setProp(prop))(request))
 		)(request)
 	});
+
+// createHeaders :: [ RequestHeaderFactory ] -> (() -> Async RequestHeaders)
+export const createHeaders: (factory: RequestHeaderFactory[]) => (() => typeof Async) =
+	pipe(
+		mconcatMap(Endo, pipe(concatHeaders, chain)),
+		flip(concat)(Endo(() => Async.of(Object.freeze({})))),
+		valueOf
+	);
