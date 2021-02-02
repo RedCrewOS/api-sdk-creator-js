@@ -1,3 +1,17 @@
+const Async = require("crocks/Async");
+const assign = require("crocks/helpers/assign");
+const constant = require("crocks/combinators/constant");
+const curry = require("crocks/core/curry");
+const flip = require("crocks/combinators/flip");
+const getPropOr = require("crocks/helpers/getPropOr");
+const identity = require("crocks/combinators/identity");
+const ifElse = require("crocks/logic/ifElse");
+const isFunction = require("crocks/core/isFunction");
+const liftA2 = require("crocks/helpers/liftA2");
+const map = require("crocks/pointfree/map");
+const pipe = require("crocks/helpers/pipe");
+const setProp = require("crocks/helpers/setProp");
+
 export enum HttpRequestMethod {
 	GET = "GET",
 	HEAD = "HEAD",
@@ -29,3 +43,20 @@ export interface HttpRequest<T = any> {
 
 	body?: T;
 }
+
+/**
+ * Creates a {@link HttpRequestPolicy} to add headers to a request
+ */
+// addHeaders :: (Async Object | () -> Async Object) -> HttpRequestPolicy
+export const addHeaders = curry(
+	(headers: typeof Async | (() => typeof Async), request: HttpRequest): typeof Async => {
+		const prop = "headers";
+		const headersFactory = ifElse(isFunction, identity, constant)(headers);
+
+		return pipe(
+			getPropOr({}, prop),
+			Async.of,
+			liftA2(assign, headersFactory()),
+			map(flip(setProp(prop))(request))
+		)(request)
+	});
