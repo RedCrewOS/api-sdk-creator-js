@@ -1,6 +1,14 @@
 const deepFreeze = require("deep-freeze");
 
-import { assertThat, instanceOf, is, isRejectedWith, promiseThat } from "hamjest";
+import {
+	allOf,
+	assertThat,
+	hasProperty,
+	instanceOf,
+	is,
+	isRejectedWith,
+	promiseThat
+} from "hamjest";
 
 import {
 	HttpRequest,
@@ -70,7 +78,10 @@ describe("JSON Marshalling", function() {
 			request.body = {};
 			request.body.a = BigInt(Number.MAX_SAFE_INTEGER + 1)
 
-			await promiseThat(marshall(), isRejectedWith(instanceOf(Error)));
+			await promiseThat(marshall(), isRejectedWith(allOf(
+				instanceOf(TypeError),
+				hasProperty("message", "Do not know how to serialize a BigInt")
+			)));
 		});
 
 		function marshall(contentType?: string): Promise<HttpRequest<string>> {
@@ -109,7 +120,10 @@ describe("JSON Marshalling", function() {
 		it("should reject when error unmarshalling response body", async function() {
 			result.response.body = "undefined";
 
-			await promiseThat(unmarshall(), isRejectedWith(instanceOf(Error)));
+			await promiseThat(unmarshall(), isRejectedWith(allOf(
+				instanceOf(SyntaxError),
+				hasProperty("message", "Unexpected token u in JSON at position 0")
+			)));
 		});
 
 		function unmarshall(): Promise<HttpResult<any, JSONObject>> {
