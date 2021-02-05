@@ -1,7 +1,6 @@
 "use strict";
 
-import { HttpRequestPolicy, HttpResult, HttpResultHandler } from "./client";
-import { HttpRequest } from "./request";
+import { HttpRequestPolicy, HttpResultHandler } from "./client";
 import { UnstructuredData, unstructuredDataAtPathToString } from "./unstructured-data";
 
 const Async = require("crocks/Async");
@@ -21,10 +20,6 @@ export type JSONObject = Record<string, any>;
 
 export const JSON_MIME_TYPE = "application/json";
 
-// parseResponseBodyToJson :: HttpResult string -> Async HttpResult JSONObject
-const parseResponseBodyToJson: (result: HttpResult<any, string>) => typeof Async =
-	resultToAsync(tryCatch(mapProps({ response: { body: JSON.parse } })))
-
 export function jsonMarshaller(
 	contentType: string = JSON_MIME_TYPE
 ): HttpRequestPolicy<JSONObject> {
@@ -35,9 +30,7 @@ export function jsonMarshaller(
 		Async.of,
 		pipe(
 			setPath([ "headers", "content-type" ], contentType),
-			resultToAsync(tryCatch((request: HttpRequest) =>
-				setPath(path, JSON.stringify(request.body), request)
-			))
+			resultToAsync(tryCatch(mapProps({ body: JSON.stringify })))
 		),
 	) as HttpRequestPolicy<JSONObject>;
 }
@@ -50,7 +43,7 @@ export function jsonUnmarshaller(): HttpResultHandler<UnstructuredData, JSONObje
 		Async.of,
 		pipeK(
 			unstructuredDataAtPathToString(path),
-			parseResponseBodyToJson
+			resultToAsync(tryCatch(mapProps({ response: { body: JSON.parse } })))
 		)
 	) as HttpResultHandler<UnstructuredData, JSONObject>;
 }
