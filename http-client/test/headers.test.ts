@@ -9,7 +9,7 @@ import {
 	promiseThat
 } from "hamjest";
 
-import { createHeaders, RequestHeaders } from "../src";
+import { bearerToken, createHeaders, RequestHeaders } from "../src";
 
 describe("Headers", function() {
 	describe("header factory", function() {
@@ -40,6 +40,16 @@ describe("Headers", function() {
 				createHeaders([ factoryOne, badFactory ])().toPromise(),
 				isRejectedWith(instanceOf(Error))
 			);
+		});
+	});
+
+	describe("bearer token factory", function() {
+		it("should create authorization header", async function() {
+			const token = "abc123";
+
+			const result = await bearerToken(() => Async.of(token), {}).toPromise();
+
+			assertThat(result, hasProperty("authorization", equalTo(`Bearer ${token}`)));
 		});
 	});
 });

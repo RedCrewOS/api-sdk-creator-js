@@ -14,15 +14,17 @@ import {
 	HttpRequestMethod,
 	HttpResult,
 	HttpResultHandler,
+	JSONObject,
 	RequestHeaderFactory,
 	UnstructuredData,
 	addHeaders,
+	bearerToken,
 	createHeaders,
 	getHttpResponse,
 	getHttpBody,
 	isSuccessfulResult,
 	jsonMarshaller,
-	jsonUnmarshaller,
+	jsonUnmarshaller
 } from "@sdk-creator/http-client";
 
 interface Account {
@@ -72,9 +74,9 @@ const httpClient: () => HttpClient = () => {
 
 				// uncomment to fail on first try.
 				// reject(new Error("Something went wrong"));
-				if (!request.headers.authorization) {
-					resolve({ request, response: unauthorisedResponse });
 
+				if (!request.headers.authorization || request.headers.authorization === "Bearer ") {
+					resolve({ request, response: unauthorisedResponse });
 				}
 
 				// uncomment to fail on second try.
@@ -98,7 +100,7 @@ const authorisationFailure: (accessToken: RequestHeaderFactory) => HttpResultHan
 		return (result: HttpResult): typeof Async => {
 			try {
 				if (count === 0) {
-					return addHeaders(accessToken, result.request)
+					return addHeaders(bearerToken(accessToken), result.request)
 						.map((request: HttpRequest) => ({
 							request,
 							response: result.response
@@ -119,7 +121,7 @@ const authorisationFailure: (accessToken: RequestHeaderFactory) => HttpResultHan
  * Policies
  */
 
-const accessTokenPolicy: () => RequestHeaderFactory = () => {
+const accessTokenPolicy: () => typeof Async = () => {
 	let count = 0;
 
 	return (): typeof Async => {
@@ -127,12 +129,12 @@ const accessTokenPolicy: () => RequestHeaderFactory = () => {
 			if (count > 0) {
 				trace("Reauthorising");
 
-				return Async.of({authorization: "abc123"});
+				return Async.of("abc123");
 			}
 			else {
 				trace("No access token");
 
-				return Async.of({});
+				return Async.of("");
 			}
 		}
 		finally {
@@ -149,7 +151,7 @@ const accessTokenPolicy: () => RequestHeaderFactory = () => {
 
 // TODO: Think about what's best to return: Promise | Async
 const withdraw = (account: Account, amount: number): Promise<Account> => {
-	const request: Partial<HttpRequest<Record<any, any>>> = {
+	const request: Partial<HttpRequest<JSONObject>> = {
 		method: HttpRequestMethod.POST,
 		url: "http://localhost:3000/account/:id/withdraw",
 		pathParams: {
@@ -168,7 +170,7 @@ const withdraw = (account: Account, amount: number): Promise<Account> => {
 
 	const defaultHeaders = createHeaders([
 		() => Async.of({ "x-application-header": "abc123" }),
-		tokenPolicy
+		bearerToken(tokenPolicy)
 	]);
 
 	const createRequest = pipeK(
