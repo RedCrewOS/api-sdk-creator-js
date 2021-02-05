@@ -1,9 +1,7 @@
 const Async = require("crocks/Async");
-const Endo = require("crocks/Endo");
+
 const assign = require("crocks/helpers/assign");
-const concat = require("crocks/pointfree/concat");
 const constant = require("crocks/combinators/constant");
-const chain = require("crocks/pointfree/chain");
 const curry = require("crocks/core/curry");
 const flip = require("crocks/combinators/flip");
 const getPropOr = require("crocks/helpers/getPropOr");
@@ -12,10 +10,8 @@ const ifElse = require("crocks/logic/ifElse");
 const isFunction = require("crocks/core/isFunction");
 const liftA2 = require("crocks/helpers/liftA2");
 const map = require("crocks/pointfree/map");
-const mconcatMap = require("crocks/helpers/mconcatMap");
 const pipe = require("crocks/helpers/pipe");
 const setProp = require("crocks/helpers/setProp");
-const valueOf = require("crocks/pointfree/valueOf");
 
 export enum HttpRequestMethod {
 	GET = "GET",
@@ -63,14 +59,6 @@ export interface HttpRequest<T = any> {
 // RequestHeaderFactory :: RequestHeaders -> Async RequestHeaders
 export type RequestHeaderFactory = (headers: RequestHeaders) => typeof Async;
 
-// concatHeaders :: RequestHeaderFactory -> RequestHeaders -> RequestHeaders
-const concatHeaders = curry((factory: RequestHeaderFactory, headers: RequestHeaders) =>
-	pipe(
-		factory,
-		map(pipe(assign(headers), Object.freeze))
-	)(headers)
-);
-
 /**
  * Creates a {@link HttpRequestPolicy} to add headers to a request
  */
@@ -87,14 +75,3 @@ export const addHeaders = curry(
 			map(flip(setProp(prop))(request))
 		)(request)
 	});
-
-/**
- * Creates a set of headers using {@link RequestHeaderFactory}s
- */
-// createHeaders :: [ RequestHeaderFactory ] -> (() -> Async RequestHeaders)
-export const createHeaders: (factory: RequestHeaderFactory[]) => (() => typeof Async) =
-	pipe(
-		mconcatMap(Endo, pipe(concatHeaders, chain)),
-		flip(concat)(Endo(() => Async.of(Object.freeze({})))),
-		valueOf
-	);
