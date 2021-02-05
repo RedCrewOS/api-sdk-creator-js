@@ -69,8 +69,7 @@ export const addHeaders = curry(
 		const headersFactory = ifElse(isFunction, identity, constant)(headers);
 
 		return pipe(
-			getPropOr({}, prop),
-			Async.of,
+			pipe(getPropOr({}, prop), Async.of),
 			liftA2(assign, headersFactory()),
 			map(flip(setProp(prop))(request))
 		)(request)
