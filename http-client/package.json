@@ -16,8 +16,7 @@
   "license": "UNLICENSED",
   "dependencies": {
     "tslib": "^2.0.3",
-    "crocks": "~0.12.4",
-    "deepmerge": "~4.2.2"
+    "crocks": "~0.12.4"
   },
   "devDependencies": {
     "@tsconfig/recommended": "~1.0.1",

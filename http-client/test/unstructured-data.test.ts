@@ -109,13 +109,22 @@ describe("Unstructured Data", function() {
 		const obj: any = {
 			a: {
 				b: body
-			}
+			},
+			c: 1,
+			d: false
 		};
 
 		it("should convert data to string", async function() {
 			const result = await unstructuredDataAtPathToString([ "a", "b" ], obj).toPromise();
 
 			assertThat(result.a.b, is(data));
+		});
+
+		it("should merge result into object", async function() {
+			const result = await unstructuredDataAtPathToString([ "a", "b" ], obj).toPromise();
+
+			assertThat(result.c, is(obj.c));
+			assertThat(result.d, is(obj.d));
 		});
 
 		it("should throw error if no property at path", async function() {

@@ -12,8 +12,6 @@ const pipe = require("crocks/helpers/pipe");
 const resultToAsync = require("crocks/Async/resultToAsync");
 const setPath = require("crocks/helpers/setPath");
 
-import objMerge from "./obj-merge";
-
 /**
  * Data type that does not have a pre-defined data model/type definition.
  */
@@ -28,8 +26,7 @@ export const unstructuredDataAtPathToString = curry((path: string[], data: any):
 	return pipe(
 		resultToAsync(maybeToResult(new Error(`Missing property at ${path.join(".")}`), getPath(path))),
 		chain(unstructuredDataToString),
-		map(flip(setPath(path))({})),
-		map(objMerge(data)),
+		map(flip(setPath(path))(data))
 	)(data);
 });
 
