@@ -1,7 +1,7 @@
 const compose = require("crocks/helpers/compose");
 
-import { HttpResponse } from "./http-response";
-import { HttpResult } from "./http-client";
+import { HttpResponse } from "./response";
+import { HttpResult } from "./client";
 import { getHttpResponse } from "./accessors";
 
 export const isSuccessfulResponse: (response: HttpResponse) => boolean =

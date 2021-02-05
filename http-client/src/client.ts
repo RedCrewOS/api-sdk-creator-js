@@ -1,5 +1,5 @@
-import { HttpRequest } from "./http-request";
-import { HttpResponse } from "./http-response";
+import { HttpRequest } from "./request";
+import { HttpResponse } from "./response";
 import { UnstructuredData } from "./unstructured-data";
 
 const Async = require("crocks/Async");

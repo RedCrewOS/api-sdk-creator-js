@@ -1,5 +1,5 @@
-import { HttpResult } from "./http-client";
-import { HttpResponse } from "./http-response";
+import { HttpResult } from "./client";
+import { HttpResponse } from "./response";
 
 /**
  * Helper to get the response in a {@link HttpResult}

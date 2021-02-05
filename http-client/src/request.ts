@@ -88,6 +88,9 @@ export const addHeaders = curry(
 		)(request)
 	});
 
+/**
+ * Creates a set of headers using {@link RequestHeaderFactory}s
+ */
 // createHeaders :: [ RequestHeaderFactory ] -> (() -> Async RequestHeaders)
 export const createHeaders: (factory: RequestHeaderFactory[]) => (() => typeof Async) =
 	pipe(

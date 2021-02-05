@@ -1,7 +1,7 @@
 "use strict";
 
-import { HttpRequestPolicy, HttpResult, HttpResultHandler } from "./http-client";
-import { HttpRequest } from "./http-request";
+import { HttpRequestPolicy, HttpResult, HttpResultHandler } from "./client";
+import { HttpRequest } from "./request";
 import { UnstructuredData, unstructuredDataAtPathToString } from "./unstructured-data";
 
 const Async = require("crocks/Async");

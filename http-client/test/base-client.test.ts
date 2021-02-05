@@ -1,6 +1,6 @@
 import { assertThat, containsString, instanceOf, is, throws } from "hamjest";
 
-import { replacePathParams, createQueryString } from "../src/base-http-client";
+import { replacePathParams, createQueryString } from "../src";
 
 describe("Base Http Client", function() {
 	describe("path params", function() {
