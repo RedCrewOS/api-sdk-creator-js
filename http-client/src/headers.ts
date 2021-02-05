@@ -53,3 +53,10 @@ export const bearerToken = curry(
 			map(pipe(toBearerToken, toAuthorisationHeader))
 		)()
 );
+
+/**
+ * Adds the given header to a {@link HttpRequest}
+ */
+export const constantHeaders = curry(
+	(headers: RequestHeaders, _: RequestHeaders): typeof Async => Async.of(headers)
+);

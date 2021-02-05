@@ -9,7 +9,7 @@ import {
 	promiseThat
 } from "hamjest";
 
-import { bearerToken, createHeaders, RequestHeaders } from "../src";
+import { bearerToken, constantHeaders, createHeaders, RequestHeaders } from "../src";
 
 describe("Headers", function() {
 	describe("header factory", function() {
@@ -50,6 +50,20 @@ describe("Headers", function() {
 			const result = await bearerToken(() => Async.of(token), {}).toPromise();
 
 			assertThat(result, hasProperty("authorization", equalTo(`Bearer ${token}`)));
+		});
+	});
+
+	describe("constant headers factory", function() {
+		it("should return provided headers", async function() {
+			const headers = {
+				"x-application-name": "project",
+				"x-api-key": "abc123"
+			}
+
+			const result = await constantHeaders(headers, {}).toPromise();
+
+			assertThat(result, hasProperty("x-application-name", equalTo("project")));
+			assertThat(result, hasProperty("x-api-key", equalTo("abc123")));
 		});
 	});
 });

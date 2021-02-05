@@ -19,6 +19,7 @@ import {
 	UnstructuredData,
 	addHeaders,
 	bearerToken,
+	constantHeaders,
 	createHeaders,
 	getHttpResponse,
 	getHttpBody,
@@ -169,7 +170,7 @@ const withdraw = (account: Account, amount: number): Promise<Account> => {
 	const tokenPolicy = accessTokenPolicy();
 
 	const defaultHeaders = createHeaders([
-		() => Async.of({ "x-application-header": "abc123" }),
+		constantHeaders({ "x-application-header": "abc123" }),
 		bearerToken(tokenPolicy)
 	]);
 
