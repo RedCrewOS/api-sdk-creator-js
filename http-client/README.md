@@ -102,14 +102,14 @@ The programming paradigm that best allows us to encapsulate a set of steps that 
 a small set of types is [Functional Programming](https://en.wikipedia.org/wiki/Functional_programming)
 (FP) as each step (or sub-step, or subsub-step) can be implemented as function that takes and returns
 one of our core SDK types. We can then use function composition to create a pipeline of steps 
-where a request can be threaded through all the functions and become a response. Indeed, that's
-all an HTTP based API client is, so this library exports the `HttpApiClient` type as a function
-type that takes a request and returns a response. The `HttpApiClient` function type is the 
-boundary between functions this library provides, and the specific parts of an SDK such as the
-host details/path structure for a request, or how to transform API data structures from/into an 
-SDK/application domain model. However, as an abstraction it gives SDK developers a lot of power
-in being able to create and compose many functions of the correct function types together to 
-form bigger SDK building blocks<sup>4</sup>.
+where a request can be threaded through all the functions and become a response. Consequently
+this library exports the `HttpApiClient` type as a function type that takes a request and 
+returns a response. The `HttpApiClient` function type is the boundary between functions this 
+library provides, and the specific parts of an SDK such as the host details/path structure for 
+a request, or how to transform API data structures from/into an SDK/application domain model.
+However, as an abstraction it gives SDK developers a lot of power in being able to create and
+compose many functions of the correct function types together to form bigger SDK building 
+blocks<sup>4</sup>.
 
 Thinking some more about creating a HTTP request, we can see that there are commonalities such 
 as the transformation of application data into a request (path params, query params), adding 
@@ -166,7 +166,7 @@ actually Exceptions, and "Business" exceptions are "failures" or a different typ
 being hammered into a runtime mechanism for altering the flow of execution.
 
 Teasing the previous paragraph apart, we can see that the reason developers often go down the
-path of creating different buckets of exceptions is because they instinctually realise that there
+path of creating different buckets of exceptions is because they instinctively realise that there
 are [two distinct types](https://fsharpforfunandprofit.com/posts/against-railway-oriented-programming/#when-should-you-use-result) 
 of errors which are better described as:
  - Domain errors - These are valid "failure" responses from an API, they're just non 200. 
@@ -281,10 +281,14 @@ Sum Types of Sum Types you have many layers to peel through, which brings us to
 Monads<sup>11</sup> as not only can Monads `map`, they can `chain` to avoid the nesting problem.
 For a more complete discussion of Monads see some of the references.
 
-Async is Crock's "lazy asynchronous Sum Type"<sup>12</sup>, which therefore allows us to 
-compose asynchronous functions together, handling errors and HTTP errors (failures).
-Async is much more preferred over Promises, as 
-[Promises suffer a few flaws](https://avaq.medium.com/broken-promises-2ae92780f33)
+Therefore, the reason that the function types return an `Async` is that `Async` is Crock's 
+"lazy asynchronous Sum Type"<sup>12</sup>, which therefore allows us to 
+compose/chain asynchronous functions together, allowing SDK developers to define different tracks
+for handling errors, HTTP errors (failures), and all manner of outcomes.
+
+We let `Async` take care of the plumbing so that we can just write the functions we need.
+
+`Async` is much more preferred over Promises, as [Promises suffer a few flaws](https://avaq.medium.com/broken-promises-2ae92780f33)
 that will get in our way.
 
 ## Examples
