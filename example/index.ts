@@ -1,14 +1,16 @@
 const {
+	curry,
 	getProp,
 	ifElse,
 	maybeToAsync,
 	partial,
 	pipe,
 	pipeK,
-	Async,
+	Async
 } = require("crocks");
 
 import {
+	HttpApiClient,
 	HttpClient,
 	HttpRequest,
 	HttpRequestMethod,
@@ -39,6 +41,19 @@ const log = (level: string, message: string): void => {
 };
 
 const trace = partial(log, "trace");
+
+const counting = (fn: any) => {
+	let counter = 0;
+
+	return () => {
+		try {
+			return fn(counter);
+		}
+		finally {
+			counter++;
+		}
+	}
+}
 
 // ---
 
@@ -122,87 +137,75 @@ const authorisationFailure: (accessToken: RequestHeaderFactory) => HttpResultHan
  * Policies
  */
 
-const accessTokenPolicy: () => typeof Async = () => {
-	let count = 0;
+const accessTokenPolicy: () => typeof Async = counting((count: number) => {
+	if (count > 0) {
+		trace("Reauthorising");
 
-	return (): typeof Async => {
-		try {
-			if (count > 0) {
-				trace("Reauthorising");
+		return Async.of("abc123");
+	}
+	else {
+		trace("No access token");
 
-				return Async.of("abc123");
-			}
-			else {
-				trace("No access token");
-
-				return Async.of("");
-			}
-		}
-		finally {
-			count++;
-		}
-	};
-}
+		return Async.of("");
+	}
+});
 
 // ---
+
+const createApiClient: () => HttpApiClient = () => {
+	const defaultHeaders = createHeaders([
+		constantHeaders({ "x-application-header": "abc123" }),
+		bearerToken(accessTokenPolicy)
+	]);
+
+	return pipeK(
+		addHeaders(defaultHeaders),
+		jsonMarshaller(),
+		httpClient(),
+		jsonUnmarshaller()
+	);
+}
 
 /*
  * Example SDK method
  */
 
-// TODO: Think about what's best to return: Promise | Async
-const withdraw = (account: Account, amount: number): Promise<Account> => {
-	const request: Partial<HttpRequest<JSONObject>> = {
-		method: HttpRequestMethod.POST,
-		url: "http://localhost:3000/account/:id/withdraw",
-		pathParams: {
-			id: account.id.toString()
-		},
-		body: { amount }
-	}
+const withdraw = curry(
+	(client: HttpApiClient, account: Account, amount: number): Promise<Account> => {
+		const request: Partial<HttpRequest<JSONObject>> = {
+			method: HttpRequestMethod.POST,
+			url: "http://localhost:3000/account/:id/withdraw",
+			pathParams: {
+				id: account.id.toString()
+			},
+			body: { amount }
+		}
 
-	const client =
-		pipeK(
-			httpClient(),
-			jsonUnmarshaller()
+		const returnBody = pipe(
+			getHttpResponse,
+			getHttpBody,
+			Async.of
 		);
 
-	const tokenPolicy = accessTokenPolicy();
+		const retryRequest = pipeK(
+			authorisationFailure(accessTokenPolicy),
+			maybeToAsync(null, getProp("request")),
+			httpClient(),
+			jsonUnmarshaller(),
+			(result: HttpResult) => resultHandler()(result)
+		);
 
-	const defaultHeaders = createHeaders([
-		constantHeaders({ "x-application-header": "abc123" }),
-		bearerToken(tokenPolicy)
-	]);
+		const resultHandler = (): HttpResultHandler =>
+			ifElse(isSuccessfulResult, returnBody, retryRequest)
 
-	const createRequest = pipeK(
-		addHeaders(defaultHeaders),
-		jsonMarshaller()
-	);
+		const result: typeof Async = pipeK(
+			client,
+			resultHandler()
+		)(request);
 
-	const returnBody = pipe(
-		getHttpResponse,
-		getHttpBody,
-		Async.of
-	);
-
-	const retryRequest = pipeK(
-		authorisationFailure(tokenPolicy),
-		maybeToAsync(null, getProp("request")),
-		client,
-		(result: HttpResult) => resultHandler()(result)
-	);
-
-	const resultHandler = (): HttpResultHandler =>
-		ifElse(isSuccessfulResult, returnBody, retryRequest)
-
-	const result: typeof Async = pipeK(
-		createRequest,
-		client,
-		resultHandler()
-	)(request);
-
-	return result.toPromise();
-};
+		return result.toPromise();
+	}
+);
 
 const account: Account = {
 	id: 1,
@@ -210,6 +213,12 @@ const account: Account = {
 	balance: 10
 };
 
+const sdk = {
+	withdraw: withdraw(createApiClient())
+};
+
 (async function run() {
-	console.log(JSON.stringify(await withdraw(account, 10)));
+	const value = await sdk.withdraw(account, 10);
+
+	console.log(`Result: ${JSON.stringify(value)}`);
 }());

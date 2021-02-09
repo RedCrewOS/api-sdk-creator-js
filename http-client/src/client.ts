@@ -5,6 +5,19 @@ import { UnstructuredData } from "./unstructured-data";
 const Async = require("crocks/Async");
 
 /**
+ * A HttpApiClient knows how to interact with an API endpoint.
+ *
+ * It knows how to construct a request to be suitable for interacting with the endpoint.
+ *
+ * It knows how to convert API data into something consumable by an application.
+ *
+ * It knows how to handle HTTP errors (even if that means returning them).
+ *
+ * @returns A resolution with the {@link HttpResponse}, or a rejection with the error.
+ */
+export type HttpApiClient = (request: HttpRequest) => typeof Async;
+
+/**
  * A HttpClient deals strictly with unstructured data types. To use a HttpClient with structured
  * data (JSON, XML, etc) consumers of the HttpClient will need to be able to marshal and
  * unmarshal structured data to/from unstructured data types.
@@ -22,6 +35,8 @@ export type HttpClient = (request: HttpRequest<UnstructuredData>) => typeof Asyn
  *
  * Includes the original request sent to allow handlers to recover after a failure by modifying
  * the request and trying again.
+ *
+ * TODO: Consider replacing with a State monad.
  */
 export interface HttpResult<Request = any, Response = any> {
 	request: HttpRequest<Request>;
