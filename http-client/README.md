@@ -198,7 +198,9 @@ Typescript achieves this with [Union types](https://www.typescriptlang.org/docs/
 Kotlin uses [Sealed Classes](https://kotlinlang.org/docs/reference/sealed-classes.html),
 Swift uses [Enumerations](https://docs.swift.org/swift-book/LanguageGuide/Enumerations.html).
 When acting on a value that is a Sum Type, languages that have Sum Types ensure<sup>9</sup> that
-the user of that value considers all possible types to ensure nothing is missed.
+the user of that value considers all possible types to ensure nothing is missed. Contrast that
+with how in the past most compilers would have happily let you get away with not checking for nothing ie: null.
+
 For example
 
 ```typescript
@@ -300,7 +302,8 @@ that will get in our way.
 
 - [Functional Programming in JavaScript](https://www.manning.com/books/functional-programming-in-javascript) -
 even though the examples use Ramda.js, Crocks can be substituted easily.
-- [Professor Frisby's Mostly Adequate Guide to Functional Programming](https://mostly-adequate.gitbooks.io/mostly-adequate-guide) - a very popular "open source" text on FP
+- [Professor Frisby's Mostly Adequate Guide to Functional Programming](https://mostly-adequate.gitbooks.io/mostly-adequate-guide) - a very popular "open source" text on FP, with an
+  [accompanying video tutorial](https://egghead.io/lessons/javascript-unboxing-things-with-foldable).
 - [Things I wish someone had explained about functional programming](https://jrsinclair.com/articles/2019/what-i-wish-someone-had-explained-about-functional-programming/) - some
   good blog posts about how to understand terms used in FP, and how to apply the concepts.
 - [Functional Programming for the Object-Oriented Programmer](https://leanpub.com/fp-oo) - a
