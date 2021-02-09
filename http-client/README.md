@@ -228,7 +228,7 @@ correct.
 
 When constructing an SDK a common requirement is to fetch an access token, and add it to the 
 request headers. Fetching an access token may fail and if it does we don't want to proceed with
-making the API call. With Sum Types, if function to fetch an access token fails, the execution
+making the API call. With Sum Types, if the function to fetch an access token fails, the execution
 will switch tracks and continue without the developer having to write complex `if/else` 
 statements or `try/catch` blocks. The types take care of it for us.
 
