@@ -101,15 +101,15 @@ From this list of steps we can deduce that we have a few types that any SDK can 
 The programming paradigm that best allows us to encapsulate a set of steps that operate over
 a small set of types is [Functional Programming](https://en.wikipedia.org/wiki/Functional_programming)
 (FP) as each step (or sub-step, or subsub-step) can be implemented as function that takes and returns
-one of our core SDK types. We can then use function composition to create a pipeline of steps 
-where a request can be threaded through all the functions and become a response. Consequently
-this library exports the `HttpApiClient` type as a function type that takes a request and 
-returns a response. The `HttpApiClient` function type is the boundary between functions this 
-library provides, and the specific parts of an SDK such as the host details/path structure for 
-a request, or how to transform API data structures from/into an SDK/application domain model.
-However, as an abstraction it gives SDK developers a lot of power in being able to create and
-compose many functions of the correct function types together to form bigger SDK building 
-blocks<sup>4</sup>.
+one of our core SDK types, modifying the data in some way. We can then use function 
+composition<sup>4</sup> to create a pipeline of steps where a request can be threaded through
+all the functions and become a response. Consequently, this library exports the `HttpApiClient`
+type as a function type that takes a request and returns a response. The `HttpApiClient` 
+function type is the boundary between functions this library provides, and the specific parts 
+of an SDK such as the host details/path structure for a request, or how to transform API data 
+structures from/into an SDK/application domain model. However, as an abstraction it gives SDK 
+developers a lot of power in being able to create and compose many functions of the correct 
+function types together to form bigger SDK building blocks.
 
 Thinking some more about creating a HTTP request, we can see that there are commonalities such 
 as the transformation of application data into a request (path params, query params), adding 
@@ -141,8 +141,9 @@ our SDK pipe together.
 
 ### Using railway tracks to create SDKs
 
-To understand why every function type returns an `Async` we have to start thinking about how 
-errors are represented in imperative/OO SDKs (or any program).
+To understand why every function type returns an `Async` we have to think about how 
+errors are represented in imperative/OO SDKs (or any program), and the consequences of the
+traditional approaches.
 
 Traditionally any error is represented by an [Exception<sup>5</sup>](https://docs.oracle.com/javase/tutorial/essential/exceptions/definition.html) being thrown to change the
 course of execution through the program. This approach is really the only option available to developers
@@ -239,16 +240,16 @@ That's going to get annoying fast!
 
 What we need to do is encapsulate the branching logic into a reusable chunk of code and then 
 apply that logic to a value. We already have a technique for doing that with polymorphic 
-dispatch. So what we need is a "Container Sum Type" that wraps the plain type and knows how to 
+dispatch<sup>11</sup>. So what we need is a "Container Sum Type" that wraps the plain type and knows how to 
 operate (or `map`) on the wrapped value with different "strategies".
 
 Enter a type called [Maybe](https://jrsinclair.com/articles/2016/marvellously-mysterious-javascript-maybe-monad/)
 (or `Optional` from Java 8).
 
 `Maybe` is a Sum Type that has two subtypes. `Just<T>` or `Nothing`. It has a method on it called
-`map` that will apply the passed function if there is a value or do nothing when there is no
-value in the container, which is the branching logic we want but encapsulated in a [parametric 
-polymorphic strategy](https://en.wikipedia.org/wiki/Parametric_polymorphism).
+`map` that will apply the passed function if there is a value (`Just`) or do nothing when there 
+is no value in the container (`Nothing`), which is the branching logic we want but encapsulated 
+in a [parametric polymorphic "strategy"](https://en.wikipedia.org/wiki/Parametric_polymorphism).
 
 ```typescript
 // typescript
@@ -268,23 +269,23 @@ function. In a curried function all the arguments can be given at once, or parti
 Here we're seeing the beauty in the use of currying so that we can map the `updateCustomer`
 function over the `customer` with a new `name`)
 
-`Maybe` is an example of a set of parametric polymorphic data types called Algebraic Data Types
-(ADTs) which are "Container types" that "implement" different interfaces (such as 
+`Maybe` is an example of a group of types called Algebraic Data Types (ADTs) which are 
+"Container types" that "implement" different interfaces (such as 
 [Functor, Applicatives and others](https://medium.com/@tzehsiang/javascript-functor-applicative-monads-in-pictures-b567c6415221#.rdwll124i)).
-ADTs allow us to compose functions together while encapsulating the messiness of dealing with
+ADTs allow us to compose functions together while encapsulating the messiness of dealing with 
 errors and asynchronous behaviour. Because Javascript doesn't natively have ADTs this library 
-relies on a ADT library called [Crocks](https://crocks.dev/).
+relies on an ADT library called [Crocks](https://crocks.dev/).
 
 Having encapsulated the abstraction of *"if there is a value do something else do nothing"* into
 a parametric polymorphic Sum Type it can be used with any other type. When you have Sum Types of
 Sum Types of Sum Types you have many layers to peel through, which brings us to 
-Monads<sup>11</sup> as not only can Monads `map`, they can `chain` to avoid the nesting problem.
+Monads<sup>12</sup> as not only can Monads `map`, they can `chain` to avoid the nesting problem.
 For a more complete discussion of Monads see some of the references.
 
 Therefore, the reason that the function types return an `Async` is that `Async` is Crock's 
-"lazy asynchronous Sum Type"<sup>12</sup>, which therefore allows us to 
-compose/chain asynchronous functions together, allowing SDK developers to define different tracks
-for handling errors, HTTP errors (failures), and all manner of outcomes.
+"lazy asynchronous monadic Sum Type"<sup>13</sup>, which therefore allows us to 
+compose/chain asynchronous functions together, allowing SDK developers to define different 
+tracks for handling errors, HTTP errors (failures), and all manner of outcomes.
 
 We let `Async` take care of the plumbing so that we can just write the functions we need.
 
@@ -328,8 +329,10 @@ control flow. For example a "non success" HTTP response (typically anything in t
 range) is converted into an `Error` and thrown. This is icky and there are better ways to
 switch the execution path based on the response from the server.
 
-<sup>4</sup> In OOP, type composition is achieved primarily though the [Decorator Pattern](https://en.wikipedia.org/wiki/Decorator_pattern)
-which allows objects that implement the same interface to wrap each other to compose behaviour. 
+<sup>4</sup> In OOP, type composition is achieved by encapsulating objects within objects. This
+is the basis for the [Law of Demeter](https://en.wikipedia.org/wiki/Law_of_Demeter). When
+composing objects of the same types, the [Decorator Pattern](https://en.wikipedia.org/wiki/Decorator_pattern)
+allows objects that implement the same interface to wrap each other to compose behaviour. 
 Function composition is a more powerful technique. The OOP variants are really poor man cousins
 to their functional brethren.
 
@@ -356,9 +359,12 @@ without a bit of help/configuration. Kotlin/Swift refuse to compile however.
 <sup>10</sup> The [Single Responsibility Principle](https://en.wikipedia.org/wiki/Single-responsibility_principle) 
 applies to functions as well.
 
-<sup>11</sup> It's a common joke in the FP world that Monads are like onions, and ogres and 
+<sup>11</sup> Again we have a popular OOP pattern of the encapsulation of logic behind a
+polymorphic interface being the [Strategy Pattern](https://en.wikipedia.org/wiki/Strategy_pattern)
+
+<sup>12</sup> It's a common joke in the FP world that Monads are like onions, and ogres and 
 parfait. They've got layers.
 
-<sup>12</sup> Lazy evaluation is a really important tool as we can specify function pipes,
+<sup>13</sup> Lazy evaluation is a really important tool as we can specify function pipes,
 for example a `HttpResultHandler` that fetches a new access token across a network but only have
 it executed/evaluated when required ie: when the API responds with a `401`
