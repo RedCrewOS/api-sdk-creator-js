@@ -359,6 +359,6 @@ applies to functions as well.
 <sup>11</sup> It's a common joke in the FP world that Monads are like onions, and ogres and 
 parfait. They've got layers.
 
-<sup>12</sup> Lazy evaluation is a really important tool in as we can specify function pipes,
+<sup>12</sup> Lazy evaluation is a really important tool as we can specify function pipes,
 for example a `HttpResultHandler` that fetches a new access token across a network but only have
 it executed/evaluated when required ie: when the API responds with a `401`
