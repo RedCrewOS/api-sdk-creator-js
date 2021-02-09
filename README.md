@@ -2,7 +2,10 @@
 
 # About me
 
-TODO: Fill this in
+Contains libraries to aid SDK developers in the creation of API client SDKs.
+
+See the individual library READMEs for more details. The best starting place is with the
+[http-client README](http-client/README.md)
 
 # Development
 
