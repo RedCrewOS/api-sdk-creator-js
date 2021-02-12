@@ -437,8 +437,8 @@
     //   "reviewCategory": "tools"
     // }
     {
-      packageName: "@sdk-creator/http-client",
-      projectFolder: "http-client"
+      packageName: "@sdk-creator/http-api-client",
+      projectFolder: "http-api-client"
     },
     {
       packageName: "@sdk-creator/axios-http-client",

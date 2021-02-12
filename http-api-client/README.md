@@ -1,11 +1,11 @@
-#  http-client
+#  http-api-client
 
 A library that can be used as a foundation to build clients (SDKs) for HTTP based APIs.
 
 ## Usage
 
 ```shell
-$ npm install @sdk-creator/http-client
+$ npm install @sdk-creator/http-api-client
 
 # pick the HTTPClient implementation, for example
 $ npm install @sdk-creator/axios-http-client

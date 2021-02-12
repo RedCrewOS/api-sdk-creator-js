@@ -28,7 +28,7 @@ import {
 	isSuccessfulResult,
 	jsonMarshaller,
 	jsonUnmarshaller
-} from "@sdk-creator/http-client";
+} from "@sdk-creator/http-api-client";
 
 interface Account {
 	id: number;

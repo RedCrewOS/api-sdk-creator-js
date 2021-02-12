@@ -15,7 +15,7 @@
 	"author": "Kieran Simpson <kieran@redcrew.com.au>",
 	"license": "UNLICENSED",
 	"dependencies": {
-		"@sdk-creator/http-client": "^0.1.0",
+		"@sdk-creator/http-api-client": "^0.1.0",
 		"tslib": "^2.0.3",
 		"crocks": "~0.12.4"
 	},

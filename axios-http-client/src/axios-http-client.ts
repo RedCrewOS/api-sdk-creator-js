@@ -22,7 +22,7 @@ import {
 	HttpResponse,
 	HttpResult,
 	UnstructuredData
-} from "@sdk-creator/http-client";
+} from "@sdk-creator/http-api-client";
 
 /*
  * Axios embeds the actual HTTP error response in the Error.
