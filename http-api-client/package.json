@@ -8,15 +8,18 @@
   "main": "index.js",
   "types": "./types",
   "scripts": {
-    "build": "rushx clean && rushx test",
-    "clean": "rimraf build",
-    "compile": "tsc -p .",
+    "build": "rushx test && rushx check",
+    "check": "tsc types/*",
     "test": "find test/ -name *.test.js | xargs mocha --timeout 1000"
   },
+  "files": [
+    "docs",
+    "src",
+    "types"
+  ],
   "author": "Kieran Simpson <kieran@redcrew.com.au>",
   "license": "UNLICENSED",
   "dependencies": {
-    "tslib": "^2.0.3",
     "crocks": "~0.12.4"
   },
   "devDependencies": {
