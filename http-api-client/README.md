@@ -1,6 +1,8 @@
 #  http-api-client
 
-A library that can be used as a foundation to build clients (SDKs) for HTTP based APIs.
+A Javascript library that can be used as a foundation to build clients (SDKs) for HTTP based APIs.
+
+Typescript definitions are included for using this library in TS projects, or to aid IDEs with code completion.
 
 ## Usage
 
@@ -133,11 +135,11 @@ This library is more concerned about how concepts can be used to meet the goal o
 with hopefully just enough theory to help users (SDK developers) understand design decisions
 made and how to use the building blocks in this library to quickly and confidently create SDKs.
 
-With that in mind, the observant reader may have noticed that the function types mentioned like
-`HttpRequestPolicy` and others actually return an `Async` of "type" where "type" is one of the
-core SDK types. This is because in real world programs, and especially in an SDK we have to deal
-with errors, and asynchronous behaviour which means we need some additional tools to compose 
-our SDK pipe together.
+With that in mind, any reader that has poked around this library may have noticed that the 
+function types mentioned like `HttpRequestPolicy` and others actually return an `Async` of 
+"type" where "type" is one of the core SDK types. This is because in real world programs, and 
+especially in an SDK we have to deal with errors, and asynchronous behaviour which means we 
+need some additional tools to compose our SDK pipe together.
 
 ### Using railway tracks to create SDKs
 
@@ -275,13 +277,14 @@ function over the `customer` with a new `name`)
 "Container types" that "implement" different interfaces (such as 
 [Functor, Applicatives and others](https://medium.com/@tzehsiang/javascript-functor-applicative-monads-in-pictures-b567c6415221#.rdwll124i)).
 ADTs allow us to compose functions together while encapsulating the messiness of dealing with 
-errors and asynchronous behaviour. Because Javascript doesn't natively have ADTs this library 
-relies on an ADT library called [Crocks](https://crocks.dev/).
+nothingness, errors and asynchronous behaviour. Because Javascript doesn't natively have ADTs 
+this library relies on an ADT library called [Crocks](https://crocks.dev/).
 
 Having encapsulated the abstraction of *"if there is a value do something else do nothing"* into
-a parametric polymorphic Sum Type it can be used with any other type. When you have Sum Types of
-Sum Types of Sum Types you have many layers to peel through, which brings us to 
-Monads<sup>12</sup> as not only can Monads `map`, they can `chain` to avoid the nesting problem.
+a parametric polymorphic Sum Type it can be used with any other type including functions which
+return a Sum Type of their own. When you have Sum Types of Sum Types of Sum Types you have many 
+layers to peel through to get at the "plain" value, which brings us to Monads<sup>12</sup> as 
+not only can Monads `map`, they can `chain` to avoid the nesting problem. 
 For a more complete discussion of Monads see some of the references.
 
 Therefore, the reason that the function types return an `Async` is that `Async` is Crock's 
@@ -292,7 +295,8 @@ tracks for handling errors, HTTP errors (failures), and all manner of outcomes.
 We let `Async` take care of the plumbing so that we can just write the functions we need.
 
 `Async` is much more preferred over Promises, as [Promises suffer a few flaws](https://avaq.medium.com/broken-promises-2ae92780f33)
-that will get in our way.
+that will get in our way, most notable that they are eager. Once defined they kick off on the
+next tick.
 
 ## Examples
 
