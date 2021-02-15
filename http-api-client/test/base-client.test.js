@@ -1,6 +1,6 @@
-import { assertThat, containsString, instanceOf, is, throws } from "hamjest";
+const { assertThat, containsString, instanceOf, is, throws } = require("hamjest");
 
-import { replacePathParams, createQueryString } from "../src";
+const { replacePathParams, createQueryString } = require("../src");
 
 describe("Base Http Client", function() {
 	describe("path params", function() {

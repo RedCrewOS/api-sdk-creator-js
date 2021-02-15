@@ -1,21 +1,14 @@
+"use strict";
+
 const Async = require("crocks/Async");
 
-import {
-	assertThat,
-	equalTo,
-	hasProperty,
-	is,
-} from "hamjest";
+const { assertThat, equalTo, hasProperty, is } = require("hamjest");
 
-import {
-	addHeaders,
-	HttpRequest,
-	HttpRequestMethod,
-} from "../src";
+const {addHeaders, HttpRequestMethod } = require("../src");
 
 describe("Http Request", function() {
 	describe("adding headers", function() {
-		let request: HttpRequest;
+		let request;
 
 		beforeEach(function() {
 			request = {
@@ -32,7 +25,8 @@ describe("Http Request", function() {
 				"x-app-header": "abc123"
 			};
 
-			const result: HttpRequest =
+			/** @type {HttpRequest} */
+			const result =
 				await addHeaders(Async.of(headers), Object.freeze(request)).toPromise();
 
 			assertThat(result.headers, hasProperty("authorization", equalTo(request.headers.authorization)));
@@ -49,7 +43,8 @@ describe("Http Request", function() {
 				"x-app-header": "abc123"
 			};
 
-			const result: HttpRequest =
+			/** @type {HttpRequest} */
+			const result =
 				await addHeaders(Async.of(headers), Object.freeze(request)).toPromise();
 
 			assertThat(result.headers, hasProperty("x-app-header", equalTo(headers["x-app-header"])));
@@ -62,7 +57,8 @@ describe("Http Request", function() {
 
 			const createHeaders = () => Async.of(headers);
 
-			const result: HttpRequest =
+			/** @type {HttpRequest} */
+			const result =
 				await addHeaders(createHeaders, Object.freeze(request)).toPromise();
 
 			assertThat(result.headers, hasProperty("x-app-header", equalTo(headers["x-app-header"])));

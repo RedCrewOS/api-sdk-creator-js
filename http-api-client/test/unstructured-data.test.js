@@ -1,7 +1,7 @@
-import { PassThrough, Readable, Transform, TransformCallback } from "stream";
-import { ReadableStream, TransformStream } from "web-streams-polyfill/ponyfill/es2018";
+const { PassThrough, Readable, Transform } = require("stream");
+const { ReadableStream, TransformStream } = require("web-streams-polyfill/ponyfill/es2018");
 
-import {
+const {
 	allOf,
 	assertThat, equalTo,
 	hasProperty,
@@ -9,17 +9,17 @@ import {
 	is,
 	isRejectedWith,
 	promiseThat
-} from "hamjest";
+} = require("hamjest");
 
-import {
+const {
 	isReadable,
 	isReadableStream,
-	UnstructuredData, unstructuredDataAtPathToString,
+	unstructuredDataAtPathToString,
 	unstructuredDataToString
-} from "../src";
+} = require("../src");
 
 class ErrorTransform extends Transform {
-	_transform(chunk: any, encoding: BufferEncoding, callback: TransformCallback) {
+	_transform(chunk, encoding, callback) {
 		callback(new Error("Fake stream error"));
 	}
 }
@@ -64,7 +64,7 @@ describe("Unstructured Data", function() {
 
 		it("should collect web stream", async function() {
 			const data = "Hello World";
-			const stream = new TransformStream<string, string>();
+			const stream = new TransformStream();
 
 			process.nextTick(() => {
 				const writer = stream.writable.getWriter();
@@ -78,7 +78,7 @@ describe("Unstructured Data", function() {
 		});
 
 		it("should throw error if web stream has error", async function() {
-			const stream = new TransformStream<string, string>({
+			const stream = new TransformStream({
 				transform: (chunk, controller) => {
 					controller.error("Fake web steams error");
 				}
@@ -94,10 +94,10 @@ describe("Unstructured Data", function() {
 		});
 
 		it("should throw error if data type not known", async function() {
-			await promiseThat(convertDataToString({} as UnstructuredData), isRejectedWith(instanceOf(Error)));
+			await promiseThat(convertDataToString({}), isRejectedWith(instanceOf(Error)));
 		});
 
-		function convertDataToString(data: UnstructuredData): Promise<string> {
+		function convertDataToString(data) {
 			return unstructuredDataToString(data).toPromise();
 		}
 	});
@@ -106,7 +106,7 @@ describe("Unstructured Data", function() {
 		const data = "Hello World";
 		const body = Buffer.from(data);
 
-		const obj: any = {
+		const obj = {
 			a: {
 				b: body
 			},

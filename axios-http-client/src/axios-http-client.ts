@@ -31,7 +31,7 @@ import {
  * for some other issue like a network failure.
  */
 // extractHttpError :: AxiosError -> Async
-const extractHttpError = function(e: AxiosError) {
+const extractHttpError = function(e: AxiosError): typeof Async {
 	return e.response ? Async.Resolved(e.response) : Async.Rejected(e);
 };
 

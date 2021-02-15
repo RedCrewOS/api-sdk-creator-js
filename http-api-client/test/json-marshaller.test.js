@@ -1,6 +1,8 @@
+"use strict";
+
 const deepFreeze = require("deep-freeze");
 
-import {
+const {
 	allOf,
 	assertThat,
 	hasProperty,
@@ -8,17 +10,13 @@ import {
 	is,
 	isRejectedWith,
 	promiseThat
-} from "hamjest";
+} = require("hamjest");
 
-import {
-	HttpRequest,
-	HttpResult,
-	HttpResponse,
-	JSONObject,
+const {
 	JSON_MIME_TYPE,
 	jsonMarshaller,
 	jsonUnmarshaller
-} from "../src";
+} = require("../src");
 
 describe("JSON Marshalling", function() {
 	const body = {
@@ -30,24 +28,25 @@ describe("JSON Marshalling", function() {
 	};
 
 	describe("marshaller", function() {
-		let request: HttpRequest;
+		let request;
 
 		beforeEach(function() {
 			request = {
 				headers: {},
 				body
-			} as HttpRequest;
+			};
 		})
 
 		it("should set content type", async function() {
 			const contentType = "application/json+vnd";
-			const result: HttpRequest = await marshall(contentType);
+
+			const result = await marshall(contentType);
 
 			assertThat(result.headers["content-type"], is(contentType));
 		});
 
 		it("should default content type", async function() {
-			const result: HttpRequest = await marshall();
+			const result = await marshall();
 
 			assertThat(result.headers["content-type"], is(JSON_MIME_TYPE));
 		});
@@ -55,7 +54,7 @@ describe("JSON Marshalling", function() {
 		it("should set no content type when no request body", async function() {
 			request.body = undefined;
 
-			const result: HttpRequest = await marshall();
+			const result = await marshall();
 
 			assertThat(result.headers["content-type"], is(undefined));
 		});
@@ -63,13 +62,13 @@ describe("JSON Marshalling", function() {
 		it("should not stringify body when no request body", async function() {
 			request.body = undefined;
 
-			const result: HttpRequest = await marshall();
+			const result = await marshall();
 
 			assertThat(result.body, is(undefined));
 		});
 
 		it("should stringify request body", async function() {
-			const result: HttpRequest = await marshall();
+			const result = await marshall();
 
 			assertThat(result.body, is(JSON.stringify(request.body)));
 		});
@@ -84,7 +83,11 @@ describe("JSON Marshalling", function() {
 			)));
 		});
 
-		function marshall(contentType?: string): Promise<HttpRequest<string>> {
+		/**
+		 * @param {string} [contentType]
+		 * @return Promise<HttpRequest>
+		 */
+		function marshall(contentType) {
 			// freeze the request to make sure we don't modify anything
 			request = deepFreeze(request);
 
@@ -93,14 +96,14 @@ describe("JSON Marshalling", function() {
 	});
 
 	describe("unmarshaller", function() {
-		let result: HttpResult;
+		let result;
 
 		beforeEach(function() {
 			result = {
 				response: {
 					body: JSON.stringify(body)
-				} as HttpResponse
-			} as HttpResult;
+				}
+			};
 		});
 
 		it("should unmarshall response body", async function() {
@@ -126,7 +129,10 @@ describe("JSON Marshalling", function() {
 			)));
 		});
 
-		function unmarshall(): Promise<HttpResult<any, JSONObject>> {
+		/**
+		 * @returns Promise<HttpResult>
+		 */
+		function unmarshall() {
 			return jsonUnmarshaller()(result).toPromise();
 		}
 	});

@@ -1,15 +1,17 @@
+"use strict";
+
 const Async = require("crocks/Async");
 
-import {
+const {
 	assertThat,
 	equalTo,
 	hasProperty,
 	instanceOf,
 	isRejectedWith,
 	promiseThat
-} from "hamjest";
+} = require("hamjest");
 
-import { bearerToken, constantHeaders, createHeaders, RequestHeaders } from "../src";
+const { bearerToken, constantHeaders, createHeaders }  = require("../src");
 
 describe("Headers", function() {
 	describe("header factory", function() {
@@ -24,8 +26,14 @@ describe("Headers", function() {
 			assertThat(headers, hasProperty("x-api-key", equalTo("abc123")));
 		});
 
+		/*
+		 * Note: Object.freeze will only throw an error if the runtime is in "strict" mode.
+		 * Else it will silently ignore the modification
+		 *
+		 * @see https://stackoverflow.com/a/9119952/586182
+		 */
 		it("should return error if trying to modify headers", async function() {
-			const badFactory = (headers: RequestHeaders) => {
+			const badFactory = (headers) => {
 				headers.foo = "bar";
 
 				return Async.of(headers);

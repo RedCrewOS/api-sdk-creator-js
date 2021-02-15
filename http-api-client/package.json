@@ -5,12 +5,13 @@
   "engines": {
     "node": "^12.18.4"
   },
-  "main": "build/index.js",
+  "main": "index.js",
+  "types": "./types",
   "scripts": {
-    "build": "rushx clean && rushx compile && rushx test",
+    "build": "rushx clean && rushx test",
     "clean": "rimraf build",
     "compile": "tsc -p .",
-    "test": "find test/ -name *.test.ts | xargs mocha --timeout 1000"
+    "test": "find test/ -name *.test.js | xargs mocha --timeout 1000"
   },
   "author": "Kieran Simpson <kieran@redcrew.com.au>",
   "license": "UNLICENSED",
@@ -24,6 +25,7 @@
     "@types/node": "~14.14.7",
     "@typescript-eslint/eslint-plugin": "~4.6.1",
     "@typescript-eslint/parser": "~4.6.1",
+    "deep-freeze": "~0.0.1",
     "eslint": "~7.12.1",
     "hamjest": "~3.7.1",
     "mocha": "~8.2.1",
@@ -32,7 +34,6 @@
     "ts-node": "~9.0.0",
     "tsconfig-paths": "~3.9.0",
     "typescript": "~4.0.5",
-    "deep-freeze": "~0.0.1",
     "web-streams-polyfill": "~3.0.1"
   }
 }

@@ -1,3 +1,5 @@
+"use strict"
+
 const Async = require("crocks/Async");
 const Endo = require("crocks/Endo");
 
@@ -12,10 +14,12 @@ const objOf = require("crocks/helpers/objOf");
 const pipe = require("crocks/helpers/pipe");
 const valueOf = require("crocks/pointfree/valueOf");
 
-import { RequestHeaderFactory, RequestHeaders } from "./request";
+/**
+ * @typedef {object} HttpHeaders
+ */
 
-// concatHeaders :: RequestHeaderFactory -> RequestHeaders -> RequestHeaders
-const concatHeaders = curry((factory: RequestHeaderFactory, headers: RequestHeaders) =>
+// concatHeaders :: RequestHeaderFactory -> HttpHeaders -> HttpHeaders
+const concatHeaders = curry((factory, headers) =>
 	pipe(
 		factory,
 		map(pipe(assign(headers), Object.freeze))
@@ -23,19 +27,19 @@ const concatHeaders = curry((factory: RequestHeaderFactory, headers: RequestHead
 );
 
 // concatString :: String -> String -> String
-const concatString = curry((a: string, b: string): string => `${a} ${b}`);
+const concatString = curry((a, b) => `${a} ${b}`);
 
 // toBearerToken :: String -> String
 const toBearerToken = concatString("Bearer");
 
-// toAuthorisationHeader :: String -> RequestHeaders
+// toAuthorisationHeader :: String -> HttpHeaders
 const toAuthorisationHeader = objOf("authorization");
 
 /**
  * Creates a set of headers using {@link RequestHeaderFactory}s
  */
-// createHeaders :: [ RequestHeaderFactory ] -> (() -> Async RequestHeaders)
-export const createHeaders: (factory: RequestHeaderFactory[]) => (() => typeof Async) =
+// createHeaders :: [ RequestHeaderFactory ] -> (() -> Async HttpHeaders)
+const createHeaders =
 	pipe(
 		mconcatMap(Endo, pipe(concatHeaders, chain)),
 		flip(concat)(Endo(() => Async.of(Object.freeze({})))),
@@ -45,18 +49,24 @@ export const createHeaders: (factory: RequestHeaderFactory[]) => (() => typeof A
 /**
  * Adds a bearer token to request headers
  */
-// bearerToken :: (() -> Async string) -> RequestHeaders -> Async RequestHeaders
-export const bearerToken = curry(
-	(accessToken: () => typeof Async, _: RequestHeaders): typeof Async =>
-		pipe(
-			accessToken,
-			map(pipe(toBearerToken, toAuthorisationHeader))
-		)()
+// bearerToken :: (() -> Async string) -> RequestHeaderFactory
+const bearerToken = curry((accessToken, _) =>
+	pipe(
+		accessToken,
+		map(pipe(toBearerToken, toAuthorisationHeader))
+	)()
 );
 
 /**
  * Adds the given header to a {@link HttpRequest}
  */
-export const constantHeaders = curry(
-	(headers: RequestHeaders, _: RequestHeaders): typeof Async => Async.of(headers)
+// constantHeaders :: HttpHeaders -> RequestHeaderFactory
+const constantHeaders = curry(
+	(headers, _) => Async.of(headers)
 );
+
+module.exports = {
+	createHeaders,
+	bearerToken,
+	constantHeaders
+}

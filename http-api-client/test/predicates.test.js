@@ -1,6 +1,8 @@
-import { HttpResponse, HttpResult, isSuccessfulResponse, isSuccessfulResult } from "../src";
+"use strict";
 
-import { assertThat, is } from "hamjest";
+const { assertThat, is } = require("hamjest");
+
+const { isSuccessfulResponse, isSuccessfulResult } = require("../src");
 
 describe("predicates", function() {
 	describe("is successful", function() {
@@ -24,11 +26,11 @@ describe("predicates", function() {
 		];
 
 		describe("successful response", function() {
-			data.forEach((datum: any) => {
+			data.forEach((datum) => {
 				const successOrNot = datum.successful ? "successful" : "unsuccessful";
 
 				it(`should determine that ${datum.code} is ${successOrNot}`, function() {
-					const response: HttpResponse = givenHttpResponse(datum.code);
+					const response = givenHttpResponse(datum.code);
 
 					assertThat(isSuccessfulResponse(response), is(datum.successful));
 				});
@@ -36,21 +38,21 @@ describe("predicates", function() {
 		});
 
 		describe("successful result", function() {
-			data.forEach((datum: any) => {
+			data.forEach((datum) => {
 				const successOrNot = datum.successful ? "successful" : "unsuccessful";
 
 				it(`should determine that ${datum.code} is ${successOrNot}`, function() {
-					const result: HttpResult = { response: givenHttpResponse(datum.code) } as HttpResult;
+					const result = { response: givenHttpResponse(datum.code) };
 
 					assertThat(isSuccessfulResult(result), is(datum.successful));
 				});
 			});
 		});
 
-		function givenHttpResponse(code: number): HttpResponse {
+		function givenHttpResponse(code) {
 			return {
 				statusCode: code
-			} as HttpResponse;
+			};
 		}
 	});
 });

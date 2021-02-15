@@ -1,8 +1,5 @@
 "use strict";
 
-import { HttpRequestPolicy, HttpResultHandler } from "./client";
-import { UnstructuredData, unstructuredDataAtPathToString } from "./unstructured-data";
-
 const Async = require("crocks/Async");
 
 const hasPropPath = require("crocks/predicates/hasPropPath");
@@ -15,14 +12,21 @@ const resultToAsync = require("crocks/Async/resultToAsync");
 const setPath = require("crocks/helpers/setPath");
 const tryCatch = require("crocks/Result/tryCatch");
 
-// very loose definition what what's convertible to/from JSON
-export type JSONObject = Record<string, any>;
+const { unstructuredDataAtPathToString } = require("./unstructured-data");
 
-export const JSON_MIME_TYPE = "application/json";
+/**
+ * @type {string} Default mime type for JSON.
+ */
+const JSON_MIME_TYPE = "application/json";
 
-export function jsonMarshaller(
-	contentType: string = JSON_MIME_TYPE
-): HttpRequestPolicy<JSONObject> {
+/**
+ * Creates a {@link HttpRequestPolicy} that tries to marshall the body to a string.
+ *
+ * @param {string} [contentType=JSON_MIME_TYPE] Optional content type. Defaults to JSON_MIME_TYPE
+ * @return {HttpRequestPolicy}
+ */
+// jsonMarshaller :: String -> HttpRequestPolicy
+const jsonMarshaller = (contentType = JSON_MIME_TYPE) => {
 	const path = [ "body" ];
 
 	return ifElse(
@@ -32,10 +36,16 @@ export function jsonMarshaller(
 			setPath([ "headers", "content-type" ], contentType),
 			resultToAsync(tryCatch(mapProps({ body: JSON.stringify })))
 		),
-	) as HttpRequestPolicy<JSONObject>;
-}
+	)
+};
 
-export function jsonUnmarshaller(): HttpResultHandler<UnstructuredData, JSONObject> {
+/**
+ * Creates a {@link HttpResultHandler} that tries to unmarshall a string to an object.
+ *
+ * @return {HttpResultHandler}
+ */
+// jsonUnmarshaller :: () -> HttpResultHandler
+function jsonUnmarshaller() {
 	const path = [ "response", "body" ];
 
 	return ifElse(
@@ -45,5 +55,11 @@ export function jsonUnmarshaller(): HttpResultHandler<UnstructuredData, JSONObje
 			unstructuredDataAtPathToString(path),
 			resultToAsync(tryCatch(mapProps({ response: { body: JSON.parse } })))
 		)
-	) as HttpResultHandler<UnstructuredData, JSONObject>;
+	)
+}
+
+module.exports = {
+	JSON_MIME_TYPE,
+	jsonMarshaller,
+	jsonUnmarshaller
 }

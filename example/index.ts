@@ -17,7 +17,6 @@ import {
 	HttpResult,
 	HttpResultHandler,
 	JSONObject,
-	RequestHeaderFactory,
 	UnstructuredData,
 	addHeaders,
 	bearerToken,
@@ -109,8 +108,8 @@ const httpClient: () => HttpClient = () => {
  * Handlers
  */
 
-const authorisationFailure: (accessToken: RequestHeaderFactory) => HttpResultHandler =
-	(accessToken: RequestHeaderFactory) => {
+const authorisationFailure: (accessToken: () => typeof Async) => HttpResultHandler =
+	(accessToken: () => typeof Async) => {
 		let count = 0;
 
 		return (result: HttpResult): typeof Async => {
