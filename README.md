@@ -5,7 +5,7 @@
 Contains libraries to aid SDK developers in the creation of API client SDKs.
 
 See the individual library READMEs for more details. The best starting place is with the
-[http-client README](http-client/README.md)
+[http-api-client README](http-api-client/README.md)
 
 | :memo: | This library is still in active development and may break compatibility in future releases |
 |--------|:------------------------------------------------------------------------------------------|
