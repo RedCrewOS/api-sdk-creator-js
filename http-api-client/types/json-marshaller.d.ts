@@ -6,6 +6,9 @@ declare const JSON_MIME_TYPE: string;
 
 export type JSONObject = Record<string, any>;
 
-export function jsonMarshaller(contentType: string): HttpRequestPolicy<JSONObject>;
+/**
+ * @param {string} [contentType] Defaults to JSON_MIME_TYPE
+ */
+export function jsonMarshaller(contentType?: string): HttpRequestPolicy<JSONObject>;
 
 export function jsonUnmarshaller(): HttpResultHandler<UnstructuredData, UnstructuredData>;

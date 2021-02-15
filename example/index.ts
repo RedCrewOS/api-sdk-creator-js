@@ -116,6 +116,7 @@ const authorisationFailure: (accessToken: () => typeof Async) => HttpResultHandl
 			try {
 				if (count === 0) {
 					return addHeaders(bearerToken(accessToken), result.request)
+						// @ts-ignore
 						.map((request: HttpRequest) => ({
 							request,
 							response: result.response
