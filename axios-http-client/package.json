@@ -1,7 +1,7 @@
 {
 	"name": "@sdk-creator/axios-http-client",
 	"version": "0.1.0",
-	"description": "Axios based HTTP client for SDKs",
+	"description": "Axios based HTTP client for @sdk-creator/http-api-client",
 	"engines": {
 		"node": "^12.18.4"
 	},
@@ -12,8 +12,15 @@
 		"compile": "tsc -p .",
 		"test": "find test/ -name *.test.ts | xargs mocha --timeout 1000"
 	},
+	"files": [
+		"build"
+	],
 	"author": "Kieran Simpson <kieran@redcrew.com.au>",
-	"license": "UNLICENSED",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/RedCrewOS/sdk-creator-js"
+	},
 	"dependencies": {
 		"@sdk-creator/http-api-client": "^0.0.1",
 		"tslib": "^2.0.3",

@@ -18,7 +18,11 @@
     "types"
   ],
   "author": "Kieran Simpson <kieran@redcrew.com.au>",
-  "license": "UNLICENSED",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/RedCrewOS/sdk-creator-js"
+  },
   "dependencies": {
     "crocks": "~0.12.4"
   },
