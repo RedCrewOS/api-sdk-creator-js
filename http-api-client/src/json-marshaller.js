@@ -45,7 +45,7 @@ const jsonMarshaller = (contentType = JSON_MIME_TYPE) => {
  * @return {HttpResultHandler}
  */
 // jsonUnmarshaller :: () -> HttpResultHandler
-function jsonUnmarshaller() {
+const jsonUnmarshaller = () => {
 	const path = [ "response", "body" ];
 
 	return ifElse(
