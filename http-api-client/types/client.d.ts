@@ -8,6 +8,8 @@ export type HttpApiClient = (request: HttpRequest) => typeof Async;
 
 export type HttpClient = (request: HttpRequest<UnstructuredData>) => typeof Async;
 
+export type HttpClientFactory = () => HttpClient;
+
 export interface HttpResult<Request = any, Response = any> {
 	request: HttpRequest<Request>;
 	response: HttpResponse<Response>;
