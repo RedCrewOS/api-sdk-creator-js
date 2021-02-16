@@ -5,7 +5,7 @@
   "engines": {
     "node": "^12.18.4"
   },
-  "main": "index.js",
+  "main": "src/index.js",
   "types": "./types",
   "scripts": {
     "build": "rushx test && rushx check",
