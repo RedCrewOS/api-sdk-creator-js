@@ -5,13 +5,17 @@ const Async = require("crocks/Async");
 const assign = require("crocks/helpers/assign");
 const constant = require("crocks/combinators/constant");
 const curry = require("crocks/core/curry");
+const defaultProps = require("crocks/helpers/defaultProps");
 const flip = require("crocks/combinators/flip");
+const getProp = require("crocks/Maybe/getProp");
 const getPropOr = require("crocks/helpers/getPropOr");
 const identity = require("crocks/combinators/identity");
 const ifElse = require("crocks/logic/ifElse");
 const isFunction = require("crocks/core/isFunction");
 const liftA2 = require("crocks/helpers/liftA2");
+const maybeToAsync = require("crocks/Async/maybeToAsync");
 const map = require("crocks/pointfree/map");
+const objOf = require("crocks/helpers/objOf");
 const pipe = require("crocks/helpers/pipe");
 const setProp = require("crocks/helpers/setProp");
 
@@ -74,7 +78,21 @@ const addHeaders = curry((headers, request) => {
 	)(request)
 });
 
+// resolveUrl :: String -> HttpRequestPolicy
+const resolveUrl = curry((base, request) => {
+	const prop = "url";
+
+	return pipe(
+		getProp(prop),
+		map(curry((a, b) => `${a}${b}`)(base)),
+		map(objOf(prop)),
+		map(defaultProps(request)),
+		maybeToAsync(new Error("'url' is missing in request"))
+	)(request)
+});
+
 module.exports = {
 	HttpRequestMethod,
-	addHeaders
+	addHeaders,
+	resolveUrl
 }

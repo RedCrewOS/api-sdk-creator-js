@@ -2,9 +2,18 @@
 
 const Async = require("crocks/Async");
 
-const { assertThat, equalTo, hasProperty, is } = require("hamjest");
+const {
+	allOf,
+	assertThat,
+	equalTo,
+	hasProperty,
+	instanceOf,
+	is,
+	isRejectedWith,
+	promiseThat
+} = require("hamjest");
 
-const {addHeaders, HttpRequestMethod } = require("../src");
+const { addHeaders, resolveUrl, HttpRequestMethod } = require("../src");
 
 describe("Http Request", function() {
 	describe("adding headers", function() {
@@ -63,5 +72,25 @@ describe("Http Request", function() {
 
 			assertThat(result.headers, hasProperty("x-app-header", equalTo(headers["x-app-header"])));
 		})
+	});
+
+	describe("resolving url", function() {
+		it("should join path to base", async function() {
+			const base = "http://localhost:3000";
+			const path = "/v1/foo/bar";
+
+			const result = await resolveUrl(base, {
+				url: path
+			}).toPromise();
+
+			assertThat(result, hasProperty("url", equalTo(`${base}${path}`)));
+		});
+
+		it("should reject if url missing in request", async function() {
+			await promiseThat(resolveUrl("", {}).toPromise(), isRejectedWith(allOf(
+				instanceOf(Error),
+				hasProperty("message", equalTo("'url' is missing in request"))
+			)));
+		});
 	});
 });
