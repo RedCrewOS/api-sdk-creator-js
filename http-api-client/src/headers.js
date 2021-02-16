@@ -38,7 +38,7 @@ const toAuthorisationHeader = objOf("authorization");
 /**
  * Creates a {@link RequestHeadersFactory} using {@link RequestHeaderFactory}s
  */
-// createHeaders :: [ RequestHeaderFactory ] -> (() -> Async HttpHeaders)
+// createHeaders :: [ RequestHeaderFactory ] | List RequestHeaderFactory -> RequestHeadersFactory
 const createHeaders =
 	pipe(
 		mconcatMap(Endo, pipe(concatHeaders, chain)),

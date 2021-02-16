@@ -1,6 +1,7 @@
 "use strict";
 
 const Async = require("crocks/Async");
+const arrayToList = require("crocks/List/arrayToList");
 
 const {
 	assertThat,
@@ -18,13 +19,21 @@ describe("Headers", function() {
 		const factoryOne = () => Async.of({ "x-application-name": "project" });
 		const factoryTwo = () => Async.of({ "x-api-key": "abc123" });
 
-		it("should create request headers", async function() {
+		it("should create request headers from Array", async function() {
 			const factory = createHeaders([ factoryOne, factoryTwo ]);
 			const headers = await factory().toPromise();
 
 			assertThat(headers, hasProperty("x-application-name", equalTo("project")));
 			assertThat(headers, hasProperty("x-api-key", equalTo("abc123")));
 		});
+
+		it("should create request headers from List", async function() {
+			const factory = createHeaders(arrayToList([ factoryOne, factoryTwo ]));
+			const headers = await factory().toPromise();
+
+			assertThat(headers, hasProperty("x-application-name", equalTo("project")));
+			assertThat(headers, hasProperty("x-api-key", equalTo("abc123")));
+		})
 
 		/*
 		 * Note: Object.freeze will only throw an error if the runtime is in "strict" mode.
