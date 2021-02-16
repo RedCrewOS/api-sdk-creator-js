@@ -30,6 +30,8 @@ export interface HttpRequest<T = any> {
 
 export type RequestHeaderFactory = (headers: HttpHeaders) => typeof Async;
 
+export type RequestHeadersFactory = () => typeof Async;
+
 export function addHeaders(
 	headers: typeof Async | (() => typeof Async),
 	request: HttpRequest

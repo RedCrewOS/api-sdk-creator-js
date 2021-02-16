@@ -1,10 +1,10 @@
 import * as Async from "crocks/Async";
 
-import { RequestHeaderFactory } from "./request";
+import { RequestHeaderFactory, RequestHeadersFactory } from "./request";
 
 export type HttpHeaders = Record<string, string>;
 
-export function createHeaders(factories: RequestHeaderFactory[]): () => typeof Async;
+export function createHeaders(factories: RequestHeaderFactory[]): () => RequestHeadersFactory;
 
 export function bearerToken(accessToken: () => typeof Async, headers: HttpHeaders): typeof Async;
 export function bearerToken(accessToken: () => typeof Async): RequestHeaderFactory;

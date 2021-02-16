@@ -36,7 +36,7 @@ const toBearerToken = concatString("Bearer");
 const toAuthorisationHeader = objOf("authorization");
 
 /**
- * Creates a set of headers using {@link RequestHeaderFactory}s
+ * Creates a {@link RequestHeadersFactory} using {@link RequestHeaderFactory}s
  */
 // createHeaders :: [ RequestHeaderFactory ] -> (() -> Async HttpHeaders)
 const createHeaders =
