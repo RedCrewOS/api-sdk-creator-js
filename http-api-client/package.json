@@ -9,7 +9,7 @@
   "types": "./types",
   "scripts": {
     "build": "rushx test && rushx check",
-    "check": "tsc types/*",
+    "check": "tsc types/*.ts --noEmit",
     "test": "find test/ -name *.test.js | xargs mocha --timeout 1000"
   },
   "files": [
