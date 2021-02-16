@@ -1,4 +1,5 @@
-import { Async } from "./crocks";
+import * as Async from "crocks/Async";
+
 import { HttpHeaders } from "./headers";
 import { HttpRequestPolicy } from "./client";
 
@@ -27,11 +28,11 @@ export interface HttpRequest<T = any> {
 	body?: T;
 }
 
-export type RequestHeaderFactory = (headers: HttpHeaders) => Async;
+export type RequestHeaderFactory = (headers: HttpHeaders) => typeof Async;
 
 export function addHeaders(
-	headers: Async | (() => Async),
+	headers: typeof Async | (() => typeof Async),
 	request: HttpRequest
-): Async;
+): typeof Async;
 
-export function addHeaders(headers: Async | (() => Async)): HttpRequestPolicy;
+export function addHeaders(headers: typeof Async | (() => typeof Async)): HttpRequestPolicy;
