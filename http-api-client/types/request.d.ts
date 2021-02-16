@@ -38,3 +38,7 @@ export function addHeaders(
 ): typeof Async;
 
 export function addHeaders(headers: typeof Async | (() => typeof Async)): HttpRequestPolicy;
+
+export function resolveUrl(base: string, request: HttpRequest): typeof Async;
+export function resolveUrl(base: string): HttpRequestPolicy;
+
