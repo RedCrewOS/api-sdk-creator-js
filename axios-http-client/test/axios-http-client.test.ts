@@ -309,14 +309,12 @@ describe("Axios HttpClient", function() {
 				assertThat(data, is(body));
 			});
 
-			it("should return string", async function() {
+			it("should default to string response", async function() {
 				const body = "This is some data";
 
 				nock(origin).get(pathname).reply(200, body);
 
-				client = createAxiosHttpClient({
-					responseType: "text"
-				});
+				client = createAxiosHttpClient();
 
 				const result: HttpResult = await client(request).toPromise();
 				assertThat(result.response.body, is(body));
