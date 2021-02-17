@@ -5,7 +5,7 @@
 	"engines": {
 		"node": "^12.18.4"
 	},
-	"main": "build/index.js",
+	"main": "build/axios-http-client.js",
 	"scripts": {
 		"build": "rushx clean && rushx compile && rushx test",
 		"clean": "rimraf build",
