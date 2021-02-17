@@ -321,6 +321,19 @@ describe("Axios HttpClient", function() {
 				const result: HttpResult = await client(request).toPromise();
 				assertThat(result.response.body, is(body));
 			});
+
+			it("should not automatically try to parse JSON", async function() {
+				const body = "{ \"a\": 1 }";
+
+				nock(origin).get(pathname).reply(200, body);
+
+				client = createAxiosHttpClient({
+					responseType: "text"
+				});
+
+				const result: HttpResult = await client(request).toPromise();
+				assertThat(result.response.body, is(body));
+			});
 		});
 	});
 });

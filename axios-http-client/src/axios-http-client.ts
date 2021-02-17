@@ -11,8 +11,12 @@ const Async = require("crocks/Async");
 const bichain = require("crocks/pointfree/bichain");
 const chain = require("crocks/pointfree/chain");
 const curry = require("crocks/helpers/curry");
+const defaultProps = require("crocks/helpers/defaultProps");
+const isDefined = require("crocks/predicates/isDefined");
 const map = require("crocks/pointfree/map");
+const option = require("crocks/pointfree/option");
 const pipe = require("crocks/helpers/pipe");
+const safe = require("crocks/Maybe/safe");
 
 import {
 	createQueryString,
@@ -58,14 +62,12 @@ const toAxiosRequest = (request: HttpRequest): AxiosRequestConfig => {
 };
 
 // toHttpResponse :: AxiosResponse -> HttpResponse
-const toHttpResponse = function(resp: AxiosResponse): HttpResponse {
-	return {
-		statusCode: resp.status,
-		statusMessage: resp.statusText,
-		headers: resp.headers,
-		body: resp.data
-	};
-}
+const toHttpResponse = (resp: AxiosResponse): HttpResponse => ({
+	statusCode: resp.status,
+	statusMessage: resp.statusText,
+	headers: resp.headers,
+	body: resp.data
+})
 
 // toHttpResult :: HttpRequest -> HttpResponse -> HttpResult
 const toHttpResult = curry(
@@ -94,11 +96,29 @@ const axiosHttpClient = curry(
 	}
 );
 
+/*
+ * Due to a bug in Axios it will *always* try to parse JSON, even if we don't want it to
+ * (ie: by setting the 'responseType').
+ *
+ * This is a workaround.
+ *
+ * @see https://github.com/axios/axios/issues/907
+ */
+// setDefaultConfig -> AxiosRequestConfig -> AxiosRequestConfig
+const setDefaultConfig =
+	pipe(
+		pipe(safe(isDefined), option({})),
+		defaultProps({
+			transformResponse: [ (data: any) => data ]
+		})
+	)
+
 /**
  * Creates a separate Axios instance.
  */
 export const createAxiosHttpClient: (config?: AxiosRequestConfig) => HttpClient =
 	pipe(
+		setDefaultConfig,
 		axios.create,
 		axiosHttpClient
 	);
