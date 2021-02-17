@@ -13,7 +13,8 @@
 		"test": "find test/ -name *.test.ts | xargs mocha --timeout 1000"
 	},
 	"files": [
-		"build"
+		"build",
+		"src"
 	],
 	"author": "Kieran Simpson <kieran@redcrew.com.au>",
 	"license": "MIT",
