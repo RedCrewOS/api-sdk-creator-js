@@ -1,5 +1,9 @@
 "use strict"
 
+const Async = require("crocks/Async");
+
+const pipe = require("crocks/helpers/pipe");
+
 /**
  * Helper to get the response in a {@link HttpResult}
  *
@@ -18,7 +22,12 @@ const getHttpResponse = (result) => result.response;
 // getHttpBody :: HttpResponse -> a
 const getHttpBody = (response) => response.body;
 
+// extractHttpBody :: HttpResult -> Async a
+const extractHttpBody =
+	pipe(getHttpResponse, getHttpBody, Async.of)
+
 module.exports = {
+	extractHttpBody,
 	getHttpBody,
 	getHttpResponse
 }
