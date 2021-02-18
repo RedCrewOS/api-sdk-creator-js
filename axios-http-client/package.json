@@ -1,7 +1,7 @@
 {
-	"name": "@sdk-creator/axios-http-client",
+	"name": "@api-sdk-creator/axios-http-client",
 	"version": "0.1.0",
-	"description": "Axios based HTTP client for @sdk-creator/http-api-client",
+	"description": "Axios based HTTP client for @api-sdk-creator/http-api-client",
 	"engines": {
 		"node": "^12.18.4"
 	},
@@ -23,7 +23,7 @@
 		"url": "https://github.com/RedCrewOS/sdk-creator-js"
 	},
 	"dependencies": {
-		"@sdk-creator/http-api-client": "^0.0.1",
+		"@api-sdk-creator/http-api-client": "^0.0.1",
 		"tslib": "^2.0.3",
 		"crocks": "~0.12.4"
 	},

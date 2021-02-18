@@ -10,10 +10,10 @@ Typescript definitions are included for using this library in TS projects, or to
 ## Usage
 
 ```shell
-$ npm install @sdk-creator/http-api-client
+$ npm install @api-sdk-creator/http-api-client
 
 # pick the HTTPClient implementation, for example
-$ npm install @sdk-creator/axios-http-client
+$ npm install @api-sdk-creator/axios-http-client
 ```
 
 ## Motivation

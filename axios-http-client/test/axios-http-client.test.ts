@@ -15,7 +15,7 @@ import {
 	HttpRequest,
 	HttpRequestMethod,
 	HttpResult
-} from "@sdk-creator/http-api-client";
+} from "@api-sdk-creator/http-api-client";
 
 import { createAxiosHttpClient } from "../src/axios-http-client";
 

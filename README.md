@@ -12,7 +12,7 @@ See the individual library READMEs for more details. The best starting place is 
 
 # Development
 
-The repository is managed by [Rush](https://rushjs.io). As such, the Rush [Command Set](https://rushjs.io/pages/commands/rush_add/) needs to be used to add/remove/update packages and to build/publish the modules/libraries that make up the `@sdk-creator` set.
+The repository is managed by [Rush](https://rushjs.io). As such, the Rush [Command Set](https://rushjs.io/pages/commands/rush_add/) needs to be used to add/remove/update packages and to build/publish the modules/libraries that make up the `@api-sdk-creator` set.
 
 Note: Using `rushx` is the equivalent to using `npm run`
 

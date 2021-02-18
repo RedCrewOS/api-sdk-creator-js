@@ -1812,7 +1812,7 @@ packages:
     dev: false
     name: '@rush-temp/axios-http-client'
     resolution:
-      integrity: sha512-6h5dwcxd7ziI90tLJTuj0+aKAp+oISqbffjmoBxzcbHHdwBES5b7vtDdTtptG7XQwfsyyzv26+NZijrgwpzKuw==
+      integrity: sha512-VDLWqglVI4edufJFRKcsFQF2y7WSgbZ14XZ7XsuxFCK2SgP7DuLf+sfFJaN5C9jXzuf5a+3oHhyTTxxo9K67OQ==
       tarball: 'file:projects/axios-http-client.tgz'
     version: 0.0.0
   'file:projects/example.tgz':
@@ -1837,7 +1837,7 @@ packages:
     dev: false
     name: '@rush-temp/example'
     resolution:
-      integrity: sha512-PS4S0eSJLCSVHFm/VA3FfIqjxat2aGm8PlaM/G2futXDZJCn8kyiEdYFU2QyytKOdoYl8SfUeBxB67F7YWHoCA==
+      integrity: sha512-6qJVazmlTfdf5fy0udAK4YYS/gM76V73MoOn51wZ3V3b4C8oISQs2zITGn8ZCenL6FaHPjCBrh3mJSoJLuTOcg==
       tarball: 'file:projects/example.tgz'
     version: 0.0.0
   'file:projects/http-api-client.tgz':

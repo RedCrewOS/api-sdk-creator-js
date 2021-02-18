@@ -1,5 +1,5 @@
 {
-  "name": "@sdk-creator/http-api-client",
+  "name": "@api-sdk-creator/http-api-client",
   "version": "0.0.1",
   "description": "HTTP client for SDKs",
   "engines": {

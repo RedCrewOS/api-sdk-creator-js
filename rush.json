@@ -437,15 +437,15 @@
     //   "reviewCategory": "tools"
     // }
     {
-      packageName: "@sdk-creator/http-api-client",
+      packageName: "@api-sdk-creator/http-api-client",
       projectFolder: "http-api-client"
     },
     {
-      packageName: "@sdk-creator/axios-http-client",
+      packageName: "@api-sdk-creator/axios-http-client",
       projectFolder: "axios-http-client"
     },
     {
-      packageName: "@sdk-creator/example",
+      packageName: "@api-sdk-creator/example",
       projectFolder: "example"
     }
   ]
