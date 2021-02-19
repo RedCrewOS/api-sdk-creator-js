@@ -438,11 +438,13 @@
     // }
     {
       packageName: "@api-sdk-creator/http-api-client",
-      projectFolder: "http-api-client"
+      projectFolder: "http-api-client",
+      shouldPublish: true
     },
     {
       packageName: "@api-sdk-creator/axios-http-client",
-      projectFolder: "axios-http-client"
+      projectFolder: "axios-http-client",
+      shouldPublish: true
     },
     {
       packageName: "@api-sdk-creator/example",
