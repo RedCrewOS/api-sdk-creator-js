@@ -28,3 +28,15 @@ $ rush build
 ```shell script
 $ cd <project> && rushx test
 ```
+
+## Publishing
+
+The `@api-sdk-creator` organisation is hosted on https://registry.npmjs.org/
+
+Rush uses the `.npmrc-publish` file to read config to access/public the modules to the NPM
+organisation. After `npm login --scope=@api-sdk-creator` the access token should be given to rush via the
+`NPM_AUTH_TOKEN` env var ie:
+
+```shell
+$ NPM_AUTH_TOKEN=abc123 rush publish ...
+```
