@@ -18,3 +18,5 @@
 #
 #   //registry.npmjs.org/:_authToken=${NPM_AUTH_TOKEN}
 #
+@api-sdk-creator:registry=https://registry.npmjs.org/
+//registry.npmjs.org/:_authToken=${NPM_AUTH_TOKEN}
