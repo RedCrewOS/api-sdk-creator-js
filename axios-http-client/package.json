@@ -27,8 +27,8 @@
 	},
 	"dependencies": {
 		"@api-sdk-creator/http-api-client": "^0.0.1",
-		"tslib": "^2.0.3",
-		"crocks": "~0.12.4"
+		"crocks": "~0.12.4",
+		"tslib": "^2.0.3"
 	},
 	"peerDependencies": {
 		"axios": "^0.21.0"
