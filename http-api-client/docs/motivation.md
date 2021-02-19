@@ -5,7 +5,7 @@
   a central location that all libraries can refer to.
 -->
 
-When discussing distributed systems an "API" is commonly defined as a service that serves
+When discussing distributed systems an "API" is commonly defined as a HTTP service that serves
 machine readable representations of data (most notably JSON<sup>1</sup>) over the network and
 that may also provide the ability to manipulate resources across the network.
 
@@ -21,8 +21,8 @@ reduce the effort and complexity required to integrate an application with an AP
 
 - Encapsulate how to access an API
 - Manage common tasks, for example, obtaining and using an access token.
-- Transform API data types into language specific data types, for example a JSON number into a
-  Java BigDecimal
+- Transform API data types into language specific data types, for example, an ISO8601 string 
+  into a Date
 
 More and more developers are expecting a client SDK for an API offered by a company or product
 as part of the overall API product.
@@ -31,15 +31,17 @@ Unfortunately writing an SDK manually can be repetitive and time-consuming. The 
 can vary depending on the skills of the developers, and the complexity of the API.
 
 A very typical approach to overcoming these issues with SDK development has been with code
-generation from an API specification such as the [Open API Generator](https://openapi-generator.tech/).
+generation from an API specification such as the [Open API Generator](https://openapi-generator.tech/),
+and other commercial products.
 
 Sadly most code generators fall into the same pitfalls.
 
 1. Binding an application to a technology stack - most notably, but not limited to the HTTP
    client. For example, one Javascript API client SDK might use Axios and another Request.
-   This can lead to build bloat or conflicts if abstractions leak into the global namespace.
+   This can lead to build bloat or conflicts in an application if abstractions leak into the 
+   global namespace.
 
-2. Brittle code - generated code often don't have good abstractions which means that a minor
+2. Brittle code - generated code often don't have good abstractions with which means that a minor
    change to a spec can lead to breaking changes for client applications.
 
 3. "Static binding" - similar to (2), due to no abstraction/modularisation of behaviour
@@ -49,9 +51,9 @@ Sadly most code generators fall into the same pitfalls.
    level change. Source level changes run the risk of being overwritten the next time the code
    is generated thus negatively impacting the client application.
 
-4. Lack of testing - developers might make changes to generator templates without testing the
-   change which increase the probability of bugs. Generated code generally doesn't have tests
-   generated as well.
+4. Lack of testing - generator developers might make changes to generator templates without 
+   testing the change which increase the probability of bugs. Generated code generally doesn't 
+   have tests generated as well.
 
 5. No upgrade path - if changes are required, the only options to client application developers
    is to regenerate the entire SDK which may introduce breaking changes, or additional defects.
@@ -122,13 +124,13 @@ made and how to use the building blocks in this library to quickly and confident
 
 With that in mind, any reader that has poked around this library may have noticed that the
 function types mentioned like `HttpRequestPolicy` and others actually return an `Async` of
-"type" where "type" is one of the core SDK types. This is because in real world programs, and
-especially in an SDK we have to deal with errors, and asynchronous behaviour which means we
+"type" where "type" is often one of the core SDK types. This is because in real world programs, 
+and especially in an SDK we have to deal with errors, and asynchronous behaviour which means we
 need some additional tools to compose our SDK pipe together.
 
 ### Using railway tracks to create SDKs
 
-To understand why every function type returns an `Async` we have to think about how
+To understand why core function types returns an `Async` we have to think about how
 errors are represented in imperative/OO SDKs (or any program), and the consequences of the
 traditional approaches.
 
@@ -157,7 +159,8 @@ Teasing the previous paragraph apart, we can see that the reason developers ofte
 path of creating different buckets of exceptions is because they instinctively realise that there
 are [two distinct types](https://fsharpforfunandprofit.com/posts/against-railway-oriented-programming/#when-should-you-use-result)
 of errors which are better described as:
-- Domain errors - These are valid "failure" responses from an API, they're just non 200.
+- Domain errors - These are valid responses from an API, they're just non 200 in order to
+  represent a non successful outcome to the process, or manipulation of a resource.
   Customers aren't found, orders aren't submitted, etc. They need to be handled by the
   application in order to meet requirements. What happens when a customer can't submit an
   order? The program should recover, provide default options, etc - not panic.
@@ -169,14 +172,15 @@ For example, an order may not be submittable because a queue is not available. E
 there is a technical reason, the error can be modelled as a domain error encapsulating the
 technical problem so that callers can focus on the what, not the why.)
 
-We need a better way of representing domain errors and leave Exceptions for panics.
+Developers need a better way of representing successful outcomes and domain errors while leaving 
+Exceptions for panics.
 
 Thinking about the circumstances in which a domain error can arise, we soon realise that the
 way we model these circumstances in code should mimic the requirements. For example, analysing the
-requirement *"If the customer exists then update their name else do nothing"* tells
+requirement *"If the customer exists then update their name (else do nothing)"* tells
 us that the function `findCustomer` can return either a `Customer` or `Nothing`<sup>8</sup>. Our
-code can then act on the result. When a `Customer` is returned then update their name, else on
-`Nothing` do nothing.
+code must then act on either result/outcome. When a `Customer` is returned then update their 
+name, else on `Nothing` do nothing.
 
 The language construct that can be used to achieve this is the [Sum Type](https://en.wikipedia.org/wiki/Tagged_union)
 which allows developers to specify the different types that a value can be, and enforce handling
@@ -186,7 +190,8 @@ Kotlin uses [Sealed Classes](https://kotlinlang.org/docs/reference/sealed-classe
 Swift uses [Enumerations](https://docs.swift.org/swift-book/LanguageGuide/Enumerations.html).
 When acting on a value that is a Sum Type, languages that have Sum Types ensure<sup>9</sup> that
 the user of that value considers all possible types to ensure nothing is missed. Contrast that
-with how in the past most compilers would have happily let you get away with not checking for nothing ie: null.
+with how in the past most compilers would have happily let you get away with not checking for 
+nothing ie: `null`.
 
 For example
 
@@ -213,7 +218,7 @@ the type of result returned from functions. We thus end up with a programming st
 [Railway Oriented Programming](https://fsharpforfunandprofit.com/rop/). ROP is much more expressive
 programming style as it allows developers to define small, singular minded functions<sup>10</sup>
 and compose them together while ensuring (thanks to Sum Types) that the flow of execution is
-correct.
+correct at runtime.
 
 When constructing an SDK a common requirement is to fetch an access token, and add it to the
 request headers. Fetching an access token may fail and if it does we don't want to proceed with
@@ -235,10 +240,10 @@ operate (or `map`) on the wrapped value with different "strategies".
 Enter a type called [Maybe](https://jrsinclair.com/articles/2016/marvellously-mysterious-javascript-maybe-monad/)
 (or `Optional` from Java 8).
 
-`Maybe` is a Sum Type that has two subtypes. `Just<T>` or `Nothing`. It has a method on it called
-`map` that will apply the passed function if there is a value (`Just`) or do nothing when there
-is no value in the container (`Nothing`), which is the branching logic we want but encapsulated
-in a [parametric polymorphic "strategy"](https://en.wikipedia.org/wiki/Parametric_polymorphism).
+`Maybe` is an abstract Sum Type that has two concrete subtypes. `Just<T>` or `Nothing`. It has 
+a method on it called `map` that will apply the passed function if there is a value (`Just`) or
+do nothing when there is no value in the container (`Nothing`), which is the branching logic we
+want but encapsulated in a [parametric polymorphic "strategy"](https://en.wikipedia.org/wiki/Parametric_polymorphism).
 
 ```typescript
 // typescript
@@ -260,7 +265,7 @@ function over the `customer` with a new `name`)
 
 `Maybe` is an example of a group of types called Algebraic Data Types (ADTs) which are
 "Container types" that "implement" different interfaces (such as
-[Functor, Applicatives and others](https://medium.com/@tzehsiang/javascript-functor-applicative-monads-in-pictures-b567c6415221#.rdwll124i)).
+[Functor, Applicative and others](https://medium.com/@tzehsiang/javascript-functor-applicative-monads-in-pictures-b567c6415221#.rdwll124i)).
 ADTs allow us to compose functions together while encapsulating the messiness of dealing with
 nothingness, errors and asynchronous behaviour. Because Javascript doesn't natively have ADTs
 this library relies on an ADT library called [Crocks](https://crocks.dev/).
@@ -269,13 +274,13 @@ Having encapsulated the abstraction of *"if there is a value do something else d
 a parametric polymorphic Sum Type it can be used with any other type including functions which
 return a Sum Type of their own. When you have Sum Types of Sum Types of Sum Types you have many
 layers to peel through to get at the "plain" value, which brings us to Monads<sup>12</sup> as
-not only can Monads `map`, they can `chain` to avoid the nesting problem.
+not only can Monads `map`, they can `chain`<sup>13</sup> to avoid the nesting problem.
 For a more complete discussion of Monads see some of the references.
 
-Therefore, the reason that the function types return an `Async` is that `Async` is Crock's
-"lazy asynchronous monadic Sum Type"<sup>13</sup>, which therefore allows us to
-compose/chain asynchronous functions together, allowing SDK developers to define different
-tracks for handling errors, HTTP errors (failures), and all manner of outcomes.
+Therefore, when asking why do function types in this library return an `Async`, the reason is 
+that `Async` is Crock's "lazy asynchronous monadic Sum Type"<sup>14</sup>, which therefore 
+allows us to compose/chain asynchronous functions together, allowing SDK developers to define 
+different tracks for handling errors, HTTP errors (failures), and all manner of outcomes.
 
 We let `Async` take care of the plumbing so that we can just write the functions we need.
 
@@ -357,6 +362,10 @@ polymorphic interface being the [Strategy Pattern](https://en.wikipedia.org/wiki
 <sup>12</sup> It's a common joke in the FP world that Monads are like onions, and ogres and
 parfait. They've got layers.
 
-<sup>13</sup> Lazy evaluation is a really important tool as we can specify function pipes,
+<sup>13</sup> Monads are actually meant to [bind](https://en.wikipedia.org/wiki/Monad_%28functional_programming%29)
+to each other, however Crocks and most JS FP libraries use `chain` to indicate the accumulation
+of effects on data. So we're sticking with that.
+
+<sup>14</sup> Lazy evaluation is a really important tool as we can specify function pipes,
 for example a `HttpResultHandler` that fetches a new access token across a network but only have
 it executed/evaluated when required ie: when the API responds with a `401`
