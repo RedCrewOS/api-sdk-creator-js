@@ -298,6 +298,7 @@ next tick.
   even though the examples use Ramda.js, Crocks can be substituted easily.
 - [Professor Frisby's Mostly Adequate Guide to Functional Programming](https://mostly-adequate.gitbooks.io/mostly-adequate-guide) - a very popular "open source" text on FP, with an
   [accompanying video tutorial](https://egghead.io/lessons/javascript-unboxing-things-with-foldable).
+- [FP terminology helper](https://everyone-can-code.github.io/fp/) - What is a Functor, Applicative, Monad or Monoid?
 - [Things I wish someone had explained about functional programming](https://jrsinclair.com/articles/2019/what-i-wish-someone-had-explained-about-functional-programming/) - some
   good blog posts about how to understand terms used in FP, and how to apply the concepts.
 - [Functional Programming for the Object-Oriented Programmer](https://leanpub.com/fp-oo) - a
