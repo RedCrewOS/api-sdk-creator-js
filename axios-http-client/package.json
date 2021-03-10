@@ -1,6 +1,6 @@
 {
 	"name": "@api-sdk-creator/axios-http-client",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"description": "Axios based HTTP client for @api-sdk-creator/http-api-client",
 	"engines": {
 		"node": "^12.18.4"
