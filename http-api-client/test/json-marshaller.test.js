@@ -101,16 +101,30 @@ describe("JSON Marshalling", function() {
 		beforeEach(function() {
 			result = {
 				response: {
+					headers: {
+						"content-type": `${JSON_MIME_TYPE} ; charset=utf8`
+					},
 					body: JSON.stringify(body)
 				}
 			};
 		});
 
-		it("should unmarshall response body", async function() {
+		it("should unmarshall JSON response body", async function() {
 			const result = await unmarshall();
 
 			assertThat(result.response.body, is(body));
 		});
+
+		it("should not unmarshall response body when content type is not json",
+				async function() {
+					const body = "This is not JSON";
+					result.response.body = body;
+					result.response.headers["content-type"] = "text/plain";
+
+					const outcome = await unmarshall();
+
+					assertThat(outcome.response.body, is(body));
+				});
 
 		it("should not unmarshall response body when no response body", async function() {
 			result.response.body = undefined;
@@ -132,8 +146,8 @@ describe("JSON Marshalling", function() {
 		/**
 		 * @returns Promise<HttpResult>
 		 */
-		function unmarshall() {
-			return jsonUnmarshaller()(result).toPromise();
+		function unmarshall(contentType = JSON_MIME_TYPE) {
+			return jsonUnmarshaller(contentType)(result).toPromise();
 		}
 	});
 });

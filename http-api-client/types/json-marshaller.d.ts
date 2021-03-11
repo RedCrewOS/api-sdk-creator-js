@@ -2,7 +2,7 @@ import { HttpRequestPolicy, HttpResultHandler } from "./client";
 
 import { UnstructuredData } from "./unstructured-data";
 
-declare const JSON_MIME_TYPE: string;
+export const JSON_MIME_TYPE: string;
 
 export type JSONObject = Record<string, any>;
 
