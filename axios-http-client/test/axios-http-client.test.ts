@@ -332,6 +332,18 @@ describe("Axios HttpClient", function() {
 				const result: HttpResult = await client(request).toPromise();
 				assertThat(result.response.body, is(body));
 			});
+
+			it("should returned undefined when no content returned from server", async function() {
+				nock(origin).get(pathname).reply(200, "", { "content-length": "0" });
+
+				client = createAxiosHttpClient();
+
+				const result: HttpResult = await client(request).toPromise();
+
+				// make sure we've returned the response
+				assertThat(result.response.statusCode, is(200));
+				assertThat(result.response.body, is(undefined));
+			});
 		});
 	});
 });

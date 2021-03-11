@@ -10,16 +10,24 @@ const Async = require("crocks/Async");
 
 const bichain = require("crocks/pointfree/bichain");
 const chain = require("crocks/pointfree/chain");
+const constant = require("crocks/combinators/constant");
 const curry = require("crocks/helpers/curry");
 const defaultProps = require("crocks/helpers/defaultProps");
+const either = require("crocks/pointfree/either");
+const equals = require("crocks/core/equals");
+const identity = require("crocks/combinators/identity");
+const ifElse = require("crocks/logic/ifElse");
 const isDefined = require("crocks/predicates/isDefined");
 const map = require("crocks/pointfree/map");
+const mapProps = require("crocks/helpers/mapProps")
 const option = require("crocks/pointfree/option");
 const pipe = require("crocks/helpers/pipe");
+const resultToAsync = require("crocks/Async/resultToAsync");
 const safe = require("crocks/Maybe/safe");
 
 import {
 	createQueryString,
+	parseIntHeader,
 	replacePathParams,
 	HttpClient,
 	HttpRequest,
@@ -61,6 +69,18 @@ const toAxiosRequest = (request: HttpRequest): AxiosRequestConfig => {
 	return axiosRequest;
 };
 
+// adjustBodyIfNoContentReceived :: HttpResponse -> Result Error HttpResponse
+const adjustBodyIfNoContentReceived = (response: HttpResponse) => pipe(
+	map(map(
+		ifElse(
+			curry(equals)(0),
+			constant(mapProps({ body: constant(undefined) }, response)),
+			constant(response)
+		)
+	)),
+	map(either(constant(response), identity))
+)(parseIntHeader("content-length", response.headers))
+
 // toHttpResponse :: AxiosResponse -> HttpResponse
 const toHttpResponse = (resp: AxiosResponse): HttpResponse => ({
 	statusCode: resp.status,
@@ -80,6 +100,15 @@ const toHttpResult = curry(
 	})
 );
 
+/*
+ * This allows the fixing of the HTTP response to compensate
+ * for Axios doing weird things.
+ */
+// fixHttpResponse :: HttpResponse -> Result Error HttpResponse
+const fixHttpResponse = pipe(
+	adjustBodyIfNoContentReceived
+);
+
 // axiosHttpClient :: AxiosInstance -> HttpClient
 const axiosHttpClient = curry(
 	(
@@ -90,7 +119,10 @@ const axiosHttpClient = curry(
 			map(toAxiosRequest),
 			chain(Async.fromPromise(instance.request.bind(instance))),
 			bichain(extractHttpError, Async.of),
-			map(toHttpResponse),
+			chain(resultToAsync(pipe(
+				toHttpResponse,
+				fixHttpResponse
+			))),
 			map(toHttpResult(request))
 		)(Async.of(request));
 	}
