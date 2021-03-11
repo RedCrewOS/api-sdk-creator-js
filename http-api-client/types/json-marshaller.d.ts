@@ -11,4 +11,4 @@ export type JSONObject = Record<string, any>;
  */
 export function jsonMarshaller(contentType?: string): HttpRequestPolicy<JSONObject>;
 
-export function jsonUnmarshaller(): HttpResultHandler<UnstructuredData, UnstructuredData>;
+export function jsonUnmarshaller(contentType?: string): HttpResultHandler<UnstructuredData, UnstructuredData>;
