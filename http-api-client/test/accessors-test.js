@@ -8,7 +8,7 @@ describe("accessors", function() {
 	it("should extract response body from result", async function() {
 		const body = { a: 1, x: "foo" };
 
-		const result = await extractHttpBody(givenHttpResult(body)).toPromise();
+		const result = extractHttpBody(givenHttpResult(body));
 
 		assertThat(result, is(body));
 	});
