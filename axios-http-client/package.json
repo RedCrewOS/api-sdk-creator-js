@@ -27,7 +27,7 @@
 		"url": "https://github.com/RedCrewOS/sdk-creator-js"
 	},
 	"dependencies": {
-		"@api-sdk-creator/http-api-client": "^0.0.1",
+		"@api-sdk-creator/http-api-client": "^0.0.2",
 		"crocks": "~0.12.4",
 		"tslib": "^2.0.3"
 	},
