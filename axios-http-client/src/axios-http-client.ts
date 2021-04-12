@@ -7,6 +7,7 @@ import axios, {
 } from "axios";
 
 const Async = require("crocks/Async");
+const Result = require("crocks/Result");
 
 const bichain = require("crocks/pointfree/bichain");
 const chain = require("crocks/pointfree/chain");
@@ -14,14 +15,15 @@ const constant = require("crocks/combinators/constant");
 const curry = require("crocks/helpers/curry");
 const defaultProps = require("crocks/helpers/defaultProps");
 const either = require("crocks/pointfree/either");
-const equals = require("crocks/core/equals");
 const identity = require("crocks/combinators/identity");
 const ifElse = require("crocks/logic/ifElse");
 const isDefined = require("crocks/predicates/isDefined");
+const isSame = require("crocks/predicates/isSame");
 const map = require("crocks/pointfree/map");
 const mapProps = require("crocks/helpers/mapProps")
 const option = require("crocks/pointfree/option");
 const pipe = require("crocks/helpers/pipe");
+const pipeK = require("crocks/helpers/pipeK");
 const resultToAsync = require("crocks/Async/resultToAsync");
 const safe = require("crocks/Maybe/safe");
 
@@ -70,16 +72,28 @@ const toAxiosRequest = (request: HttpRequest): AxiosRequestConfig => {
 };
 
 // adjustBodyIfNoContentReceived :: HttpResponse -> Result Error HttpResponse
-const adjustBodyIfNoContentReceived = (response: HttpResponse) => pipe(
-	map(map(
+const adjustBodyIfNoContentReceived = (response: HttpResponse) =>
+	pipe(
+		map(map(
+			ifElse(
+				isSame(0),
+				constant(mapProps({ body: constant(undefined) }, response)),
+				constant(response)
+			)
+		)),
+		map(either(constant(response), identity))
+	)(parseIntHeader("content-length", response.headers))
+
+// adjustBodyBasedOnStatusCode :: HttpResponse -> Result Error HttpResponse
+const adjustBodyBasedOnStatusCode = (response: HttpResponse) =>
+	pipe(
 		ifElse(
-			curry(equals)(0),
+			isSame(204),
 			constant(mapProps({ body: constant(undefined) }, response)),
 			constant(response)
-		)
-	)),
-	map(either(constant(response), identity))
-)(parseIntHeader("content-length", response.headers))
+		),
+		Result.of
+	)(response.statusCode)
 
 // toHttpResponse :: AxiosResponse -> HttpResponse
 const toHttpResponse = (resp: AxiosResponse): HttpResponse => ({
@@ -104,8 +118,9 @@ const toHttpResult = curry(
  * This allows the fixing of the HTTP response to compensate
  * for Axios doing weird things.
  */
-// fixHttpResponse :: HttpResponse -> Result Error HttpResponse
-const fixHttpResponse = pipe(
+// fixHttpResponse :: Result HttpResponse -> Result Error HttpResponse
+const fixHttpResponse = pipeK(
+	adjustBodyBasedOnStatusCode,
 	adjustBodyIfNoContentReceived
 );
 
