@@ -59,6 +59,11 @@ Sadly most code generators fall into the same pitfalls.
    is to regenerate the entire SDK which may introduce breaking changes, or additional defects.
    Client applications might pin the generator version to control the outcome which causes a
    massive barrier to overcome to upgrade a client application.
+   
+6. Inconsistency between language targets. If developers want to have SDKs in multiple languages
+   or with different framkeworks (eg: Spring) the quality of the generated code can very leading
+   to developers having to develop hacky workarounds. Over time the reason for the workarounds
+   can become obscured leading a fragile codebase that is hard to maintain and upgrade.
 
 ## Moving towards better SDKs
 
