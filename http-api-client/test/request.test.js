@@ -59,6 +59,17 @@ describe("Http Request", function() {
 
 			assertThat(result.headers, hasProperty("x-app-header", equalTo(headers["x-app-header"])));
 		});
+
+		it("should return error if factory fails to create headers", async function() {
+			const error = new Error("Can't create headers");
+
+			const createHeaders = () => Async.Rejected(error);
+
+			await promiseThat(
+					addHeaders(createHeaders, Object.freeze(request)).toPromise(),
+					isRejectedWith(error)
+			);
+		});
 	});
 
 	describe("resolving url", function() {
