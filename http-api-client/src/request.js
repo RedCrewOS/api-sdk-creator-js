@@ -53,14 +53,24 @@ const HttpRequestMethod = {
  */
 
 /**
- * Factory definition to create request headers.
+ * Factory to create request headers.
  *
  * Returns an Async value as creating some headers (eg: Authorization) may require
  * async work to be done (ie: fetching an access token).
  *
  * @typedef {function} RequestHeaderFactory
  * @param {object} headers To be used if one header value depends on another. Should not be modified.
- * @returns {Async} A new set of headers that will be merged with existing headers.
+ * @returns {Async} A new set of headers.
+ */
+
+/**
+ * Factory definition to create a set of HTTP headers.
+ *
+ * Returns an Async value as creating some headers (eg: Authorization) may require
+ * async work to be done (ie: fetching an access token).
+ *
+ * @typedef {function} RequestHeadersFactory
+ * @returns {Async} A new set of headers.
  */
 
 /**
