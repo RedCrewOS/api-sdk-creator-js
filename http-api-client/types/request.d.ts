@@ -33,11 +33,11 @@ export type RequestHeaderFactory = (headers: HttpHeaders) => typeof Async;
 export type RequestHeadersFactory = () => typeof Async;
 
 export function addHeaders(
-	headers: typeof Async | (() => typeof Async),
+	factory: RequestHeadersFactory,
 	request: HttpRequest
 ): typeof Async;
 
-export function addHeaders(headers: typeof Async | (() => typeof Async)): HttpRequestPolicy;
+export function addHeaders(factory: RequestHeadersFactory): HttpRequestPolicy;
 
 export function resolveUrl(base: string, request: HttpRequest): typeof Async;
 export function resolveUrl(base: string): HttpRequestPolicy;

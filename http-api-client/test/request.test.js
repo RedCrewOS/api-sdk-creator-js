@@ -1,6 +1,7 @@
 "use strict";
 
 const Async = require("crocks/Async");
+const constant = require("crocks/combinators/constant");
 
 const {
 	allOf,
@@ -36,7 +37,7 @@ describe("Http Request", function() {
 
 			/** @type {HttpRequest} */
 			const result =
-				await addHeaders(Async.of(headers), Object.freeze(request)).toPromise();
+				await addHeaders(constant(Async.of(headers)), Object.freeze(request)).toPromise();
 
 			assertThat(result.headers, hasProperty("authorization", equalTo(request.headers.authorization)));
 			assertThat(result.headers, hasProperty("x-app-header", equalTo(headers["x-app-header"])));
@@ -54,24 +55,10 @@ describe("Http Request", function() {
 
 			/** @type {HttpRequest} */
 			const result =
-				await addHeaders(Async.of(headers), Object.freeze(request)).toPromise();
+				await addHeaders(constant(Async.of(headers)), Object.freeze(request)).toPromise();
 
 			assertThat(result.headers, hasProperty("x-app-header", equalTo(headers["x-app-header"])));
 		});
-
-		it("should use function to create headers", async function() {
-			const headers = {
-				"x-app-header": "abc123"
-			};
-
-			const createHeaders = () => Async.of(headers);
-
-			/** @type {HttpRequest} */
-			const result =
-				await addHeaders(createHeaders, Object.freeze(request)).toPromise();
-
-			assertThat(result.headers, hasProperty("x-app-header", equalTo(headers["x-app-header"])));
-		})
 	});
 
 	describe("resolving url", function() {

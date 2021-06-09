@@ -3,15 +3,11 @@
 const Async = require("crocks/Async");
 
 const assign = require("crocks/helpers/assign");
-const constant = require("crocks/combinators/constant");
 const curry = require("crocks/core/curry");
 const defaultProps = require("crocks/helpers/defaultProps");
 const flip = require("crocks/combinators/flip");
 const getProp = require("crocks/Maybe/getProp");
 const getPropOr = require("crocks/helpers/getPropOr");
-const identity = require("crocks/combinators/identity");
-const ifElse = require("crocks/logic/ifElse");
-const isFunction = require("crocks/core/isFunction");
 const liftA2 = require("crocks/helpers/liftA2");
 const maybeToAsync = require("crocks/Async/maybeToAsync");
 const map = require("crocks/pointfree/map");
@@ -76,14 +72,13 @@ const HttpRequestMethod = {
 /**
  * Creates a {@link HttpRequestPolicy} to add headers to a request
  */
-// addHeaders :: (Async HttpHeaders | () -> Async HttpHeaders) -> HttpRequestPolicy
-const addHeaders = curry((headers, request) => {
+// addHeaders :: RequestHeadersFactory -> HttpRequestPolicy
+const addHeaders = curry((factory, request) => {
 	const prop = "headers";
-	const headersFactory = ifElse(isFunction, identity, constant)(headers);
 
 	return pipe(
 		pipe(getPropOr({}, prop), Async.of),
-		liftA2(assign, headersFactory()),
+		liftA2(assign, factory()),
 		map(flip(setProp(prop))(request))
 	)(request)
 });
