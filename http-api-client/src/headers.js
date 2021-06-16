@@ -18,7 +18,7 @@ const valueOf = require("crocks/pointfree/valueOf");
  * @typedef {object} HttpHeaders
  */
 
-// concatHeaders :: RequestHeaderFactory -> HttpHeaders -> HttpHeaders
+// concatHeaders :: RequestHeaderFactory -> HttpHeaders -> Async HttpHeaders
 const concatHeaders = curry((factory, headers) =>
 	pipe(
 		factory,
