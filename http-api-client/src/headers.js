@@ -18,6 +18,9 @@ const valueOf = require("crocks/pointfree/valueOf");
  * @typedef {object} HttpHeaders
  */
 
+// prepend :: m a -> m a -> m a
+const prepend = flip(concat);
+
 // concatHeaders :: RequestHeaderFactory -> HttpHeaders -> Async HttpHeaders
 const concatHeaders = curry((factory, headers) =>
 	pipe(
@@ -38,11 +41,16 @@ const toAuthorisationHeader = objOf("authorization");
 /**
  * Creates a {@link RequestHeadersFactory} using {@link RequestHeaderFactory}s
  */
-// createHeaders :: [ RequestHeaderFactory ] | List RequestHeaderFactory -> RequestHeadersFactory
+// createHeaders :: Foldable RequestHeaderFactory -> RequestHeadersFactory
 const createHeaders =
 	pipe(
+		/*
+		 * Reduces the Foldable to function composition (using the Endo Monoid) where the result
+		 * of the factory call is passed to each subsequent function, and the results chained
+		 * together (since each factory returns a Async)
+		 */
 		mconcatMap(Endo, pipe(concatHeaders, chain)),
-		flip(concat)(Endo(() => Async.of(Object.freeze({})))),
+		prepend(Endo(() => Async.of(Object.freeze({})))),
 		valueOf
 	);
 
