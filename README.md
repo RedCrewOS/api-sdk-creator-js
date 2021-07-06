@@ -1,6 +1,4 @@
-# api-sdk-creator
-
-# About me
+# api-sdk-creator-js
 
 Contains libraries to aid SDK developers in the creation of API client SDKs.
 
