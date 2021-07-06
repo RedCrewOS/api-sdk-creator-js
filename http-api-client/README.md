@@ -18,7 +18,7 @@ $ npm install @api-sdk-creator/axios-http-client
 
 ## Motivation
 
-To understand the movitivation behind building this libary, and the design decisions, see
+To understand the movitivation behind building this library, and the design decisions, see
 [the motivation doc](./docs/motivation.md)
 
 ## Docs
