@@ -24,6 +24,7 @@ $ rush build
 ## Testing
 
 ```shell script
+$ rush rebuild
 $ cd <project> && rushx test
 ```
 
