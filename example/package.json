@@ -18,7 +18,7 @@
   "license": "UNLICENSED",
   "dependencies": {
     "@api-sdk-creator/axios-http-client": "^0.1.0",
-    "@api-sdk-creator/http-api-client": "^0.0.2",
+    "@api-sdk-creator/http-api-client": "^0.1.0",
     "axios": "^0.21.0",
     "tslib": "^2.0.3",
     "crocks": "~0.12.4"
