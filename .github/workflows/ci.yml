@@ -30,7 +30,10 @@ jobs:
 
       - name: Commit Dist
         run: |
-          git status
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git commit -a -m 'Updated dists'
+          git push
 
       - name: Publish
         if: ${{ github.ref == 'refs/heads/main' }}
