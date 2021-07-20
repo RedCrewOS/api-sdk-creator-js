@@ -43,6 +43,3 @@ jobs:
         run: rush publish -p -b main --include-all --set-access-level=public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-      - name: Push tags
-        run : git push --tags
