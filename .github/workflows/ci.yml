@@ -40,7 +40,7 @@ jobs:
       # any published module.
       - name: Publish
         if: ${{ github.ref == 'refs/heads/main' }}
-        run: rush publish -p --include-all --set-access-level=public
+        run: rush publish -p -c main --include-all --set-access-level=public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
