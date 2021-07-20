@@ -1,6 +1,6 @@
 {
 	"name": "@api-sdk-creator/marshallers",
-	"version": "0.1.4",
+	"version": "0.1.0",
 	"description": "Marshallers and unmarshallers for @api-sdk-creator/http-api-client",
 	"engines": {
 		"node": "^12.18.4"
