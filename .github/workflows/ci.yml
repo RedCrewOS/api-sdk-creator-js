@@ -1,0 +1,37 @@
+name: '@api-sdk-creator build'
+
+on:
+  push:
+    branches: [ main ]
+
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: '12.x'
+
+      - name: Rush CLI
+        run: npm install -g @microsoft/rush
+
+      - name: Rush Install
+        uses: advancedcsg-open/actions-rush@v1.0.1
+
+      - name: Rush Build
+        run: rush build
+
+      - name: Commit Dist
+        run: |
+          git status
+
+      - name: Publish
+        if: ${{ github.ref == 'refs/heads/main' }}
+        run: echo "publishing"
