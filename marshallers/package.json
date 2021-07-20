@@ -1,0 +1,55 @@
+{
+	"name": "@api-sdk-creator/marshallers",
+	"version": "0.1.4",
+	"description": "Marshallers and unmarshallers for @api-sdk-creator/http-api-client",
+	"engines": {
+		"node": "^12.18.4"
+	},
+	"main": "build/index.js",
+	"scripts": {
+		"dist": "rushx pack && rushx test:pack",
+		"build": "rushx clean && rushx compile && rushx test && rushx dist",
+		"clean": "rimraf build",
+		"compile": "tsc -p .",
+		"pack": "webpack --mode production",
+		"test": "mocha 'test/**/*.test.ts' --timeout 1000",
+		"test:pack": "karma start test/webpack/karma.config.js --single-run"
+	},
+	"files": [
+		"build",
+		"dist",
+		"src"
+	],
+	"author": "Kieran Simpson <kieran@redcrew.com.au>",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/RedCrewOS/sdk-creator-js"
+	},
+	"dependencies": {
+		"crocks": "~0.12.4",
+		"tslib": "^2.0.3"
+	},
+	"devDependencies": {
+		"@tsconfig/recommended": "~1.0.1",
+		"@types/mocha": "~8.0.3",
+		"@types/node": "~14.14.7",
+		"@typescript-eslint/eslint-plugin": "~4.6.1",
+		"@typescript-eslint/parser": "~4.6.1",
+		"eslint": "~7.12.1",
+		"hamjest": "~3.7.1",
+		"jsdom": "~16.4.0",
+		"karma": "~6.1.1",
+		"karma-jsdom-launcher": "~9.0.0",
+		"karma-mocha": "~2.0.1",
+		"karma-typescript": "~5.4.0",
+		"mocha": "~8.2.1",
+		"rimraf": "~3.0.2",
+		"ts-loader": "~8.0.9",
+		"ts-node": "~9.0.0",
+		"tsconfig-paths": "~3.9.0",
+		"typescript": "~4.0.5",
+		"webpack": "~5.22.0",
+		"webpack-cli": "~4.5.0"
+	}
+}

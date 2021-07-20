@@ -2,6 +2,7 @@ dependencies:
   '@rush-temp/axios-http-client': 'file:projects/axios-http-client.tgz'
   '@rush-temp/example': 'file:projects/example.tgz'
   '@rush-temp/http-api-client': 'file:projects/http-api-client.tgz'
+  '@rush-temp/marshallers': 'file:projects/marshallers.tgz'
   '@tsconfig/recommended': 1.0.1
   '@types/mocha': 8.0.4
   '@types/node': 14.14.22
@@ -4648,7 +4649,7 @@ packages:
     dev: false
     name: '@rush-temp/axios-http-client'
     resolution:
-      integrity: sha512-aURlZSmqJUxNxUiV08AEhyokgwkC+R6CoEwLOAA1dQOrtxGOAur5YmDhAw0wJVPvnQsaFFvLdyx9kyRdSRbbTg==
+      integrity: sha512-+CLKGwYbgX9M1E+79U6j2JjzGraohJ/8OFcLe4N8eY+lirm1KbJ92e6+5e1CHA19gh3Du2kA2jsWsFcodyRJXA==
       tarball: 'file:projects/axios-http-client.tgz'
     version: 0.0.0
   'file:projects/example.tgz':
@@ -4673,7 +4674,7 @@ packages:
     dev: false
     name: '@rush-temp/example'
     resolution:
-      integrity: sha512-6qJVazmlTfdf5fy0udAK4YYS/gM76V73MoOn51wZ3V3b4C8oISQs2zITGn8ZCenL6FaHPjCBrh3mJSoJLuTOcg==
+      integrity: sha512-9OZAEY4Vwbg4ZuQgLKLG59sLwz8nNP/7dk6bws9mt0z64bjN2PvSvYHqENeCSZFRM+4unq/9KE20Meg/P2+AzQ==
       tarball: 'file:projects/example.tgz'
     version: 0.0.0
   'file:projects/http-api-client.tgz':
@@ -4701,11 +4702,42 @@ packages:
       integrity: sha512-JykH7s2WKvF4wyJJOi2MoVRWFSxDcbYVSFV/BHyD2eRaaGKRZ7DkyJP/Ljg9OrlolzHTERBDDg7agLlJ/2M3IA==
       tarball: 'file:projects/http-api-client.tgz'
     version: 0.0.0
+  'file:projects/marshallers.tgz':
+    dependencies:
+      '@tsconfig/recommended': 1.0.1
+      '@types/mocha': 8.0.4
+      '@types/node': 14.14.22
+      '@typescript-eslint/eslint-plugin': 4.6.1_ef70842fa77cd1a4abb2a38c98d2a1a7
+      '@typescript-eslint/parser': 4.6.1_eslint@7.12.1+typescript@4.0.5
+      crocks: 0.12.4
+      eslint: 7.12.1
+      hamjest: 3.7.1
+      jsdom: 16.4.0
+      karma: 6.1.1
+      karma-jsdom-launcher: 9.0.0_jsdom@16.4.0+karma@6.1.1
+      karma-mocha: 2.0.1
+      karma-typescript: 5.4.0_karma@6.1.1+typescript@4.0.5
+      mocha: 8.2.1
+      rimraf: 3.0.2
+      ts-loader: 8.0.9_typescript@4.0.5
+      ts-node: 9.0.0_typescript@4.0.5
+      tsconfig-paths: 3.9.0
+      tslib: 2.1.0
+      typescript: 4.0.5
+      webpack: 5.22.0_webpack-cli@4.5.0+webpack@5.22.0
+      webpack-cli: 4.5.0_webpack-cli@4.5.0+webpack@5.22.0
+    dev: false
+    name: '@rush-temp/marshallers'
+    resolution:
+      integrity: sha512-H5HEIsHbA8ddPPEr+DIJ0yxVcFdn3fozNDiwdf7Bsc9tU0VtELV620rs1hXL1Lx9rACmcuUTVMQBcr5aigCyjg==
+      tarball: 'file:projects/marshallers.tgz'
+    version: 0.0.0
 registry: ''
 specifiers:
   '@rush-temp/axios-http-client': 'file:./projects/axios-http-client.tgz'
   '@rush-temp/example': 'file:./projects/example.tgz'
   '@rush-temp/http-api-client': 'file:./projects/http-api-client.tgz'
+  '@rush-temp/marshallers': 'file:./projects/marshallers.tgz'
   '@tsconfig/recommended': ~1.0.1
   '@types/mocha': ~8.0.3
   '@types/node': ~14.14.7

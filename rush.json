@@ -447,6 +447,11 @@
       shouldPublish: true
     },
     {
+      packageName: "@api-sdk-creator/marshallers",
+      projectFolder: "marshallers",
+      shouldPublish: true
+    },
+    {
       packageName: "@api-sdk-creator/example",
       projectFolder: "example"
     }
