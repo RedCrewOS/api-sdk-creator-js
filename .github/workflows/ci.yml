@@ -36,9 +36,11 @@ jobs:
           git commit -a -m 'Updated dists'
           git push
 
+      # Can't be in a separate job as we need the results of any build to be included in
+      # any published module.
       - name: Publish
         if: ${{ github.ref == 'refs/heads/main' }}
-        run: rush publish -a --include-all --set-access-level=public
+        run: rush publish -p --include-all --set-access-level=public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
