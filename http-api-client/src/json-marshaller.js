@@ -3,49 +3,23 @@
 const Async = require("crocks/Async");
 
 const and = require("crocks/logic/and");
-const curry = require("crocks/core/curry");
-const getPath = require("crocks/Maybe/getPath");
 const hasPropPath = require("crocks/predicates/hasPropPath");
 const ifElse = require("crocks/logic/ifElse");
-const isSame = require("crocks/predicates/isSame");
-const map = require("crocks/pointfree/map");
 const mapProps = require("crocks/helpers/mapProps");
 const not = require("crocks/logic/not");
-const option = require("crocks/pointfree/option");
 const pipe = require("crocks/helpers/pipe");
 const pipeK = require("crocks/helpers/pipeK");
 const resultToAsync = require("crocks/Async/resultToAsync");
 const setPath = require("crocks/helpers/setPath");
 const tryCatch = require("crocks/Result/tryCatch");
 
-const { split } = require("@epistemology-factory/crocks-ext/String");
-
+const { resultHasContentType } = require("./predicates");
 const { unstructuredDataAtPathToString } = require("./unstructured-data");
 
 /**
  * @type {string} Default mime type for JSON.
  */
 const JSON_MIME_TYPE = "application/json";
-
-// takeFirst :: [a] -> a
-const takeFirst = arr => arr[0];
-
-// trim :: String -> String
-const trim = (str) => str.trim();
-
-// hasContentType :: String -> HttpResult -> Boolean
-const hasContentType = curry((contentType, result) =>
-	pipe(
-		getPath([ "response", "headers", "content-type" ]),
-		map(pipe(
-			split(";"),
-			takeFirst,
-			trim,
-			isSame(contentType),
-		)),
-		option(false)
-	)(result)
-);
 
 /**
  * Creates a {@link HttpRequestPolicy} that tries to marshall the body to a string.
@@ -77,7 +51,7 @@ const jsonUnmarshaller = (contentType = JSON_MIME_TYPE) => {
 	const path = [ "response", "body" ];
 
 	return ifElse(
-		not(and(hasPropPath(path), hasContentType(contentType))),
+		not(and(hasPropPath(path), resultHasContentType(contentType))),
 		Async.of,
 		pipeK(
 			unstructuredDataAtPathToString(path),

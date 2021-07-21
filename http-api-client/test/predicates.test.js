@@ -2,7 +2,7 @@
 
 const { assertThat, is } = require("hamjest");
 
-const { isSuccessfulResponse, isSuccessfulResult } = require("../src");
+const { hasContentType, isSuccessfulResponse, isSuccessfulResult } = require("../src");
 
 describe("predicates", function() {
 	describe("is successful", function() {
@@ -54,5 +54,27 @@ describe("predicates", function() {
 				statusCode: code
 			};
 		}
+	});
+
+	describe("hasContentType", function() {
+		it("should return true when content type matches", function() {
+			const contentType = "application/json";
+
+			assertThat(hasContentType(contentType)(contentType), is(true));
+		});
+
+		it("should return true when content type has charset", function() {
+			const contentType = "application/json";
+
+			assertThat(hasContentType(contentType)(`${contentType} ; charset=utf8`), is(true));
+		});
+
+		it("should return false when content type blank", function() {
+			assertThat(hasContentType("application/json")(""), is(false));
+		});
+
+		it("should return false when content type doesn't match", function() {
+			assertThat(hasContentType("application/json")("text/plain"), is(false));
+		});
 	});
 });
