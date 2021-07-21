@@ -14,12 +14,12 @@ const objOf = require("crocks/helpers/objOf");
 const pipe = require("crocks/helpers/pipe");
 const valueOf = require("crocks/pointfree/valueOf");
 
+const { joinPair } = require("@epistemology-factory/crocks-ext/String");
+const { prepend } = require("@epistemology-factory/crocks-ext/helpers");
+
 /**
  * @typedef {object} HttpHeaders
  */
-
-// prepend :: m a -> m a -> m a
-const prepend = flip(concat);
 
 // concatHeaders :: RequestHeaderFactory -> HttpHeaders -> Async HttpHeaders
 const concatHeaders = curry((factory, headers) =>
@@ -29,11 +29,8 @@ const concatHeaders = curry((factory, headers) =>
 	)(headers)
 );
 
-// concatString :: String -> String -> String
-const concatString = curry((a, b) => `${a} ${b}`);
-
 // toBearerToken :: String -> String
-const toBearerToken = concatString("Bearer");
+const toBearerToken = joinPair(" ", "Bearer");
 
 // toAuthorisationHeader :: String -> HttpHeaders
 const toAuthorisationHeader = objOf("authorization");

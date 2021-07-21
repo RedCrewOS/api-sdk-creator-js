@@ -18,15 +18,14 @@ const resultToAsync = require("crocks/Async/resultToAsync");
 const setPath = require("crocks/helpers/setPath");
 const tryCatch = require("crocks/Result/tryCatch");
 
+const { split } = require("@epistemology-factory/crocks-ext/String");
+
 const { unstructuredDataAtPathToString } = require("./unstructured-data");
 
 /**
  * @type {string} Default mime type for JSON.
  */
 const JSON_MIME_TYPE = "application/json";
-
-// split :: String -> String -> [String]
-const split = delimiter => str => str.split(delimiter);
 
 // takeFirst :: [a] -> a
 const takeFirst = arr => arr[0];
