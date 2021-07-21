@@ -12,10 +12,10 @@ const {
 } = require("hamjest");
 
 const {
+	collectUnstructuredDataToString,
 	isReadable,
 	isReadableStream,
-	unstructuredDataAtPathToString,
-	unstructuredDataToString
+	unstructuredDataToString,
 } = require("../src");
 
 class ErrorTransform extends Transform {
@@ -98,7 +98,7 @@ describe("Unstructured Data", function() {
 		});
 
 		function convertDataToString(data) {
-			return unstructuredDataToString(data).toPromise();
+			return collectUnstructuredDataToString(data).toPromise();
 		}
 	});
 
@@ -115,13 +115,13 @@ describe("Unstructured Data", function() {
 		};
 
 		it("should convert data to string", async function() {
-			const result = await unstructuredDataAtPathToString([ "a", "b" ], obj).toPromise();
+			const result = await unstructuredDataToString([ "a", "b" ], obj).toPromise();
 
 			assertThat(result.a.b, is(data));
 		});
 
 		it("should merge result into object", async function() {
-			const result = await unstructuredDataAtPathToString([ "a", "b" ], obj).toPromise();
+			const result = await unstructuredDataToString([ "a", "b" ], obj).toPromise();
 
 			assertThat(result.c, is(obj.c));
 			assertThat(result.d, is(obj.d));
@@ -129,7 +129,7 @@ describe("Unstructured Data", function() {
 
 		it("should throw error if no property at path", async function() {
 			await promiseThat(
-				unstructuredDataAtPathToString([ "x", "y" ], obj).toPromise(),
+				unstructuredDataToString([ "x", "y" ], obj).toPromise(),
 				isRejectedWith(allOf(
 					instanceOf(Error),
 					hasProperty("message", equalTo("Missing property at x.y"))

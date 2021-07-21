@@ -21,8 +21,8 @@ const setPath = require("crocks/helpers/setPath");
  */
 
 // @private
-// collects a readable stream into a string
-const collectReadable = (stream) => {
+// collectReadableToString :: NodeJS.ReadableStream -> String
+const collectReadableToString = (stream) => {
 	/*
 	 * reject: (err: Error) => void
 	 * resolve: (result: string) => void
@@ -45,8 +45,8 @@ const collectReadable = (stream) => {
 };
 
 // @private
-// collects a ReadableStream into a string
-const collectReadableStream = (stream) => {
+// collectReadableStreamToString :: ReadableStream -> String
+const collectReadableStreamToString = (stream) => {
 	/*
 	 * reject: (err: Error) => void
 	 * resolve: (result: string) => void
@@ -64,6 +64,7 @@ const collectReadableStream = (stream) => {
 }
 
 // @private
+// streamReduce :: (String, ReadableStream) -> Promise String
 const streamReduce = async (accumulator, stream) => {
 	const { done, value } = await stream.read();
 
@@ -74,21 +75,8 @@ const streamReduce = async (accumulator, stream) => {
 	return done ? accumulator : streamReduce(accumulator, stream);
 };
 
-/**
- * Extracts a property (body) at a location, converts the data to a string, and merges the result
- * into the original input.
- */
-// unstructuredDataAtPathToString :: [ String ] -> HttpResult UnstructuredData -> Async HttpResult String
-const unstructuredDataAtPathToString = curry((path, data) =>
-	pipe(
-		resultToAsync(maybeToResult(new Error(`Missing property at ${path.join(".")}`), getPath(path))),
-		chain(unstructuredDataToString),
-		map(flip(setPath(path))(data))
-	)(data)
-);
-
-// unstructuredDataToString :: UnstructuredData -> Async String
-const unstructuredDataToString = (data) => {
+// collectUnstructuredDataToString :: UnstructuredData -> Async String
+const collectUnstructuredDataToString = (data) => {
 	/*
 	 * reject: (err: Error) => void
 	 * resolve: (result: string) => void
@@ -103,11 +91,11 @@ const unstructuredDataToString = (data) => {
 		}
 
 		if (isReadable(data)) {
-			return collectReadable(data).fork(reject, resolve);
+			return collectReadableToString(data).fork(reject, resolve);
 		}
 
 		if (isReadableStream(data)) {
-			return collectReadableStream(data).fork(reject, resolve);
+			return collectReadableStreamToString(data).fork(reject, resolve);
 		}
 
 		reject(new Error("Unknown data type"));
@@ -128,9 +116,22 @@ const isReadable =
 const isReadableStream =
 	(obj) => (typeof obj.getReader === "function")
 
+/**
+ * Extracts a property (body) at a location, converts the data to a string, and merges the result
+ * into the original input.
+ */
+// unstructuredDataToString :: [ String ] -> HttpResult UnstructuredData -> Async HttpResult String
+const unstructuredDataToString = curry((path, data) =>
+	pipe(
+		resultToAsync(maybeToResult(new Error(`Missing property at ${path.join(".")}`), getPath(path))),
+		chain(collectUnstructuredDataToString),
+		map(flip(setPath(path))(data))
+	)(data)
+);
+
 module.exports = {
-	unstructuredDataAtPathToString,
-	unstructuredDataToString,
+	collectUnstructuredDataToString,
 	isReadable,
-	isReadableStream
+	isReadableStream,
+	unstructuredDataToString
 }

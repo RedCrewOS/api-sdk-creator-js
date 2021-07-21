@@ -14,7 +14,7 @@ const setPath = require("crocks/helpers/setPath");
 const tryCatch = require("crocks/Result/tryCatch");
 
 const { resultHasContentType } = require("./predicates");
-const { unstructuredDataAtPathToString } = require("./unstructured-data");
+const { unstructuredDataToString } = require("./unstructured-data");
 
 /**
  * @type {string} Default mime type for JSON.
@@ -54,7 +54,7 @@ const jsonUnmarshaller = (contentType = JSON_MIME_TYPE) => {
 		not(and(hasPropPath(path), resultHasContentType(contentType))),
 		Async.of,
 		pipeK(
-			unstructuredDataAtPathToString(path),
+			unstructuredDataToString(path),
 			resultToAsync(tryCatch(mapProps({ response: { body: JSON.parse } })))
 		)
 	)
