@@ -1,0 +1,45 @@
+{
+	"name": "@api-sdk-creator/node-http-client",
+	"version": "0.1.0",
+	"description": "Node HTTP client for @api-sdk-creator/http-api-client`",
+	"engines": {
+		"node": "^12.18.4"
+	},
+	"main": "build/index.js",
+	"scripts": {
+		"build": "rushx clean && rushx compile && rushx test",
+		"clean": "rimraf build",
+		"compile": "tsc -p .",
+		"test": "mocha 'test/**/*.test.ts' --timeout 1000"
+	},
+	"files": [
+		"build",
+		"dist",
+		"src"
+	],
+	"author": "Kieran Simpson <kieran@redcrew.com.au>",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/RedCrewOS/sdk-creator-js"
+	},
+	"dependencies": {
+		"crocks": "~0.12.4",
+		"tslib": "^2.0.3"
+	},
+	"devDependencies": {
+		"@tsconfig/recommended": "~1.0.1",
+		"@types/mocha": "~8.0.3",
+		"@types/node": "~14.14.7",
+		"@typescript-eslint/eslint-plugin": "~4.6.1",
+		"@typescript-eslint/parser": "~4.6.1",
+		"eslint": "~7.12.1",
+		"hamjest": "~3.7.1",
+		"mocha": "~8.2.1",
+		"rimraf": "~3.0.2",
+		"ts-loader": "~8.0.9",
+		"ts-node": "~9.0.0",
+		"tsconfig-paths": "~3.9.0",
+		"typescript": "~4.0.5",
+	}
+}

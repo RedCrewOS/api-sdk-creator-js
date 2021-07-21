@@ -452,6 +452,11 @@
       shouldPublish: true
     },
     {
+      packageName: "@api-sdk-creator/node-http-client",
+      projectFolder: "node-http-client",
+      shouldPublish: true
+    },
+    {
       packageName: "@api-sdk-creator/example",
       projectFolder: "example"
     }
