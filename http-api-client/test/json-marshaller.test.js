@@ -37,7 +37,7 @@ describe("JSON Marshalling", function() {
 			};
 		})
 
-		it("should set content type", async function() {
+		it("should set given content type", async function() {
 			const contentType = "application/json+vnd";
 
 			const result = await marshall(contentType);
@@ -51,28 +51,6 @@ describe("JSON Marshalling", function() {
 			assertThat(result.headers["content-type"], is(JSON_MIME_TYPE));
 		});
 
-		it("should set no content type when no request body", async function() {
-			request.body = undefined;
-
-			const result = await marshall();
-
-			assertThat(result.headers["content-type"], is(undefined));
-		});
-
-		it("should not stringify body when no request body", async function() {
-			request.body = undefined;
-
-			const result = await marshall();
-
-			assertThat(result.body, is(undefined));
-		});
-
-		it("should stringify request body", async function() {
-			const result = await marshall();
-
-			assertThat(result.body, is(JSON.stringify(request.body)));
-		});
-
 		it("should reject when error marshalling request body", async function() {
 			request.body = {};
 			request.body.a = BigInt(Number.MAX_SAFE_INTEGER + 1)
@@ -83,10 +61,6 @@ describe("JSON Marshalling", function() {
 			)));
 		});
 
-		/**
-		 * @param {string} [contentType]
-		 * @return Promise<HttpRequest>
-		 */
 		function marshall(contentType) {
 			// freeze the request to make sure we don't modify anything
 			request = deepFreeze(request);
@@ -115,25 +89,6 @@ describe("JSON Marshalling", function() {
 			assertThat(result.response.body, is(body));
 		});
 
-		it("should not unmarshall response body when content type is not json",
-				async function() {
-					const body = "This is not JSON";
-					result.response.body = body;
-					result.response.headers["content-type"] = "text/plain";
-
-					const outcome = await unmarshall();
-
-					assertThat(outcome.response.body, is(body));
-				});
-
-		it("should not unmarshall response body when no response body", async function() {
-			result.response.body = undefined;
-
-			const outcome = await unmarshall();
-
-			assertThat(outcome.response.body, is(undefined));
-		});
-
 		it("should reject when error unmarshalling response body", async function() {
 			result.response.body = "undefined";
 
@@ -143,9 +98,6 @@ describe("JSON Marshalling", function() {
 			)));
 		});
 
-		/**
-		 * @returns Promise<HttpResult>
-		 */
 		function unmarshall(contentType = JSON_MIME_TYPE) {
 			return jsonUnmarshaller(contentType)(result).toPromise();
 		}
