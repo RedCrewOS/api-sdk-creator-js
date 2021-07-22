@@ -4,15 +4,32 @@ const { Readable } = require("stream");
 
 const Async = require("crocks/Async");
 
-const chain = require("crocks/pointfree/chain");
+const and = require("crocks/logic/and");
+const compose = require("crocks/helpers/compose");
+const composeK = require("crocks/helpers/composeK");
+const converge = require("crocks/combinators/converge");
 const curry = require("crocks/core/curry");
-const getPath = require("crocks/Maybe/getPath");
-const flip = require("crocks/combinators/flip");
-const map = require("crocks/pointfree/map");
-const maybeToResult = require("crocks/Result/maybeToResult");
+const hasPropPath = require("crocks/predicates/hasPropPath");
+const ifElse = require("crocks/logic/ifElse");
+const liftA2 = require("crocks/helpers/liftA2");
+const not = require("crocks/logic/not");
 const pipe = require("crocks/helpers/pipe");
-const resultToAsync = require("crocks/Async/resultToAsync");
 const setPath = require("crocks/helpers/setPath");
+
+const { getPath } = require("@epistemology-factory/crocks-ext/Async");
+const { prepend } = require("@epistemology-factory/crocks-ext/helpers");
+
+const { resultHasContentType } = require("./predicates");
+
+const requestBodyPath = [ "body" ];
+
+const resultBodyPath = [ "response", "body" ];
+
+// newError :: String -> Error
+const newError = (message) => new Error(message)
+
+// missingPath :: String -> Error
+const missingPath = compose(newError, prepend("Missing property at "))
 
 /**
  * Data type that does not have a pre-defined data model/type definition.
@@ -75,6 +92,16 @@ const streamReduce = async (accumulator, stream) => {
 	return done ? accumulator : streamReduce(accumulator, stream);
 };
 
+// @private
+// transformBody :: [ String ] -> (a -> Async Error b) -> Object -> Async Error Object
+const transformBody = curry((path, transform) =>
+	converge(
+		liftA2(setPath(path)),
+		composeK(transform, getPath(missingPath, path)),
+		Async.of
+	)
+)
+
 // collectUnstructuredDataToString :: UnstructuredData -> Async String
 const collectUnstructuredDataToString = (data) => {
 	/*
@@ -103,6 +130,40 @@ const collectUnstructuredDataToString = (data) => {
 }
 
 /**
+ * A string marshaller takes a transformation function, and a content type.
+ * It creates a HttpRequestPolicy that will transform the body of the request to a string
+ * and add the content-type request header.
+ */
+// stringMarshaller :: (a -> Async Error String) -> String -> HttpRequestPolicy
+const stringMarshaller =  curry((transform, contentType) =>
+	ifElse(
+		not(hasPropPath(requestBodyPath)),
+		Async.of,
+		pipe(
+			setPath([ "headers", "content-type" ], contentType),
+			transformBody(requestBodyPath, transform)
+		)
+	)
+)
+
+/**
+ * A string unmarshaller takes a transformation function, and a content type.
+ * It creates a HttpResultHandler that will transform the body of the request from a
+ * string to something if the content type of the response matches the desired content type.
+ *
+ * If the unmarshaller can't process the response body, it will just pass the result back
+ * unchanged.
+ */
+// stringUnmarshaller :: (String -> Async Error a) -> String -> HttpResultHandler
+const stringUnmarshaller = curry((transform, contentType) => {
+	return ifElse(
+		not(and(hasPropPath(resultBodyPath), resultHasContentType(contentType))),
+		Async.of,
+		transformBody(resultBodyPath, composeK(transform, collectUnstructuredDataToString))
+	)
+})
+
+/**
  * @return Whether the object is a Node Readable stream.
  */
 // isReadable :: a -> Boolean
@@ -120,18 +181,19 @@ const isReadableStream =
  * Extracts a property (body) at a location, converts the data to a string, and merges the result
  * into the original input.
  */
-// unstructuredDataToString :: [ String ] -> HttpResult UnstructuredData -> Async HttpResult String
-const unstructuredDataToString = curry((path, data) =>
-	pipe(
-		resultToAsync(maybeToResult(new Error(`Missing property at ${path.join(".")}`), getPath(path))),
-		chain(collectUnstructuredDataToString),
-		map(flip(setPath(path))(data))
-	)(data)
-);
+// unstructuredDataToString :: [ String ] -> HttpResult UnstructuredData -> Async Error (HttpResult String)
+const unstructuredDataToString = (path) =>
+	converge(
+		liftA2(setPath(path)),
+		composeK(collectUnstructuredDataToString, getPath(missingPath, path)),
+		Async.of
+	)
 
 module.exports = {
 	collectUnstructuredDataToString,
 	isReadable,
 	isReadableStream,
+	stringMarshaller,
+	stringUnmarshaller,
 	unstructuredDataToString
 }
