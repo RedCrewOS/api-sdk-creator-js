@@ -100,7 +100,7 @@ const apiClient: (httpClient: HttpClient) => HttpApiClient = (client) =>
 const checkIp: (client: HttpApiClient) => typeof Async = (client) =>
 	/*
  	 * The operation specific components of the request.
-   */
+	 */
 	client({
 		method: HttpRequestMethod.GET,
 		url: "http://ifconfig.co/json",
