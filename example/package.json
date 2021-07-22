@@ -6,9 +6,9 @@
   "engines": {
     "node": "^12.18.4"
   },
-  "main": "build/index.js",
+  "main": "build/sandpit.js",
   "scripts": {
-    "run": "node build/index.js",
+    "run": "node build/sandpit.js",
     "build": "rushx clean && rushx compile",
     "clean": "rimraf build",
     "compile": "tsc -p .",
