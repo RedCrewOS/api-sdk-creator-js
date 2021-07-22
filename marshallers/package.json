@@ -29,7 +29,7 @@
 	"dependencies": {
 		"crocks": "~0.12.4",
 		"tslib": "^2.0.3",
-		"@epistemology-factory/crocks-ext": "~0.0.10"
+		"@epistemology-factory/crocks-ext": "~0.0.11"
 	},
 	"devDependencies": {
 		"@tsconfig/recommended": "~1.0.1",
