@@ -5,6 +5,7 @@
 export * from "./accessors";
 export * from "./base-client";
 export * from "./client";
+export * from "./form-marshaller";
 export * from "./json-marshaller";
 export * from "./headers";
 export * from "./predicates";

@@ -19,7 +19,7 @@ const URL_ENCODED_MIME_TYPE = "application/x-www-form-urlencoded";
  * @param {string} [contentType=JSON_MIME_TYPE] Optional content type. Defaults to JSON_MIME_TYPE
  * @return {HttpRequestPolicy}
  */
-// jsonMarsformMarshallerhaller :: String? -> HttpRequestPolicy
+// formMarshaller :: String? -> HttpRequestPolicy
 const formMarshaller = (contentType = URL_ENCODED_MIME_TYPE) =>
 	stringMarshaller(compose(resultToAsync, tryCatch(urlencoded.encoder())), contentType)
 
