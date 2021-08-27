@@ -4,10 +4,8 @@ const Async = require("crocks/Async");
 const Endo = require("crocks/Endo");
 
 const assign = require("crocks/helpers/assign");
-const concat = require("crocks/pointfree/concat");
 const chain = require("crocks/pointfree/chain");
 const curry = require("crocks/core/curry");
-const flip = require("crocks/combinators/flip");
 const map = require("crocks/pointfree/map");
 const mconcatMap = require("crocks/helpers/mconcatMap");
 const objOf = require("crocks/helpers/objOf");
@@ -54,7 +52,7 @@ const createHeaders =
 /**
  * Adds a bearer token to request headers
  */
-// bearerToken :: (() -> Async string) -> RequestHeaderFactory
+// bearerToken :: (() -> Async string) -> () -> RequestHeaderFactory
 const bearerToken = curry((accessToken, _) =>
 	pipe(
 		accessToken,
@@ -65,7 +63,7 @@ const bearerToken = curry((accessToken, _) =>
 /**
  * Adds the given header to a {@link HttpRequest}
  */
-// constantHeaders :: HttpHeaders -> RequestHeaderFactory
+// constantHeaders :: HttpHeaders -> () -> RequestHeaderFactory
 const constantHeaders = curry(
 	(headers, _) => Async.of(headers)
 );

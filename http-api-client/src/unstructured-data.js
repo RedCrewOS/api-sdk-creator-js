@@ -17,6 +17,7 @@ const pipe = require("crocks/helpers/pipe");
 const setPath = require("crocks/helpers/setPath");
 
 const { getPath } = require("@epistemology-factory/crocks-ext/Async");
+const { join } = require("@epistemology-factory/crocks-ext/String");
 const { prepend } = require("@epistemology-factory/crocks-ext/helpers");
 
 const { resultHasContentType } = require("./predicates");
@@ -29,7 +30,7 @@ const resultBodyPath = [ "response", "body" ];
 const newError = (message) => new Error(message)
 
 // missingPath :: String -> Error
-const missingPath = compose(newError, prepend("Missing property at "))
+const missingPath = compose(newError, prepend("Missing property at "), join("."))
 
 /**
  * Data type that does not have a pre-defined data model/type definition.
