@@ -7,14 +7,15 @@ const Async = require("crocks/Async");
 const and = require("crocks/logic/and");
 const compose = require("crocks/helpers/compose");
 const composeK = require("crocks/helpers/composeK");
-const converge = require("crocks/combinators/converge");
 const curry = require("crocks/core/curry");
+const flip = require("crocks/combinators/flip");
 const hasPropPath = require("crocks/predicates/hasPropPath");
 const ifElse = require("crocks/logic/ifElse");
-const liftA2 = require("crocks/helpers/liftA2");
+const map = require("crocks/pointfree/map");
 const not = require("crocks/logic/not");
 const pipe = require("crocks/helpers/pipe");
 const setPath = require("crocks/helpers/setPath");
+const subtitution = require("crocks/combinators/substitution");
 
 const { getPath } = require("@epistemology-factory/crocks-ext/Async");
 const { join } = require("@epistemology-factory/crocks-ext/String");
@@ -96,10 +97,9 @@ const streamReduce = async (accumulator, stream) => {
 // @private
 // transformBody :: [ String ] -> (a -> Async Error b) -> Object -> Async Error Object
 const transformBody = curry((path, transform) =>
-	converge(
-		liftA2(setPath(path)),
-		composeK(transform, getPath(missingPath, path)),
-		Async.of
+	subtitution(
+		compose(map, flip(setPath(path))),
+		composeK(transform, getPath(missingPath, path))
 	)
 )
 
@@ -184,10 +184,9 @@ const isReadableStream =
  */
 // unstructuredDataToString :: [ String ] -> HttpResult UnstructuredData -> Async Error (HttpResult String)
 const unstructuredDataToString = (path) =>
-	converge(
-		liftA2(setPath(path)),
+	subtitution(
+		compose(map, flip(setPath(path))),
 		composeK(collectUnstructuredDataToString, getPath(missingPath, path)),
-		Async.of
 	)
 
 module.exports = {
