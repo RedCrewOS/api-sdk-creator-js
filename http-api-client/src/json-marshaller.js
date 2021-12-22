@@ -5,7 +5,7 @@ const resultToAsync = require("crocks/Async/resultToAsync");
 
 const { parse, stringify } = require("@epistemology-factory/crocks-ext/node/json");
 
-const { stringMarshaller, stringUnmarshaller } = require("./unstructured-data");
+const { marshallerFor, unmarshallerFor } = require("./marshaller");
 
 /**
  * @type {string} Default mime type for JSON.
@@ -20,7 +20,7 @@ const JSON_MIME_TYPE = "application/json";
  */
 // jsonMarshaller :: String? -> HttpRequestPolicy
 const jsonMarshaller = (contentType = JSON_MIME_TYPE) =>
-	stringMarshaller(compose(resultToAsync, stringify), contentType)
+	marshallerFor(contentType, compose(resultToAsync, stringify))
 
 /**
  * Creates a {@link HttpResultHandler} that tries to unmarshall a string to an object.
@@ -29,7 +29,7 @@ const jsonMarshaller = (contentType = JSON_MIME_TYPE) =>
  */
 // jsonUnmarshaller :: String? -> HttpResultHandler
 const jsonUnmarshaller = (contentType = JSON_MIME_TYPE) =>
-	stringUnmarshaller(compose(resultToAsync, parse), contentType)
+	unmarshallerFor(contentType, compose(resultToAsync, parse))
 
 module.exports = {
 	JSON_MIME_TYPE,

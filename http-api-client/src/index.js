@@ -7,6 +7,7 @@ module.exports = {
 	...require("./form-marshalling"),
 	...require("./headers"),
 	...require("./json-marshaller"),
+	...require("./marshaller"),
 	...require("./predicates"),
 	...require("./request"),
 	...require("./response"),
