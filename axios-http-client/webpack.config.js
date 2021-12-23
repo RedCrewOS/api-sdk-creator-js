@@ -1,5 +1,7 @@
 const path = require("path");
 
+const webpack = require("webpack")
+
 module.exports = {
 	entry: path.join(__dirname, "/src/axios-http-client.ts"),
 	output: {
@@ -18,6 +20,11 @@ module.exports = {
 			}
 		]
 	},
+	plugins: [
+		new webpack.DefinePlugin({
+			"process.env.NODE_DEBUG": JSON.stringify(process.env.NODE_DEBUG)
+		})
+	],
 	resolve: {
 		extensions: [".tsx", ".ts", ".js"],
 
