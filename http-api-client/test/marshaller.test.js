@@ -1,20 +1,22 @@
 "use strict";
 
-const Async = require("crocks/Async");
-
-const pipe = require("crocks/helpers/pipe");
+const { Async, Either, compose, identity, ifElse, isSame, pipe } = require("crocks");
 
 const { join, split } = require("@epistemology-factory/crocks-ext/String");
 
 const deepFreeze = require("deep-freeze");
 const {
+	allOf,
 	assertThat,
+	equalTo,
+	hasProperty,
+	instanceOf,
 	is,
 	isRejectedWith,
 	promiseThat
 } = require("hamjest");
 
-const { marshallerFor, unmarshallerFor } = require("../src/marshaller");
+const { marshallerFor, unmarshaller, unmarshallerFor } = require("../src/marshaller");
 
 describe("Marshalling", function() {
 	const reverse = (a) => a.reverse()
@@ -97,7 +99,7 @@ describe("Marshalling", function() {
 		});
 
 		it("should unmarshall response body", async function() {
-			const result = await unmarshall();
+			const result = (await unmarshall()).either(throwUnstructuredDataException, identity);
 
 			assertThat(result.response.body, is("Hello World"));
 		});
@@ -107,7 +109,7 @@ describe("Marshalling", function() {
 			result.response.body = body;
 			result.response.headers["content-type"] = "application/json";
 
-			const outcome = await unmarshall();
+			const outcome = (await unmarshall()).either(identity, throwUnmarshalledDataException);
 
 			assertThat(outcome.response.body, is(body));
 		});
@@ -115,7 +117,8 @@ describe("Marshalling", function() {
 		it("should not unmarshall response body when no response body", async function() {
 			result.response.body = undefined;
 
-			const outcome = await unmarshall();
+			// we expect an Either.Right as the result since there is no body.
+			const outcome = (await unmarshall()).either(throwUnstructuredDataException, identity);
 
 			assertThat(outcome.response.body, is(undefined));
 		});
@@ -129,6 +132,96 @@ describe("Marshalling", function() {
 
 		function unmarshall(contentType = "text/plain", transform = transformer) {
 			return unmarshallerFor(contentType, transform)(result).toPromise();
+		}
+
+		function throwUnstructuredDataException() {
+			throw new Error("Expected HttpResponse to have had body unmarshalled")
+		}
+
+		function throwUnmarshalledDataException() {
+			throw new Error("HttpResponse erroneously had body unmarshalled")
+		}
+	});
+
+	describe("unmarshaller", function() {
+		const plainTextUnmarshaller = makeUnmarshaller("text/plain", "This is some text")
+		const anotherPlainTextUnmarshaller = makeUnmarshaller("text/plain", "This is other text")
+		const jsonUnmarshaller = makeUnmarshaller("application/json", "{ \"a\": false }")
+
+		const unmarshallers = unmarshaller(
+			jsonUnmarshaller,
+			plainTextUnmarshaller,
+			anotherPlainTextUnmarshaller
+		)
+
+		const responseHeaders = {
+			"content-type": "text/plain"
+		}
+
+		it("should not unmarshall anything when no response body", async function() {
+			const input = {
+				response: {
+					headers: responseHeaders
+				}
+			}
+
+			const result = await unmarshallers(input).toPromise()
+
+			assertThat(result.response.body, is(undefined));
+		});
+
+		it("should return first unmarshalled body", async function() {
+			const input = {
+				response: {
+					headers: responseHeaders,
+					body: "Hello World"
+				}
+			}
+
+			const result = await unmarshallers(input).toPromise()
+
+			assertThat(result.response.body, is("This is some text"));
+		});
+
+		it("should return unsupported content when response body not unmarshalled", async function() {
+			const input = {
+				response: {
+					headers: {
+						"content-type": "image/png"
+					},
+					body: "Hello World"
+				}
+			}
+
+			await promiseThat(
+				unmarshallers(input).toPromise(),
+				isRejectedWith(allOf(
+					instanceOf(Error),
+					hasProperty("message", equalTo("Unrecognised content type 'image/png'"))
+				))
+			);
+		});
+
+		function makeUnmarshaller(contentType, data) {
+			return ifElse(
+				(result) => result.response.body,
+				ifElse(
+					(result) => isSame(result.response.headers["content-type"], contentType),
+					(result) => Async.Resolved(Either.Right(copyWithBody(result, data))),
+					(result) => Async.Resolved(Either.Left(result))
+				),
+				compose(Async.Resolved, Either.Right)
+			)
+		}
+
+		function copyWithBody(result, body) {
+			return {
+				request: result.request,
+				response: {
+					...result.response,
+					body
+				}
+			}
 		}
 	});
 });

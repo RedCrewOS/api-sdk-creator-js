@@ -15,8 +15,10 @@ export function marshallerFor
 export function unmarshallerFor(
 	contentType: string,
 	transformer: (data: UnstructuredData) => typeof Async
-): HttpResultHandler
+): (HttpResult) => typeof Async
 
 export function unmarshallerFor
 	(contentType: string):
-	(transformer: (data: UnstructuredData) => typeof Async) => HttpResultHandler
+	(transformer: (data: UnstructuredData) => typeof Async) => (HttpResult) => typeof Async
+
+export function unmarshaller(unmarshallers: (HttpResult) => typeof Async): HttpResultHandler

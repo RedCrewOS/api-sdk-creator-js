@@ -27,6 +27,7 @@ dependencies:
   tsconfig-paths: 3.9.0
   tslib: 2.1.0
   typescript: 4.0.5
+  util: 0.12.4
   web-streams-polyfill: 3.0.1
   webpack: 5.22.0_webpack-cli@4.5.0+webpack@5.22.0
   webpack-cli: 4.5.0_webpack-cli@4.5.0+webpack@5.22.0
@@ -4243,6 +4244,17 @@ packages:
     dev: false
     resolution:
       integrity: sha512-I8XkoQwE+fPQEhy9v012V+TSdH2kp9ts29i20TaaDUXsg7x/onePbhFJUExBfv/2ay1ZOp/Vsm3nDlmnFGSAog==
+  /util/0.12.4:
+    dependencies:
+      inherits: 2.0.4
+      is-arguments: 1.1.0
+      is-generator-function: 1.0.8
+      is-typed-array: 1.1.5
+      safe-buffer: 5.2.1
+      which-typed-array: 1.1.4
+    dev: false
+    resolution:
+      integrity: sha512-bxZ9qtSlGUWSOy9Qa9Xgk11kSslpuZwaxCg4sNIDj6FLucDab2JxnHwyNTCpHMtK1MjoQiWQ6DiUMZYbSrO+Sw==
   /utils-merge/1.0.1:
     dev: false
     engines:
@@ -4715,11 +4727,12 @@ packages:
       tsconfig-paths: 3.9.0
       tslib: 2.1.0
       typescript: 4.0.5
+      util: 0.12.4
       web-streams-polyfill: 3.0.1
     dev: false
     name: '@rush-temp/http-api-client'
     resolution:
-      integrity: sha512-5749qDBd/QA5N9NLnxloST7wF0r8yNQBnACXufUEfwZH4258Biym2iXPGC9zpfnVNUXt9h5Ij33ocDtF2Sl/Bw==
+      integrity: sha512-dqm6NyyQsMGpp119wspvuKVT7oiRGQt4j/GW/CDzVeeYXcEy+YVYmax6XP3/HxPIBdP07kIheoWnAsJPWeHYYQ==
       tarball: 'file:projects/http-api-client.tgz'
     version: 0.0.0
   'file:projects/marshallers.tgz':
@@ -4783,6 +4796,7 @@ specifiers:
   tsconfig-paths: ~3.9.0
   tslib: ^2.0.3
   typescript: ~4.0.5
+  util: ~0.12.4
   web-streams-polyfill: ~3.0.1
   webpack: ~5.22.0
   webpack-cli: ~4.5.0
