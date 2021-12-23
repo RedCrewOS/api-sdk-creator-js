@@ -1,6 +1,6 @@
 {
   "name": "@api-sdk-creator/http-api-client",
-  "version": "0.1.4",
+  "version": "0.2.0",
   "description": "HTTP client for SDKs",
   "engines": {
     "node": "^12.18.4"
