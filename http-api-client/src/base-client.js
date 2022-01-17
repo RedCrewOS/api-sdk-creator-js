@@ -14,7 +14,7 @@ exports.replacePathParams = (path, params) => {
 			if (segment[0] === ":") {
 				const value = params[segment.substr(1)];
 
-				if (!value) {
+				if (value === undefined) {
 					throw new Error(`No value provided for '${segment}'`);
 				}
 
