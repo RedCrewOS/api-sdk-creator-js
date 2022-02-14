@@ -5,27 +5,29 @@ const Endo = require("crocks/Endo");
 
 const assign = require("crocks/helpers/assign");
 const chain = require("crocks/pointfree/chain");
+const compose = require("crocks/helpers/compose");
+const composeB = require("crocks/combinators/composeB");
+const contramap = require("crocks/pointfree/contramap");
 const curry = require("crocks/core/curry");
 const map = require("crocks/pointfree/map");
-const mconcatMap = require("crocks/helpers/mconcatMap");
+const mreduceMap = require("crocks/helpers/mreduceMap");
 const objOf = require("crocks/helpers/objOf");
 const pipe = require("crocks/helpers/pipe");
-const valueOf = require("crocks/pointfree/valueOf");
+const substitution = require("crocks/combinators/substitution");
 
 const { joinPair } = require("@epistemology-factory/crocks-ext/String");
-const { prepend } = require("@epistemology-factory/crocks-ext/helpers");
 
 /**
  * @typedef {object} HttpHeaders
  */
 
 // concatHeaders :: RequestHeaderFactory -> HttpHeaders -> Async HttpHeaders
-const concatHeaders = curry((factory, headers) =>
-	pipe(
-		factory,
-		map(pipe(assign(headers), Object.freeze))
-	)(headers)
-);
+const concatHeaders = curry((factory) =>
+	substitution(
+		compose(map, composeB(Object.freeze), assign),
+		factory
+	)
+)
 
 // toBearerToken :: String -> String
 const toBearerToken = joinPair(" ", "Bearer");
@@ -44,9 +46,8 @@ const createHeaders =
 		 * of the factory call is passed to each subsequent function, and the results chained
 		 * together (since each factory returns a Async)
 		 */
-		mconcatMap(Endo, pipe(concatHeaders, chain)),
-		prepend(Endo(() => Async.of(Object.freeze({})))),
-		valueOf
+		mreduceMap(Endo, pipe(concatHeaders, chain)),
+		contramap(() => Async.Resolved(Object.freeze({})))
 	);
 
 /**
