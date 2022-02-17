@@ -110,7 +110,7 @@ const unmarshallerFor = curry((contentType, transformer) =>
 	)
 )
 
-// unmarshallResult :: (HttpResult -> Async Error Either HttpResult) -> Async Error Either HttpResult -> Async Error Either HttpResult
+// unmarshallResult :: Async Error Either HttpResult -> (HttpResult -> Async Error Either HttpResult) -> Async Error Either HttpResult
 const unmarshallResult = flip((unmarshaller) =>
 	chain(either(
 		unmarshaller,
