@@ -25,7 +25,6 @@ const { getPath } = require("@epistemology-factory/crocks-ext/Async");
 const { join } = require("@epistemology-factory/crocks-ext/String");
 const { prepend } = require("@epistemology-factory/crocks-ext/helpers");
 
-const { collectUnstructuredDataToString } = require("./unstructured-data");
 const { resultHasContentType } = require("./predicates");
 
 const requestBodyPath = [ "body" ];
@@ -102,10 +101,7 @@ const unmarshallerFor = curry((contentType, transformer) =>
 		ifElse(
 			not(resultHasContentType(contentType)),
 			compose(Async.Resolved, Either.Left),
-			pipe(
-				transformBody(resultBodyPath, composeK(transformer, collectUnstructuredDataToString)),
-				map(Either.Right)
-			)
+			compose(map(Either.Right), transformBody(resultBodyPath, transformer))
 		)
 	)
 )

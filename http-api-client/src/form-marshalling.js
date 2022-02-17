@@ -1,17 +1,24 @@
 "use strict";
 
-const compose = require("crocks/helpers/compose");
+const composeK = require("crocks/helpers/composeK");
 const resultToAsync = require("crocks/Async/resultToAsync");
 const tryCatch = require("crocks/Result/tryCatch");
 
 const { urlencoded } = require("@api-sdk-creator/marshallers");
 
+const { collectUnstructuredDataToString } = require("./unstructured-data");
 const { marshallerFor, unmarshallerFor, unmarshaller } = require("./marshaller");
 
 /**
  * @type {string} Default mime type for JSON.
  */
 const URL_ENCODED_MIME_TYPE = "application/x-www-form-urlencoded";
+
+// encode :: String -> Async Error String
+const encode = resultToAsync(tryCatch(urlencoded.encoder()))
+
+// decode :: String -> Async Error String
+const decode = resultToAsync(tryCatch(urlencoded.decoder()))
 
 /**
  * Creates a {@link HttpRequestPolicy} that tries to marshall the body to a string.
@@ -21,7 +28,7 @@ const URL_ENCODED_MIME_TYPE = "application/x-www-form-urlencoded";
  */
 // formMarshaller :: String? -> HttpRequestPolicy
 const formMarshaller = (contentType = URL_ENCODED_MIME_TYPE) =>
-	marshallerFor(contentType, compose(resultToAsync, tryCatch(urlencoded.encoder())))
+	marshallerFor(contentType, encode)
 
 /**
  * Creates a {@link HttpResultHandler} that tries to unmarshall a string to an object.
@@ -34,7 +41,7 @@ const formMarshaller = (contentType = URL_ENCODED_MIME_TYPE) =>
 // formUnmarshaller :: String? -> HttpResultHandler
 const formUnmarshaller = (contentType = URL_ENCODED_MIME_TYPE) =>
 	unmarshaller(
-		unmarshallerFor(contentType, compose(resultToAsync, tryCatch(urlencoded.decoder())))
+		unmarshallerFor(contentType, composeK(decode, collectUnstructuredDataToString))
 	)
 
 module.exports = {
