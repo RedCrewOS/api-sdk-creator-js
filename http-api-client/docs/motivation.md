@@ -314,7 +314,12 @@ next tick.
   video series specifically for Crocks
 - [Functional JS with Crocks](https://www.youtube.com/watch?v=O1Gu5b7rxbw&list=PLjvgv-FpMo7XvlfO8YKiz4_onf8WonhiA&index=1) -
   another video series on specific parts of Crocks
-
+- [Scott Wlaschin presentations](https://fsharpforfunandprofit.com/video/) engaging 
+  presentations of FP concepts and how to use them. Very good for beginners.
+  - [The Power of Composition](https://www.youtube.com/watch?v=oquuPOkz8xo)
+  - [The Functional Programmer’s Toolkit](https://www.youtube.com/watch?v=bK-Tz-GLfOs)
+  - [Functional Design Patterns](https://www.youtube.com/watch?v=srQt1NAHYC0)
+  - [Railway Oriented Programming](https://vimeo.com/113707214)
 ----
 
 <sup>1</sup> As of Postman's 2020 [State of the API](https://www.postman.com/state-of-api/)
