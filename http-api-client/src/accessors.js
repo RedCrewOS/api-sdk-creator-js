@@ -29,6 +29,12 @@ const getHttpResponse = (result) => result.response;
 // getHttpBody :: HttpResponse -> a
 const getHttpBody = (response) => response.body;
 
+/**
+ * Extracts the response body from a {@link HttpResult}
+ *
+ * @param {HttpResult} result
+ * @return {any} The body. Maybe null
+ */
 // extractHttpBody :: HttpResult -> a
 const extractHttpBody =
 	pipe(getHttpResponse, getHttpBody)
@@ -45,6 +51,9 @@ const parseIntValue = (a) =>
  * Will ignore a missing header as not all headers are returned under all circumstances and that
  * might be OK (eg: content-length). Use `maybeToResult` to force an error if the header is
  * missing.
+ *
+ * @param {string} header The header to parse eg: `content-length`
+ * @param {object} headers HTTP headers.
  */
 // parseIntHeader :: String -> Object -> Result Error Maybe Integer
 const parseIntHeader = curry((header, headers) =>

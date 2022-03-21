@@ -52,6 +52,8 @@ const createHeaders =
 
 /**
  * Adds a bearer token to request headers
+ *
+ * Takes a factory that knows to obtain a token to insert into a request.
  */
 // bearerToken :: (() -> Async string) -> () -> RequestHeaderFactory
 const bearerToken = curry((accessToken, _) =>

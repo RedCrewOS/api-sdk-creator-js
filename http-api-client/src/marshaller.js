@@ -50,14 +50,16 @@ const transformBody = curry((path, transform) =>
  * a curried function an instance of the marshaller can be configured for the correct content
  * type.
  *
- * The abstraction of how to actually convert between a type and an UnstructuredData type is
- * so that users can provide the transformation function of their choice.
+ * The abstraction of how to actually convert between a type and {@link UnstructuredData} type
+ * is so that users can provide the transformation function of their choice.
  *
  * If an application/SDK wishes to support multiple marshallers to take advantage of content
  * negotiation the application will need to orchestrate the selection process.
  *
- * The result is a HttpRequestPolicy that will transform the body of the request (if present)
- * and add the Content-Type request header.
+ * The result is a {@link HttpRequestPolicy} that will transform the body of the request
+ * (if present) and add the Content-Type request header.
+ *
+ * @param {string} contentType What content type are we creating the marshaller for?
  */
 // marshallerFor :: String -> (a -> Async Error UnstructuredData) -> HttpRequestPolicy
 const marshallerFor = curry((contentType, transformer) =>
@@ -76,8 +78,8 @@ const marshallerFor = curry((contentType, transformer) =>
  * a curried function an instance of the unmarshaller can be configured for the correct content
  * type.
  *
- * The abstraction of how to actually convert between UnstructuredData and another type is so
- * that users can provide the transformation function of their choice.
+ * The abstraction of how to actually convert between {@link UnstructuredData} and another type
+ * is so that users can provide the transformation function of their choice.
  *
  * We can't guarantee the content type of a response is something an unmarshaller can process,
  * therefore the result is either the original response unchanged (left), or the response with
@@ -88,6 +90,8 @@ const marshallerFor = curry((contentType, transformer) =>
  * networks, where a misconfigured gateway/endpoint returns a different content type due to it
  * being misconfigured. Often this is HTML, whereas an application/SDK might be expecting
  * JSON/XML in the response.
+ *
+ * @param {string} contentType What content type are we creating the unmarshaller for?
  */
 // unmarshallerFor :: String -> (UnstructuredData -> Async Error a) -> (HttpResult -> Async Error Either HttpResult)
 const unmarshallerFor = curry((contentType, transformer) =>

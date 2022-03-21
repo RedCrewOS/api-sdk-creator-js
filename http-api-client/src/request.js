@@ -83,6 +83,11 @@ const addHeaders = curry((factory, request) => {
 	)(request)
 });
 
+/**
+ * Resolves a relative URL in a {@link HttpRequest} to an absolute URL.
+ *
+ * Takes a base URL to resolve to, followed by a request.
+ */
 // resolveUrl :: String -> HttpRequestPolicy
 const resolveUrl = curry((base, request) => {
 	const prop = "url";

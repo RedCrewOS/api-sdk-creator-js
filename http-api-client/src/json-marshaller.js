@@ -18,7 +18,7 @@ const JSON_MIME_TYPE = "application/json";
 const parseData = composeK(resultToAsync(parse), collectUnstructuredDataToString)
 
 /**
- * Creates a {@link HttpRequestPolicy} that tries to marshall the body to a string.
+ * Creates a {@link HttpRequestPolicy} that tries to marshall a {@link HttpRequest} body to a string.
  *
  * @param {string} [contentType=JSON_MIME_TYPE] Optional content type. Defaults to JSON_MIME_TYPE
  * @return {HttpRequestPolicy}
@@ -28,11 +28,12 @@ const jsonMarshaller = (contentType = JSON_MIME_TYPE) =>
 	marshallerFor(contentType, compose(resultToAsync, stringify))
 
 /**
- * Creates a {@link HttpResultHandler} that tries to unmarshall a string to an object.
+ * Creates a {@link HttpResultHandler} that tries to unmarshall {@link UnstructuredData} to an object.
  *
- * The returned HttpResultHandler will return an Exception if anything other than the given
- * content type is in the HttpResponse.
+ * The returned HttpResultHandler will return an error if anything other than the given
+ * content type is in the {@link HttpResponse}.
  *
+ * @param {string} [contentType=JSON_MIME_TYPE] Optional content type. Defaults to JSON_MIME_TYPE
  * @return {HttpResultHandler}
  */
 // jsonUnmarshaller :: String? -> HttpResultHandler
