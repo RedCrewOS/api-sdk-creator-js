@@ -320,6 +320,11 @@ next tick.
   - [The Functional Programmer’s Toolkit](https://www.youtube.com/watch?v=bK-Tz-GLfOs)
   - [Functional Design Patterns](https://www.youtube.com/watch?v=srQt1NAHYC0)
   - [Railway Oriented Programming](https://vimeo.com/113707214)
+- [Mark Seemann](https://blog.ploeh.dk/archive/) presentations on FP for OOP programmers
+  - [Get value of out monad](https://www.youtube.com/watch?v=F9bznonKc64) Helpful 
+   presentation on how to use Monads effectively and push impure behaviour to the "edge" of the program
+  - [From Dependency injection to dependency rejection](https://www.youtube.com/watch?v=cxs7oLGrxQ4)
+   Dealing with dependencies in FP
 ----
 
 <sup>1</sup> As of Postman's 2020 [State of the API](https://www.postman.com/state-of-api/)
