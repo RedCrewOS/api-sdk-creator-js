@@ -7,7 +7,7 @@ export type RequestHeaderFactory = (headers: HttpHeaders) => typeof Async;
 
 export type RequestHeadersFactory = () => typeof Async;
 
-export function createHeaders(factories: RequestHeaderFactory[] | List): () => RequestHeadersFactory;
+export function createHeaders(factories: RequestHeaderFactory[] | typeof List): () => RequestHeadersFactory;
 
 export function bearerToken(accessToken: () => typeof Async, headers: HttpHeaders): typeof Async;
 export function bearerToken(accessToken: () => typeof Async): RequestHeaderFactory;
