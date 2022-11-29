@@ -1,6 +1,6 @@
 import * as Async from "crocks/Async";
 
-import { HttpHeaders } from "./headers";
+import { HttpHeaders, RequestHeadersFactory } from "./headers";
 import { HttpRequestPolicy } from "./client";
 
 declare enum HttpRequestMethod {
@@ -27,10 +27,6 @@ export interface HttpRequest<T = any> {
 
 	body?: T;
 }
-
-export type RequestHeaderFactory = (headers: HttpHeaders) => typeof Async;
-
-export type RequestHeadersFactory = () => typeof Async;
 
 export function addHeaders(
 	factory: RequestHeadersFactory,

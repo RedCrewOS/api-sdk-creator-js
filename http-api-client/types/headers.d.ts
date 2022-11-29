@@ -1,9 +1,11 @@
 import * as Async from "crocks/Async";
 import * as List from "crocks/List";
 
-import { RequestHeaderFactory, RequestHeadersFactory } from "./request";
-
 export type HttpHeaders = Record<string, string>;
+
+export type RequestHeaderFactory = (headers: HttpHeaders) => typeof Async;
+
+export type RequestHeadersFactory = () => typeof Async;
 
 export function createHeaders(factories: RequestHeaderFactory[] | List): () => RequestHeadersFactory;
 
