@@ -1,6 +1,6 @@
 import * as Async from "crocks/Async";
 
-import { HttpRequestPolicy, HttpResultHandler } from "./client";
+import { HttpRequestPolicy, HttpResult, HttpResultHandler } from "./client";
 import { UnstructuredData } from "./unstructured-data";
 
 export function marshallerFor(
@@ -15,10 +15,10 @@ export function marshallerFor
 export function unmarshallerFor(
 	contentType: string,
 	transformer: (data: UnstructuredData) => typeof Async
-): (HttpResult) => typeof Async
+): (result: HttpResult) => typeof Async
 
 export function unmarshallerFor
 	(contentType: string):
-	(transformer: (data: UnstructuredData) => typeof Async) => (HttpResult) => typeof Async
+	(transformer: (data: UnstructuredData) => typeof Async) => (result: HttpResult) => typeof Async
 
-export function unmarshaller(unmarshallers: (HttpResult) => typeof Async): HttpResultHandler
+export function unmarshaller(unmarshallers: (result: HttpResult) => typeof Async): HttpResultHandler
