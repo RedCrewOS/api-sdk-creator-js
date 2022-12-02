@@ -452,6 +452,11 @@
       shouldPublish: true
     },
     {
+      packageName: "@api-sdk-creator/generator",
+      projectFolder: "generator",
+      shouldPublish: false
+    },
+    {
       packageName: "@api-sdk-creator/example",
       projectFolder: "example"
     }

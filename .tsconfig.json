@@ -2,6 +2,8 @@
 	"extends": "./common/temp/node_modules/@tsconfig/recommended/tsconfig.json",
 
 	"compilerOptions": {
+		"noImplicitAny": true,
+
 		/* Project options */
 		"declaration": true,
 		"declarationMap": true,
