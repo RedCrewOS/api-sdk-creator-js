@@ -7,7 +7,7 @@
   },
   "main": "src/index.js",
   "scripts": {
-    "build": "rushx test",
+    "build": "rushx test && rushx check",
     "check": "tsc types/**/*.ts --noEmit",
     "test": "find test/ -name *.test.js | xargs mocha --timeout 1000"
   },
@@ -35,10 +35,10 @@
     "ts-loader": "~8.0.9",
     "ts-node": "~9.0.0",
     "tsconfig-paths": "~3.9.0",
-    "typescript": "~4.0.5",
-    "@types/crocks": "~0.12.0"
+    "typescript": "~4.0.5"
   },
   "dependencies": {
-    "crocks": "~0.12.4"
+    "crocks": "~0.12.4",
+    "@epistemology-factory/crocks-ext": "~0.0.14"
   }
 }
