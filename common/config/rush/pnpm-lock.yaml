@@ -17,10 +17,10 @@ dependencies:
   eslint: 7.12.1
   hamjest: 3.7.3
   jsdom: 16.4.0
-  karma: 6.1.2
-  karma-jsdom-launcher: 9.0.0_jsdom@16.4.0+karma@6.1.2
+  karma: 6.4.1
+  karma-jsdom-launcher: 9.0.0_jsdom@16.4.0+karma@6.4.1
   karma-mocha: 2.0.1
-  karma-typescript: 5.4.0_karma@6.1.2+typescript@4.0.8
+  karma-typescript: 5.4.0_karma@6.4.1+typescript@4.0.8
   mocha: 8.2.1
   nock: 13.0.11
   rimraf: 3.0.2
@@ -250,6 +250,12 @@ packages:
       node: '>=6.9.0'
     resolution:
       integrity: sha512-c9fst/h2/dcF7H+MJKZ2T0KjEQ8hY/BNnDk/H3XY8C4Aw/eWQXWn/lWntHF9ooUBnGmEvbfGrTgLWc+um0YDUg==
+  /@colors/colors/1.5.0:
+    dev: false
+    engines:
+      node: '>=0.1.90'
+    resolution:
+      integrity: sha512-ooWCrlZP11i8GImSjTHYHLkvFDP48nS4+204nGb1RiX/WXYHmJA2III9/e2DWVabCESdW7hBAEzHRqUn9OUVvQ==
   /@discoveryjs/json-ext/0.5.7:
     dev: false
     engines:
@@ -360,14 +366,14 @@ packages:
       node: '>= 8'
     resolution:
       integrity: sha512-oGB+UxlgWcgQkgwo8GcEGwemoTFt3FIO9ababBmaGwXIoBKZ+GTy0pP185beGg7Llih/NSHSV2XAs1lnznocSg==
+  /@socket.io/component-emitter/3.1.0:
+    dev: false
+    resolution:
+      integrity: sha512-+9jVqKhRSpsc591z5vX+X5Yyw+he/HCB4iQ/RYxw35CEPaY1gnsNE43nf9n9AaYjAQrTiI/mOwKUKdUs9vf7Xg==
   /@tsconfig/recommended/1.0.1:
     dev: false
     resolution:
       integrity: sha512-2xN+iGTbPBEzGSnVp/Hd64vKJCJWxsi9gfs88x4PPMyEjHJoA3o5BY9r5OLPHIZU2pAQxkSAsJFqn6itClP8mQ==
-  /@types/component-emitter/1.2.11:
-    dev: false
-    resolution:
-      integrity: sha512-SRXjM+tfsSlA9VuG8hGO2nft2p8zjXCK1VcC6N4NXbBbYbSia9kzCChYQajIjzIqOOOuh5Ock6MmV2oux4jDZQ==
   /@types/cookie/0.4.1:
     dev: false
     resolution:
@@ -885,12 +891,6 @@ packages:
     dev: false
     resolution:
       integrity: sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw==
-  /base64-arraybuffer/0.1.4:
-    dev: false
-    engines:
-      node: '>= 0.6.0'
-    resolution:
-      integrity: sha512-a1eIFi4R9ySrbiMuyTGx5e92uRH5tQY6kArNcFaKBUleIoLjdjBg7Zxm3Mqm3Kmkf27HLR/1fnxX9q8GQ7Iavg==
   /base64-js/1.5.1:
     dev: false
     resolution:
@@ -1231,12 +1231,6 @@ packages:
     dev: false
     resolution:
       integrity: sha512-Y2oEozpomLn7Q3HFP7dpww7AtMJplbM9lGZP6RDfHqmbeRjiwRg4n6VM6j4KLmRke85uWEI7JqF17f3pqdRA0g==
-  /colors/1.4.0:
-    dev: false
-    engines:
-      node: '>=0.1.90'
-    resolution:
-      integrity: sha512-a+UqTh4kgZg/SlGvfbzDHpgRu7AAQOmmqRHJnxhRZICKFUT91brVhNNt58CMWU9PsBbv3PDCZUHbVxuDiH2mtA==
   /combine-source-map/0.8.0:
     dependencies:
       convert-source-map: 1.1.3
@@ -1264,10 +1258,6 @@ packages:
       node: '>= 10'
     resolution:
       integrity: sha512-QrWXB+ZQSVPmIWIhtEO9H+gwHaMGYiF5ChvoJ+K9ZGHG/sVsa6yiesAD1GC/x46sET00Xlwo1u49RVVVzvcSkw==
-  /component-emitter/1.3.0:
-    dev: false
-    resolution:
-      integrity: sha512-Rd3se6QB+sO1TwqZjscQrurpEPIfO0/yYnSin6Q/rD3mOutHvUrCAhJub3r90uNb+SESBuE0QYoB90YdfatsRg==
   /concat-map/0.0.1:
     dev: false
     resolution:
@@ -1633,28 +1623,29 @@ packages:
       node: '>= 0.8'
     resolution:
       integrity: sha512-TPJXq8JqFaVYm2CWmPvnP2Iyo4ZSM7/QKcSmuMLDObfpH5fi7RUGmd/rTDf+rut/saiDiQEeVTNgAmJEdAOx0w==
-  /engine.io-parser/4.0.3:
-    dependencies:
-      base64-arraybuffer: 0.1.4
+  /engine.io-parser/5.0.4:
     dev: false
     engines:
-      node: '>=8.0.0'
+      node: '>=10.0.0'
     resolution:
-      integrity: sha512-xEAAY0msNnESNPc00e19y5heTPX4y/TJ36gr8t1voOaNmTojP9b3oK3BbJLFufW2XFPQaaijpFewm2g2Um3uqA==
-  /engine.io/4.1.2:
+      integrity: sha512-+nVFp+5z1E3HcToEnO7ZIj3g+3k9389DvWtvJZz0T6/eOCPIyyxehFcedoYrZQrp0LgQbD9pPXhpMBKMd5QURg==
+  /engine.io/6.2.1:
     dependencies:
+      '@types/cookie': 0.4.1
+      '@types/cors': 2.8.13
+      '@types/node': 14.14.45
       accepts: 1.3.8
       base64id: 2.0.0
       cookie: 0.4.2
       cors: 2.8.5
       debug: 4.3.4
-      engine.io-parser: 4.0.3
-      ws: 7.4.6
+      engine.io-parser: 5.0.4
+      ws: 8.2.3
     dev: false
     engines:
       node: '>=10.0.0'
     resolution:
-      integrity: sha512-t5z6zjXuVLhXDMiFJPYsPOWEER8B0tIsD3ETgw19S1yg9zryvUfY3Vhtk3Gf4sihw/bQGIqQ//gjvVlu+Ca0bQ==
+      integrity: sha512-ECceEFcAaNRybd3lsGQKas3ZlMVjN3cyWwMP25D2i0zWfyiytVbTpRPa34qrr+FHddtpBVOmq4H/DCv1O0lZRA==
   /enhanced-resolve/4.5.0:
     dependencies:
       graceful-fs: 4.2.10
@@ -2755,10 +2746,10 @@ packages:
       node: '>=0.6.0'
     resolution:
       integrity: sha512-P2bSOMAc/ciLz6DzgjVlGJP9+BrJWu5UDGK70C2iweC5QBIeFf0ZXRvGjEj2uYgrY2MkAAhsSWHDWlFtEroZWw==
-  /karma-jsdom-launcher/9.0.0_jsdom@16.4.0+karma@6.1.2:
+  /karma-jsdom-launcher/9.0.0_jsdom@16.4.0+karma@6.4.1:
     dependencies:
       jsdom: 16.4.0
-      karma: 6.1.2
+      karma: 6.4.1
     dev: false
     peerDependencies:
       jsdom: ^9.0.0 || ^10.0.0 || ^11.0.0 || ^12.0.0 || ^13.0.0 || ^14.0.0 || ^15.0.0 || ^16.0.0
@@ -2771,7 +2762,7 @@ packages:
     dev: false
     resolution:
       integrity: sha512-Tzd5HBjm8his2OA4bouAsATYEpZrp9vC7z5E5j4C5Of5Rrs1jY67RAwXNcVmd/Bnk1wgvQRou0zGVLey44G4tQ==
-  /karma-typescript/5.4.0_karma@6.1.2+typescript@4.0.8:
+  /karma-typescript/5.4.0_karma@6.4.1+typescript@4.0.8:
     dependencies:
       acorn: 8.8.1
       acorn-walk: 8.2.0
@@ -2796,7 +2787,7 @@ packages:
       istanbul-lib-source-maps: 4.0.1
       istanbul-reports: 3.1.5
       json-stringify-safe: 5.0.1
-      karma: 6.1.2
+      karma: 6.4.1
       lodash: 4.17.21
       log4js: 6.7.1
       minimatch: 3.1.2
@@ -2824,12 +2815,12 @@ packages:
       typescript: 1 || 2 || 3 || 4
     resolution:
       integrity: sha512-ZaxlLzuo88uRbi3MYK/dC8ZDfvQyKzjS8SNDvFYYUontv9sPH38TOqsYB/OWCkjsbKpuGD1/iQkQ5r4uhIBv8Q==
-  /karma/6.1.2:
+  /karma/6.4.1:
     dependencies:
+      '@colors/colors': 1.5.0
       body-parser: 1.20.1
       braces: 3.0.2
       chokidar: 3.5.3
-      colors: 1.4.0
       connect: 3.7.0
       di: 0.0.1
       dom-serialize: 2.2.1
@@ -2841,10 +2832,11 @@ packages:
       log4js: 6.7.1
       mime: 2.6.0
       minimatch: 3.1.2
+      mkdirp: 0.5.6
       qjobs: 1.2.0
       range-parser: 1.2.1
       rimraf: 3.0.2
-      socket.io: 3.1.2
+      socket.io: 4.5.4
       source-map: 0.6.1
       tmp: 0.2.1
       ua-parser-js: 0.7.32
@@ -2854,7 +2846,7 @@ packages:
       node: '>= 10'
     hasBin: true
     resolution:
-      integrity: sha512-mKbxgsJrt3UHBPdKfCxC2eg3lpqyt6hQRFhNWJ2sk0wUnbnLPEiCpgIgiycuLSra0vC6TaK9OPJiMGATGzgH/A==
+      integrity: sha512-Cj57NKOskK7wtFWSlMvZf459iX+kpYIPXmkNUzP2WAFcA7nhr/ALn5R7sw3w+1udFDcpMx/tuB8d5amgm3ijaA==
   /kind-of/6.0.3:
     dev: false
     engines:
@@ -3864,36 +3856,32 @@ packages:
       node: '>=6'
     resolution:
       integrity: sha512-Qu+VC3EwYLldKa1fCxuuvULvSJOKEgk9pi8dZeCVK7TqBfUNTH4sFkk4joj8afVSfAYgJoSOetjx9QWOJ5mYoQ==
-  /socket.io-adapter/2.1.0:
+  /socket.io-adapter/2.4.0:
     dev: false
     resolution:
-      integrity: sha512-+vDov/aTsLjViYTwS9fPy5pEtTkrbEKsw2M+oVSoFGw6OD1IpvlV1VPhUzNbofCQ8oyMbdYJqDtGdmHQK6TdPg==
-  /socket.io-parser/4.0.5:
+      integrity: sha512-W4N+o69rkMEGVuk2D/cvca3uYsvGlMwsySWV447y99gUPghxq42BxqLNMndb+a1mm/5/7NeXVQS7RLa2XyXvYg==
+  /socket.io-parser/4.2.1:
     dependencies:
-      '@types/component-emitter': 1.2.11
-      component-emitter: 1.3.0
+      '@socket.io/component-emitter': 3.1.0
       debug: 4.3.4
     dev: false
     engines:
       node: '>=10.0.0'
     resolution:
-      integrity: sha512-sNjbT9dX63nqUFIOv95tTVm6elyIU4RvB1m8dOeZt+IgWwcWklFDOdmGcfo3zSiRsnR/3pJkjY5lfoGqEe4Eig==
-  /socket.io/3.1.2:
+      integrity: sha512-V4GrkLy+HeF1F/en3SpUaM+7XxYXpuMUWLGde1kSSh5nQMN4hLrbPIkD+otwh6q9R6NOQBN4AMaOZ2zVjui82g==
+  /socket.io/4.5.4:
     dependencies:
-      '@types/cookie': 0.4.1
-      '@types/cors': 2.8.13
-      '@types/node': 14.14.45
       accepts: 1.3.8
       base64id: 2.0.0
       debug: 4.3.4
-      engine.io: 4.1.2
-      socket.io-adapter: 2.1.0
-      socket.io-parser: 4.0.5
+      engine.io: 6.2.1
+      socket.io-adapter: 2.4.0
+      socket.io-parser: 4.2.1
     dev: false
     engines:
       node: '>=10.0.0'
     resolution:
-      integrity: sha512-JubKZnTQ4Z8G4IZWtaAZSiRP3I/inpy8c/Bsx2jrwGrTbKeVU5xd6qkKMHpChYeM3dWZSO0QACiGK+obhBNwYw==
+      integrity: sha512-m3GC94iK9MfIEeIBfbhJs5BqFibMtkRk8ZpKwG2QwxV0m/eEhPIV4ara6XCF1LWNAus7z58RodiZlAH71U3EhQ==
   /source-list-map/2.0.1:
     dev: false
     resolution:
@@ -4687,20 +4675,6 @@ packages:
       node: '>=4'
     resolution:
       integrity: sha512-/lg70HAjtkUgWPVZhZcm+T4hkL8Zbtp1nFNOn3lRrxnlv50SRBv7cR7RqR+GMsd3hUXy9hWBo4CHTbFTcOYwig==
-  /ws/7.4.6:
-    dev: false
-    engines:
-      node: '>=8.3.0'
-    peerDependencies:
-      bufferutil: ^4.0.1
-      utf-8-validate: ^5.0.2
-    peerDependenciesMeta:
-      bufferutil:
-        optional: true
-      utf-8-validate:
-        optional: true
-    resolution:
-      integrity: sha512-YmhHDO4MzaDLB+M9ym/mDA5z0naX8j7SIlT8f8z+I0VtzsRbekxEutHSme7NPS2qE8StCYQNUnfWdXta/Yu85A==
   /ws/7.5.9:
     dev: false
     engines:
@@ -4715,6 +4689,20 @@ packages:
         optional: true
     resolution:
       integrity: sha512-F+P9Jil7UiSKSkppIiD94dN07AwvFixvLIj1Og1Rl9GGMuNipJnV9JzjD6XuqmAeiswGvUmNLjr5cFuXwNS77Q==
+  /ws/8.2.3:
+    dev: false
+    engines:
+      node: '>=10.0.0'
+    peerDependencies:
+      bufferutil: ^4.0.1
+      utf-8-validate: ^5.0.2
+    peerDependenciesMeta:
+      bufferutil:
+        optional: true
+      utf-8-validate:
+        optional: true
+    resolution:
+      integrity: sha512-wBuoj1BDpC6ZQ1B7DWQBYVLphPWkm8i9Y0/3YdHjHKHiohOJ1ws+3OccDWtH+PoC9DZD5WOTrJvNbWvjS6JWaA==
   /xml-name-validator/3.0.0:
     dev: false
     resolution:
@@ -4820,10 +4808,10 @@ packages:
       eslint: 7.12.1
       hamjest: 3.7.3
       jsdom: 16.4.0
-      karma: 6.1.2
-      karma-jsdom-launcher: 9.0.0_jsdom@16.4.0+karma@6.1.2
+      karma: 6.4.1
+      karma-jsdom-launcher: 9.0.0_jsdom@16.4.0+karma@6.4.1
       karma-mocha: 2.0.1
-      karma-typescript: 5.4.0_karma@6.1.2+typescript@4.0.8
+      karma-typescript: 5.4.0_karma@6.4.1+typescript@4.0.8
       mocha: 8.2.1
       nock: 13.0.11
       rimraf: 3.0.2
@@ -4837,7 +4825,7 @@ packages:
     dev: false
     name: '@rush-temp/axios-http-client'
     resolution:
-      integrity: sha512-v2nCc4GP8T646lxfhieD3/IMestb8RmCeRlELtVIJxBB3i9HDx8ZveIZvyzM9qX4hEOujEjRZ0MvP6l2rMWLDg==
+      integrity: sha512-ozBM5aKbDJEtrwt3Rw0F8Ob0rG347GZ+HqheoLy1TIsrBcevuMT8i1AjM5cy+Kq1ru3MO3MxTSakUhDz+MlDoQ==
       tarball: 'file:projects/axios-http-client.tgz'
     version: 0.0.0
   'file:projects/example.tgz_webpack@5.22.0':
@@ -4936,10 +4924,10 @@ packages:
       eslint: 7.12.1
       hamjest: 3.7.3
       jsdom: 16.4.0
-      karma: 6.1.2
-      karma-jsdom-launcher: 9.0.0_jsdom@16.4.0+karma@6.1.2
+      karma: 6.4.1
+      karma-jsdom-launcher: 9.0.0_jsdom@16.4.0+karma@6.4.1
       karma-mocha: 2.0.1
-      karma-typescript: 5.4.0_karma@6.1.2+typescript@4.0.8
+      karma-typescript: 5.4.0_karma@6.4.1+typescript@4.0.8
       mocha: 8.2.1
       rimraf: 3.0.2
       ts-loader: 8.0.18_typescript@4.0.8+webpack@5.22.0
@@ -4952,7 +4940,7 @@ packages:
     dev: false
     name: '@rush-temp/marshallers'
     resolution:
-      integrity: sha512-8bwxRWEFfOuiYS6R8wVwKdaNgp5DG1Q1oD0pExMryqN+lEVnk3fAc8HMUv0D0OT/bPS2FEPgPGH7zRApqYxHYw==
+      integrity: sha512-Dv2IPZnE0Klc39IpNKzYQu2pcX9SY03XOmWNRuX9/JMM7zOFVzDsy3de3EFpzKqBxlF7lPk9bdkipeeide7EuA==
       tarball: 'file:projects/marshallers.tgz'
     version: 0.0.0
 registry: ''
@@ -4975,7 +4963,7 @@ specifiers:
   eslint: ~7.12.1
   hamjest: ~3.7.1
   jsdom: ~16.4.0
-  karma: ~6.1.1
+  karma: ~6.4.1
   karma-jsdom-launcher: ~9.0.0
   karma-mocha: ~2.0.1
   karma-typescript: ~5.4.0
