@@ -44,6 +44,7 @@ const { split } = require("@epistemology-factory/crocks-ext/String");
 
 const { missingProp, unknownType } = require("../errors");
 const { modifyProp } = require("../props");
+const { sequenceResult } = require("../result");
 
 // last :: [ a ] -> Integer
 const last = (arr) => arr[arr.length - 1]
@@ -53,10 +54,6 @@ const emptyObjectType = constant({
 	type: "object",
 	properties: {}
 })
-
-// sequenceResult :: Functor f => (a -> Result b c) -> f a -> Result b (f c)
-const sequenceResult = (fn) =>
-	compose(sequence(Result), map(fn))
 
 // findProp :: Foldable f => f a -> a -> Maybe a
 const findProp = (f) =>
