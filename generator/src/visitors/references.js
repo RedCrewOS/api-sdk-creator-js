@@ -43,6 +43,7 @@ const { getProp } = require("@epistemology-factory/crocks-ext/Result");
 const { split } = require("@epistemology-factory/crocks-ext/String");
 
 const { missingProp, unknownType } = require("../errors");
+const { modifyProp } = require("../props");
 
 // last :: [ a ] -> Integer
 const last = (arr) => arr[arr.length - 1]
@@ -52,14 +53,6 @@ const emptyObjectType = constant({
 	type: "object",
 	properties: {}
 })
-
-// updateProp :: String -> (a -> Result Error b) -> Object -> Result Error Object
-const updateProp = curry((prop, fn) =>
-	substitution(
-		compose(map, flip(setProp(prop))),
-		compose(chain(fn), getProp(missingProp, prop))
-	)
-)
 
 // sequenceResult :: Functor f => (a -> Result b c) -> f a -> Result b (f c)
 const sequenceResult = (fn) =>
@@ -155,7 +148,7 @@ const inlineRequiredPropertyIntoObjectTypeProperties =
 // inlineRequiredPropertiesForObjectTypeProperties :: SchemaObject -> Result Error SchemaObject
 const inlineRequiredPropertiesForObjectTypeProperties =
 	substitution(
-		flip(updateProp("properties")),
+		flip(modifyProp("properties")),
 		compose(map(Result.Ok), inlineRequiredPropertyIntoObjectTypeProperties)
 	)
 
@@ -195,13 +188,13 @@ const resolveObjectTypePropertyRef =
 
 // resolveRefsInArrayTypeItems :: SchemaObject -> SchemaObject -> Result Error SchemaObject
 const resolveRefsInArrayTypeItems = (schemas) =>
-	updateProp("items", pipeK(
+	modifyProp("items", pipeK(
 		resolveObjectTypePropertyRef(schemas)
 	))
 
 // resolveRefsInObjectTypeProperties :: SchemaObject -> SchemaObject -> Result Error SchemaObject
 const resolveRefsInObjectTypeProperties = (schemas) =>
-	updateProp("properties", pipe(
+	modifyProp("properties", pipe(
 		toPairs,
 
 		// List (Pair String SchemaObject)
@@ -242,10 +235,6 @@ const resolveRefsInSchemaObject = (schemas) =>
 		resolveRefsInArrayType(schemas),
 	)
 
-// resolveRefsInComponentObject :: (String, (Object -> Result Error Object) -> Object -> Result Error Object
-const resolveRefsInComponentObject = (prop, fn) =>
-	updateProp(prop, fn)
-
 // resolveRefsInSchemasObject :: SchemaObject -> Result Error SchemaObject
 const resolveRefsInSchemasObject =
 	pipe(
@@ -258,7 +247,7 @@ const resolveRefsInSchemasObject =
 // resolveRefsInComponentsObject :: ComponentsObject -> Async Error ComponentsObject
 const resolveRefsInComponentsObject =
 	resultToAsync(pipeK(
-		resolveRefsInComponentObject("schemas", resolveRefsInSchemasObject)
+		modifyProp("schemas", resolveRefsInSchemasObject)
 	))
 
 module.exports = {
