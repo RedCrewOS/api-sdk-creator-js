@@ -24,7 +24,11 @@ const modifyProp = curry((prop, fn) =>
 	)
 )
 
+// pluckProp :: a -> Object -> b
+const pluckProp = curry((prop, obj) => obj[prop])
+
 module.exports = {
 	modifyProp,
+	pluckProp,
 	putProp
 }

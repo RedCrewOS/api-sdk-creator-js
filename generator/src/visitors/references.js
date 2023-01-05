@@ -20,6 +20,7 @@ const fromPairs = require("crocks/helpers/fromPairs");
 const getPropOr = require("crocks/helpers/getPropOr");
 const identity = require("crocks/combinators/identity");
 const ifElse = require("crocks/logic/ifElse");
+const isSame = require("crocks/predicates/isSame");
 const liftA2 = require("crocks/helpers/liftA2");
 const map = require("crocks/pointfree/map");
 const mapReduce = require("crocks/helpers/mapReduce");
@@ -43,7 +44,7 @@ const { getProp } = require("@epistemology-factory/crocks-ext/Result");
 const { split } = require("@epistemology-factory/crocks-ext/String");
 
 const { missingProp, unknownType } = require("../errors");
-const { modifyProp } = require("../props");
+const { modifyProp, pluckProp } = require("../props");
 const { sequenceResult } = require("../result");
 
 // last :: [ a ] -> Integer
@@ -109,7 +110,7 @@ const ifPropPresent = curry((prop, fn) =>
 
 // ifType :: String -> (SchemaObject -> Result Error SchemaObject)) -> SchemaObject -> Result Error SchemaObject
 const ifType = curry((t, fn) =>
-	ifElse(({ type }) => type === t, fn, Result.Ok)
+	ifElse(compose(isSame(t), pluckProp("type")), fn, Result.Ok)
 )
 
 // ifArrayType :: (SchemaObject -> Result Error SchemaObject) -> SchemaObject -> Result Error SchemaObject
