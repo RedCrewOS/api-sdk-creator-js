@@ -64,9 +64,13 @@ const findProp = (f) =>
 const propExists = (lst) =>
 	compose(either(constant(false), constant(true)), findProp(lst))
 
-// transformProps :: [ Object -> Result Error Object ] -> Object -> Result Error Object
+// transformProps :: [ Object -> Result Error (Object -> Object) ] -> Object -> Result Error Object
 const transformProps = (fns) =>
 	compose(reduce(ap, Result.Ok({})), applyFunctor(fns))
+
+// mapRequiredProperty :: Object -> (Object -> Object)
+const mapRequiredProperty = (fn) =>
+	compose(either(constant(identity), fn), maybeProp("required"))
 
 // setRequiredFlagInObject :: [ String ] -> Pair String Object -> Object
 const setRequiredFlagInObject = (required) =>
@@ -94,7 +98,7 @@ const mergeObjectTypeRequired = binary(
 // mergeObjectTypes :: SchemaObject -> SchemaObject -> Result Error SchemaObject
 const mergeObjectTypes = curry((a, b) =>
 	map(mreduce(Assign), sequence(Result, [
-		Result.Ok({ type: "object" }),
+		Result.Ok(emptyObjectType()),
 		mergeObjectTypeProperties(a, b),
 		mergeObjectTypeRequired(a, b)
 	]))
@@ -136,18 +140,11 @@ const inlineRequiredPropertyIntoObjectTypeProperty = curry((required) =>
 	)
 )
 
-// inlineRequiredPropertyIntoObjectTypeProperties :: Object -> (Object -> Object)
-const inlineRequiredPropertyIntoObjectTypeProperties =
-	pipe(
-		maybeProp("required"),
-		either(constant(identity), inlineRequiredPropertyIntoObjectTypeProperty)
-	)
-
-// inlineRequiredPropertiesForObjectTypeProperties :: SchemaObject -> Result Error SchemaObject
-const inlineRequiredPropertiesForObjectTypeProperties =
+// inlineRequiredPropertiesIntoObjectTypeProperties :: SchemaObject -> Result Error SchemaObject
+const inlineRequiredPropertiesIntoObjectTypeProperties =
 	substitution(
 		flip(modifyProp("properties")),
-		compose(map(Result.Ok), inlineRequiredPropertyIntoObjectTypeProperties)
+		compose(map(Result.Ok), mapRequiredProperty(inlineRequiredPropertyIntoObjectTypeProperty))
 	)
 
 // inlineReferencedTypes :: SchemaObject -> [ SchemaObject ] -> Result Error [ SchemaObject ]
@@ -163,7 +160,7 @@ const resolveTypeRef =
 	resolveRef(transformProps([
 		compose(map(setProp("type")), getProp(missingProp, "type")),
 		compose(map(setProp("properties")), getProp(missingProp, "properties")),
-		compose(Result.Ok, either(constant(identity), setProp("required")), maybeProp("required"))
+		compose(Result.Ok, mapRequiredProperty(setProp("required")))
 	]))
 
 // reduceObjectTypePropertyAllOf :: SchemaObject -> SchemaObject -> Result Error Object
@@ -215,7 +212,7 @@ const resolveRefsInArrayType = (schemas) =>
 const resolveRefsInObjectType = (schemas) =>
 	ifObjectType(pipeK(
 		resolveRefsInObjectTypeProperties(schemas),
-		inlineRequiredPropertiesForObjectTypeProperties
+		inlineRequiredPropertiesIntoObjectTypeProperties
 	))
 
 // resolveRefsInCompositeType :: SchemaObject -> SchemaObject -> Result Error SchemaObject
