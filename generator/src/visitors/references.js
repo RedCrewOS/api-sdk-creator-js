@@ -19,7 +19,6 @@ const flip = require("crocks/combinators/flip");
 const fromPairs = require("crocks/helpers/fromPairs");
 const getPropOr = require("crocks/helpers/getPropOr");
 const identity = require("crocks/combinators/identity");
-const ifElse = require("crocks/logic/ifElse");
 const isSame = require("crocks/predicates/isSame");
 const liftA2 = require("crocks/helpers/liftA2");
 const map = require("crocks/pointfree/map");
@@ -28,7 +27,6 @@ const maybeProp = require("crocks/Maybe/getProp");
 const merge = require("crocks/pointfree/merge");
 const mreduce = require("crocks/helpers/mreduce");
 const objOf = require("crocks/helpers/objOf");
-const option = require("crocks/pointfree/option");
 const pipe = require("crocks/helpers/pipe");
 const pipeK = require("crocks/helpers/pipeK");
 const psi = require("crocks/combinators/psi");
@@ -44,7 +42,7 @@ const { getProp } = require("@epistemology-factory/crocks-ext/Result");
 const { split } = require("@epistemology-factory/crocks-ext/String");
 
 const { unknownType } = require("../errors");
-const { modifyProp, pluckProp } = require("../props");
+const { modifyProp } = require("../props");
 const { sequenceResult } = require("../result");
 const { visitComponentObject, visitObject } = require("./visitor");
 const {
@@ -53,6 +51,7 @@ const {
 	getObjectTypeType,
 	getObjectTypeTitle
 } = require("../accessors/object-type");
+const { ifArrayType, ifObjectType, ifPropPresent } = require("../transformers");
 
 // last :: [ a ] -> Integer
 const last = (arr) => arr[arr.length - 1]
@@ -110,25 +109,6 @@ const mergeObjectTypes = curry((a, b) =>
 		mergeObjectTypeRequired(a, b)
 	]))
 )
-
-// ifPropPresent :: String -> (a -> Result Error b) -> Object -> Result Error b
-const ifPropPresent = curry((prop, fn) =>
-	substitution(
-		compose(option, Result.Ok),
-		compose(map(fn), maybeProp(prop))
-	)
-)
-
-// ifType :: String -> (SchemaObject -> Result Error SchemaObject)) -> SchemaObject -> Result Error SchemaObject
-const ifType = curry((t, fn) =>
-	ifElse(compose(isSame(t), pluckProp("type")), fn, Result.Ok)
-)
-
-// ifArrayType :: (SchemaObject -> Result Error SchemaObject) -> SchemaObject -> Result Error SchemaObject
-const ifArrayType = ifType("array")
-
-// ifObjectType :: (SchemaObject -> Result Error SchemaObject) -> SchemaObject -> Result Error SchemaObject
-const ifObjectType = ifType("object")
 
 // inlineReference :: (SchemaObject -> Result Error Object) -> SchemaObject -> String -> Result Error Object
 const inlineReference = curry((mapping, schemas) =>
