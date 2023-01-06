@@ -43,9 +43,16 @@ const { applyFunctor, chainLiftA2 } = require("@epistemology-factory/crocks-ext/
 const { getProp } = require("@epistemology-factory/crocks-ext/Result");
 const { split } = require("@epistemology-factory/crocks-ext/String");
 
-const { missingProp, unknownType } = require("../errors");
+const { unknownType } = require("../errors");
 const { modifyProp, pluckProp } = require("../props");
 const { sequenceResult } = require("../result");
+const { visitComponentObject, visitObject } = require("./visitor");
+const {
+	getObjectTypeDescription,
+	getObjectTypeProperties,
+	getObjectTypeType,
+	getObjectTypeTitle
+} = require("../accessors/object-type");
 
 // last :: [ a ] -> Integer
 const last = (arr) => arr[arr.length - 1]
@@ -83,7 +90,7 @@ const setRequiredFlagInObject = (required) =>
 const mergeObjectTypeProperties = binary(
 	compose(map(objOf("properties")), psi(
 		liftA2(flip(assign)),
-		getProp(missingProp, "properties")
+		getObjectTypeProperties
 	))
 )
 
@@ -158,8 +165,8 @@ const resolveRef =
 // resolveTypeRef :: SchemaObject -> SchemaObject -> Result Error Object
 const resolveTypeRef =
 	resolveRef(transformProps([
-		compose(map(setProp("type")), getProp(missingProp, "type")),
-		compose(map(setProp("properties")), getProp(missingProp, "properties")),
+		compose(map(setProp("type")), getObjectTypeType),
+		compose(map(setProp("properties")), getObjectTypeProperties),
 		compose(Result.Ok, mapRequiredProperty(setProp("required")))
 	]))
 
@@ -177,8 +184,8 @@ const reduceCompositeType =
 // resolveObjectTypePropertyRef :: SchemaObject -> SchemaObject -> Result Error Object
 const resolveObjectTypePropertyRef =
 	resolveRef(transformProps([
-		compose(map(setProp("type")), getProp(missingProp, "title")),
-		compose(map(setProp("description")), getProp(missingProp, "description"))
+		compose(map(setProp("type")), getObjectTypeTitle),
+		compose(map(setProp("description")), getObjectTypeDescription)
 	]))
 
 // resolveRefsInArrayTypeItems :: SchemaObject -> SchemaObject -> Result Error SchemaObject
@@ -189,17 +196,11 @@ const resolveRefsInArrayTypeItems = (schemas) =>
 
 // resolveRefsInObjectTypeProperties :: SchemaObject -> SchemaObject -> Result Error SchemaObject
 const resolveRefsInObjectTypeProperties = (schemas) =>
-	modifyProp("properties", pipe(
-		toPairs,
-
-		// List (Pair String SchemaObject)
-		sequenceResult(sequenceResult(pipeK(
+	modifyProp("properties", visitObject(
+		pipeK(
 			resolveObjectTypePropertyRef(schemas),
 			reduceObjectTypePropertyAllOf(schemas)
-		))),
-
-		// Result Error (List (Pair String SchemaObject))
-		map(fromPairs)
+		)
 	))
 
 // resolveRefsInArrayType :: SchemaObject -> SchemaObject -> Result Error SchemaObject
@@ -231,13 +232,9 @@ const resolveRefsInSchemaObject = (schemas) =>
 	)
 
 // resolveRefsInSchemasObject :: SchemaObject -> Result Error SchemaObject
-const resolveRefsInSchemasObject =
-	pipe(
-		substitution(compose(sequenceResult, sequenceResult, resolveRefsInSchemaObject), toPairs),
-
-		// (Result Error (List (Pair String SchemaObject)))
-		map(fromPairs)
-	)
+const resolveRefsInSchemasObject = visitComponentObject(
+	resolveRefsInSchemaObject
+)
 
 // resolveRefsInComponentsObject :: ComponentsObject -> Async Error ComponentsObject
 const resolveRefsInComponentsObject =
