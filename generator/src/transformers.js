@@ -12,17 +12,21 @@ const option = require("crocks/pointfree/option");
 const substitution = require("crocks/combinators/substitution");
 
 const { pluckProp } = require("./props");
+const { isInbuiltType } = require("./predicates");
 
-// ifType :: String -> (SchemaObject -> Result Error SchemaObject)) -> SchemaObject -> Result Error SchemaObject
-const ifType = curry((type, fn) =>
-	ifElse(compose(isSame(type), pluckProp("type")), fn, Result.Ok)
+// ifType :: (String -> Boolean) -> (SchemaObject -> Result Error SchemaObject)) -> SchemaObject -> Result Error SchemaObject
+const ifType = curry((pred, fn) =>
+	ifElse(compose(pred, pluckProp("type")), fn, Result.Ok)
 )
 
 // ifArrayType :: (SchemaObject -> Result Error SchemaObject) -> SchemaObject -> Result Error SchemaObject
-const ifArrayType = ifType("array")
+const ifArrayType = ifType(isSame("array"))
+
+// ifInbuiltType :: (SchemaObject -> Result Error SchemaObject) -> SchemaObject -> Result Error SchemaObject
+const ifInbuiltType = ifType(isInbuiltType)
 
 // ifObjectType :: (SchemaObject -> Result Error SchemaObject) -> SchemaObject -> Result Error SchemaObject
-const ifObjectType = ifType("object")
+const ifObjectType = ifType(isSame("object"))
 
 // ifPropPresent :: String -> (a -> Result Error b) -> Object -> Result Error b
 const ifPropPresent = curry((prop, fn) =>
@@ -34,6 +38,7 @@ const ifPropPresent = curry((prop, fn) =>
 
 module.exports = {
 	ifArrayType,
+	ifInbuiltType,
 	ifObjectType,
 	ifPropPresent
 }
