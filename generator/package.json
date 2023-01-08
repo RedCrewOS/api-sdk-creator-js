@@ -39,6 +39,6 @@
   },
   "dependencies": {
     "crocks": "~0.12.4",
-    "@epistemology-factory/crocks-ext": "~0.0.14"
+    "@epistemology-factory/crocks-ext": "~0.0.18"
   }
 }

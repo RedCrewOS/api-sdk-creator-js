@@ -1,12 +1,10 @@
 dependencies:
-  '@epistemology-factory/crocks-ext': 0.0.17_crocks@0.12.4
   '@rush-temp/axios-http-client': 'file:projects/axios-http-client.tgz'
   '@rush-temp/example': 'file:projects/example.tgz_webpack@5.22.0'
   '@rush-temp/generator': 'file:projects/generator.tgz_webpack@5.22.0'
   '@rush-temp/http-api-client': 'file:projects/http-api-client.tgz_webpack@5.22.0'
   '@rush-temp/marshallers': 'file:projects/marshallers.tgz'
   '@tsconfig/recommended': 1.0.1
-  '@types/crocks': 0.12.0
   '@types/mocha': 8.0.4
   '@types/node': 14.14.45
   '@typescript-eslint/eslint-plugin': 4.6.1_c91dfed246a64d613f595d65f7a9fa68
@@ -262,14 +260,17 @@ packages:
       node: '>=10.0.0'
     resolution:
       integrity: sha512-dBVuXR082gk3jsFp7Rd/JI4kytwGHecnCoTtXFb7DB6CNHp4rg5k1bhg0nWdLGLnOV71lmDzGQaLMy8iPLY0pw==
-  /@epistemology-factory/crocks-ext/0.0.17_crocks@0.12.4:
+  /@epistemology-factory/crocks-ext/0.0.18_crocks@0.12.4:
     dependencies:
       crocks: 0.12.4
     dev: false
+    engines:
+      node: '>=12.22.0 <=18.13.x'
+      npm: '>=8.x'
     peerDependencies:
       crocks: ^0.12.4
     resolution:
-      integrity: sha512-1KbyzcWKN9cSqvMwCZ6P2ad5jKbcofa00CynefgjX7vTxPlGYgnaUO3JCNfo3Hp/LQViJWQv6RR1SrCrp6gVVg==
+      integrity: sha512-ddZXi7J19zUycS0Mm+/QXE6YJ0l43qLcONkuHf0zRI+JLv1lI6YVa9xlgvwS8VZ/CEgqQSNKXyS7wXH4W/dYmw==
   /@eslint/eslintrc/0.2.2:
     dependencies:
       ajv: 6.12.6
@@ -4858,7 +4859,7 @@ packages:
     version: 0.0.0
   'file:projects/generator.tgz_webpack@5.22.0':
     dependencies:
-      '@epistemology-factory/crocks-ext': 0.0.17_crocks@0.12.4
+      '@epistemology-factory/crocks-ext': 0.0.18_crocks@0.12.4
       '@tsconfig/recommended': 1.0.1
       '@types/crocks': 0.12.0
       '@types/mocha': 8.0.4
@@ -4880,12 +4881,12 @@ packages:
     peerDependencies:
       webpack: '*'
     resolution:
-      integrity: sha512-OIWPUGhOjzwtYiRFR9RN9ZMFBkNgxyVkECmVjONlAgvKlu2+16H/sr8gEm0XHK//mgv0mz2ZRyvMGQGXVA/PNQ==
+      integrity: sha512-jHa630GtKINsaxEY582RJJLxsXLOtqiukYiYVVFBIHCiTkyRFOXWp+98A5rBVvgVljEmCtJbWkvHIhSfUXkOFQ==
       tarball: 'file:projects/generator.tgz'
     version: 0.0.0
   'file:projects/http-api-client.tgz_webpack@5.22.0':
     dependencies:
-      '@epistemology-factory/crocks-ext': 0.0.17_crocks@0.12.4
+      '@epistemology-factory/crocks-ext': 0.0.18_crocks@0.12.4
       '@tsconfig/recommended': 1.0.1
       '@types/mocha': 8.0.4
       '@types/node': 14.14.45
@@ -4909,12 +4910,12 @@ packages:
     peerDependencies:
       webpack: '*'
     resolution:
-      integrity: sha512-dqm6NyyQsMGpp119wspvuKVT7oiRGQt4j/GW/CDzVeeYXcEy+YVYmax6XP3/HxPIBdP07kIheoWnAsJPWeHYYQ==
+      integrity: sha512-2ULwSiAd0okE6V4vlh10cm1UfeB5DEw5+Yy6Wg/F+yWp/ckL+sHmhcAWrJGWo2yxS7FfXqQGVgGv2DEAxBV+6g==
       tarball: 'file:projects/http-api-client.tgz'
     version: 0.0.0
   'file:projects/marshallers.tgz':
     dependencies:
-      '@epistemology-factory/crocks-ext': 0.0.17_crocks@0.12.4
+      '@epistemology-factory/crocks-ext': 0.0.18_crocks@0.12.4
       '@tsconfig/recommended': 1.0.1
       '@types/mocha': 8.0.4
       '@types/node': 14.14.45
@@ -4940,19 +4941,17 @@ packages:
     dev: false
     name: '@rush-temp/marshallers'
     resolution:
-      integrity: sha512-Dv2IPZnE0Klc39IpNKzYQu2pcX9SY03XOmWNRuX9/JMM7zOFVzDsy3de3EFpzKqBxlF7lPk9bdkipeeide7EuA==
+      integrity: sha512-ddUwYhq3rEumliEuVpY28PpRUO1IrnNAn/Rv/kaLqmN8m0jEdySurPN4ZVcPxet94DkQyH+vQlWToRILGckLoA==
       tarball: 'file:projects/marshallers.tgz'
     version: 0.0.0
 registry: ''
 specifiers:
-  '@epistemology-factory/crocks-ext': ~0.0.14
   '@rush-temp/axios-http-client': 'file:./projects/axios-http-client.tgz'
   '@rush-temp/example': 'file:./projects/example.tgz'
   '@rush-temp/generator': 'file:./projects/generator.tgz'
   '@rush-temp/http-api-client': 'file:./projects/http-api-client.tgz'
   '@rush-temp/marshallers': 'file:./projects/marshallers.tgz'
   '@tsconfig/recommended': ~1.0.1
-  '@types/crocks': ~0.12.0
   '@types/mocha': ~8.0.3
   '@types/node': ~14.14.7
   '@typescript-eslint/eslint-plugin': ~4.6.1
