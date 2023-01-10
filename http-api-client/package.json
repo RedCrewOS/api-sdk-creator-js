@@ -24,7 +24,7 @@
     "url": "https://github.com/RedCrewOS/sdk-creator-js"
   },
   "dependencies": {
-    "@epistemology-factory/crocks-ext": "~0.0.18",
+    "@epistemology-factory/crocks-ext": "~0.0.19",
     "@api-sdk-creator/marshallers": "~0.1.0",
     "crocks": "~0.12.4",
     "util": "~0.12.4"

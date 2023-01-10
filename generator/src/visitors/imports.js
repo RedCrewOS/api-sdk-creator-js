@@ -27,8 +27,9 @@ const snd = require("crocks/Pair/snd");
 const substitution = require("crocks/combinators/substitution");
 const toPairs = require("crocks/Pair/toPairs");
 
-const { chainLiftA2, unique } = require("@epistemology-factory/crocks-ext/helpers");
+const { chainLiftA2 } = require("@epistemology-factory/crocks-ext/helpers");
 const { getProp } = require("@epistemology-factory/crocks-ext/Result");
+const { unique } = require("@epistemology-factory/crocks-ext/helpers/lists");
 
 const {
 	getObjectTypeProperties,
