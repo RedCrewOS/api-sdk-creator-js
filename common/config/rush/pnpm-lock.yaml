@@ -23,6 +23,7 @@ dependencies:
   karma-typescript: 5.4.0_karma@6.4.1+typescript@4.0.8
   mocha: 8.2.1
   nock: 13.0.11
+  prettier: 2.8.2
   rimraf: 3.0.2
   ts-loader: 8.0.18_typescript@4.0.8+webpack@5.22.0
   ts-node: 9.0.0_typescript@4.0.8
@@ -3443,6 +3444,13 @@ packages:
       node: '>= 0.8.0'
     resolution:
       integrity: sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g==
+  /prettier/2.8.2:
+    dev: false
+    engines:
+      node: '>=10.13.0'
+    hasBin: true
+    resolution:
+      integrity: sha512-BtRV9BcncDyI2tsuS19zzhzoxD8Dh8LiCx7j7tHzrkz8GFXAexeWFdi22mjE1d16dftH2qNaytVxqiRTGlMfpw==
   /process-nextick-args/2.0.1:
     dev: false
     resolution:
@@ -4899,6 +4907,7 @@ packages:
       hamjest: 3.7.3
       handlebars: 4.7.7
       mocha: 8.2.1
+      prettier: 2.8.2
       rimraf: 3.0.2
       ts-loader: 8.0.18_typescript@4.0.8+webpack@5.22.0
       ts-node: 9.0.0_typescript@4.0.8
@@ -4910,7 +4919,7 @@ packages:
     peerDependencies:
       webpack: '*'
     resolution:
-      integrity: sha512-MqxNcKDb8lEXSeZvXTc9cM1FT8afJT1i7W84SwClOYToFY1F0Ul59KPqPi/SAiFCbzPvv3NxBfYvKxo6vb2dFA==
+      integrity: sha512-MM8/AF8Fawk6Fpndk3Z8H1gjDK4yxkQFcugcSVVZGFapVOZXpTZFPrvdfWGHAPtuERdeXYz0cQij6PEqecwBVA==
       tarball: 'file:projects/generator.tgz'
     version: 0.0.0
   'file:projects/http-api-client.tgz_webpack@5.22.0':
@@ -4999,6 +5008,7 @@ specifiers:
   karma-typescript: ~5.4.0
   mocha: ~8.2.1
   nock: ~13.0.4
+  prettier: ~2.8.2
   rimraf: ~3.0.2
   ts-loader: ~8.0.9
   ts-node: ~9.0.0
