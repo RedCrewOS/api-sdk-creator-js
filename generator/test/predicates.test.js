@@ -4,10 +4,10 @@ const { Pair, isDefined, map } = require("crocks");
 
 const { assertThat, is } = require("hamjest");
 
-const { isInbuiltType } = require("../src/predicates");
+const { isArrayType, isInbuiltType, isObjectType } = require("../src/predicates");
 
 describe("predicates", function() {
-	describe("isInbuiltType", function() {
+	describe("inbuilt types", function() {
 		const newPair = (key) => Pair(key, true)
 		const dataTypes = map(newPair, [
 			"integer",
@@ -35,6 +35,16 @@ describe("predicates", function() {
 			.filter(isDefined)
 			.join(" ")
 		}
+	});
+
+	describe("compound types", function() {
+		it("should match object type", function() {
+			assertThat(isObjectType({ type: "object" }), is(true));
+		});
+
+		it("should match array type", function() {
+			assertThat(isArrayType({ type: "array" }), is(true));
+		})
 	});
 });
 
