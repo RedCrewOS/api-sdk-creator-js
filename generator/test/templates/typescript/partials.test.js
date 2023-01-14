@@ -63,14 +63,16 @@ describe("partials", function() {
 			inBuiltTypes.forEach((type) => {
 				const result = render(givenObject({
 					prop: {
-						type
+						type,
+						required: true
 					}
 				}));
 
 				assertThat(result, isCode(givenInterface([
 					{
 						name: "prop",
-						type
+						type,
+						required: true
 					}
 				])));
 			})
@@ -79,14 +81,33 @@ describe("partials", function() {
 		it("should render properties with object ref type", function() {
 			const result = render(givenObject({
 				prop: {
-					type: TITLE
+					type: TITLE,
+					required: true
 				}
 			}));
 
 			assertThat(result, isCode(givenInterface([
 				{
 					name: "prop",
-					type: TITLE
+					type: TITLE,
+					required: true
+				}
+			])));
+		});
+
+		it("should render properties that aren't required", function() {
+			const result = render(givenObject({
+				prop: {
+					type: TITLE,
+					required: false
+				}
+			}));
+
+			assertThat(result, isCode(givenInterface([
+				{
+					name: "prop",
+					type: TITLE,
+					required: false
 				}
 			])));
 		});
@@ -97,14 +118,16 @@ describe("partials", function() {
 					type: "array",
 					items: {
 						type: TITLE
-					}
+					},
+					required: true
 				}
 			}));
 
 			assertThat(result, isCode(givenInterface([
 				{
 					name: "prop",
-					type: `${TITLE}[]`
+					type: `${TITLE}[]`,
+					required: true
 				}
 			])));
 		});
@@ -115,7 +138,8 @@ describe("partials", function() {
 			const result = render(givenObject({
 				prop: {
 					type: TITLE,
-					description
+					description,
+					required: true
 				}
 			}));
 
@@ -123,7 +147,8 @@ describe("partials", function() {
 				{
 					name: "prop",
 					type: TITLE,
-					description
+					description,
+					required: true
 				}
 			])));
 		});
@@ -161,7 +186,7 @@ describe("partials", function() {
 				lines.push(`/** ${attr.description} */`);
 			}
 
-			lines.push(`${attr.name}: ${attr.type};`);
+			lines.push(`${attr.name}${!attr.required ? "?" : ""}: ${attr.type};`);
 
 			return lines.join("\n");
 		}

@@ -2,7 +2,7 @@
 export interface {{ title }} {
 	{{#each properties as |property name|}}
 		{{#if property.description}}/** {{ property.description }} */{{/if}}
-		{{ name }}: {{typeref property }};
+		{{ name }}{{#unless property.required}}?{{/unless}}: {{typeref property }};
 	{{/each}}
 }
 {{/if}}
