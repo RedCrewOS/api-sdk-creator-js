@@ -10,18 +10,15 @@ const option = require("crocks/pointfree/option");
 const or = require("crocks/logic/or");
 const reduce = require("crocks/pointfree/reduce");
 
-// [ (String -> Boolean) ]
-const inbuiltTypes =
-	map(isSame, [
-		"integer",
-		"number",
-		"string",
-		"boolean"
-	])
+const { inBuiltTypes } = require("./types");
+
+// isInBuiltTypes :: [ (String -> Boolean) ]
+const isInBuiltTypes =
+	map(isSame, inBuiltTypes)
 
 // isInbuiltType :: String -> Boolean
 const isInbuiltType =
-	reduce(binary(or), constant(false), inbuiltTypes)
+	reduce(binary(or), constant(false), isInBuiltTypes)
 
 // isCompoundType :: String -> Object -> Boolean
 const isCompoundType = (type) =>
