@@ -11,7 +11,7 @@ const pipe = require("crocks/helpers/pipe");
 const unit = require("crocks/helpers/unit");
 
 const { applyHandlebarsTo, registerHelper } = require("./wrappers");
-const { isArrayType, isObjectType } = require("../predicates");
+const { isArrayType, isEnumType, isObjectType } = require("../predicates");
 const { pluckProp } = require("../props");
 
 // toArrayRef :: Object -> String
@@ -45,6 +45,7 @@ const predicateHelper = (pred) =>
 const addHelpers =
 	pipe(
 		applyHandlebarsTo([
+			registerHelper("isEnumType", predicateHelper(isEnumType)),
 			registerHelper("isObjectType", predicateHelper(isObjectType)),
 			registerHelper("typeref", typeref)
 		]),

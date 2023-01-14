@@ -1,0 +1,7 @@
+{{#if (isEnumType)}}
+export enum {{ title }} {
+  {{#each enum }}
+		{{ this }} = "{{ this }}",
+  {{/each}}
+}
+{{/if}}

@@ -167,6 +167,34 @@ describe("partials", function() {
 		}
 	});
 
+	describe("enums", function() {
+		let render;
+
+		before(function() {
+			render = renderTemplate(hbs.compile(`
+				{{> enum}}
+			`));
+		});
+
+		it("should render string enum", function() {
+			const title = "EnumExample";
+			const strings = [ "a", "b", "c" ];
+			const enumType = {
+				title,
+				type: "string",
+				enum: strings
+			}
+
+			const result = render(enumType);
+
+			assertThat(result, isCode(`
+				export enum ${title} {
+					${strings.map((str) => `${str} = "${str}",`).join("\n")}
+				}
+			`));
+		});
+	});
+
 	function renderTemplate(template) {
 		return (context) =>
 			formatTypescript(template(context))
