@@ -18,8 +18,8 @@ const { pluckProp } = require("../props");
 const toArrayRef =
 	compose(concat("[]"), getPathOr("undefined", [ "items", "type" ]))
 
-// typeref :: Object -> String
-const typeref =
+// typeRef :: Object -> String
+const typeRef =
 	ifElse(
 		isArrayType,
 		toArrayRef,
@@ -47,7 +47,7 @@ const addHelpers =
 		applyHandlebarsTo([
 			registerHelper("isEnumType", predicateHelper(isEnumType)),
 			registerHelper("isObjectType", predicateHelper(isObjectType)),
-			registerHelper("typeref", typeref)
+			registerHelper("typeRef", typeRef)
 		]),
 		Async.Resolved
 	)
