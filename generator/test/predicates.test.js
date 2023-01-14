@@ -4,7 +4,12 @@ const { Pair, isDefined, map } = require("crocks");
 
 const { assertThat, is } = require("hamjest");
 
-const { isArrayType, isInbuiltType, isObjectType } = require("../src/predicates");
+const {
+	isArrayType,
+	isEnumType,
+	isInbuiltType,
+	isObjectType
+} = require("../src/predicates");
 
 describe("predicates", function() {
 	describe("inbuilt types", function() {
@@ -45,6 +50,17 @@ describe("predicates", function() {
 		it("should match array type", function() {
 			assertThat(isArrayType({ type: "array" }), is(true));
 		})
+	});
+
+	describe("enum types", function() {
+		it("should match string enum", function() {
+			const enumType = {
+				type: "string",
+				enum: [ "a", "b", "c" ]
+			}
+
+			assertThat(isEnumType(enumType), is(true));
+		});
 	});
 });
 
