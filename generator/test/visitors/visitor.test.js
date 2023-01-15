@@ -5,9 +5,9 @@ const { Result, identity } = require("crocks");
 const { assertThat, equalTo, hasProperty } = require("hamjest");
 const { throwContents } = require("@epistemology-factory/crocks-ext/utils");
 
-const { visitComponentObject, visitObject, visitObjectWith } = require("../src/visitors/visitor");
+const { visitComponentObject, visitObject, visitObjectWith } = require("../../src/visitors/visitor");
 
-describe("Visitors", function() {
+describe("visitors", function() {
 	const add = (a) => b => Result.Ok(a + b);
 	const inc = add(1);
 	const addWith = ({ a }) => add(a);
