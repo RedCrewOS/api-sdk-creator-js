@@ -17,8 +17,8 @@ const { applyHandlebarsTo } = require("./wrappers");
 // templatesDir :: String
 const templatesDir = path.resolve(__dirname, "../../templates");
 
-// dirPath :: String -> String -> String
-const dirPath = curry((language, dir) =>
+// languageDir :: String -> String -> String
+const languageDir = curry((language, dir) =>
 	`${templatesDir}/${language}/${dir}`
 )
 
@@ -42,11 +42,12 @@ const reduceTemplates = (fn) =>
 		applyHandlebarsTo
 	)
 
-// readTemplatesFromDir :: (String -> String -> Handlebars) -> String -> String -> Async Error (Handlebars -> Handlebars)
-const readTemplatesFromDir = curry((fn, language, dir) =>
-	map(reduceTemplates(fn), readDirContents({ encoding: "utf8" }, dirPath(language, dir)))
+// readTemplatesFromDir :: (String -> String -> Handlebars) -> String -> Async Error (Handlebars -> Handlebars)
+const readTemplatesFromDir = curry((fn) =>
+	compose(map(reduceTemplates(fn)), readDirContents({ encoding: "utf8" }))
 )
 
 module.exports = {
+	languageDir,
 	readTemplatesFromDir
 }
