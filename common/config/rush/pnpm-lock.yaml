@@ -1,5 +1,5 @@
 dependencies:
-  '@epistemology-factory/crocks-ext': 0.0.19_crocks@0.12.4
+  '@epistemology-factory/crocks-ext': 0.0.20_crocks@0.12.4
   '@rush-temp/axios-http-client': 'file:projects/axios-http-client.tgz'
   '@rush-temp/example': 'file:projects/example.tgz_webpack@5.22.0'
   '@rush-temp/generator': 'file:projects/generator.tgz_webpack@5.22.0'
@@ -263,7 +263,7 @@ packages:
       node: '>=10.0.0'
     resolution:
       integrity: sha512-dBVuXR082gk3jsFp7Rd/JI4kytwGHecnCoTtXFb7DB6CNHp4rg5k1bhg0nWdLGLnOV71lmDzGQaLMy8iPLY0pw==
-  /@epistemology-factory/crocks-ext/0.0.19_crocks@0.12.4:
+  /@epistemology-factory/crocks-ext/0.0.20_crocks@0.12.4:
     dependencies:
       crocks: 0.12.4
     dev: false
@@ -273,7 +273,7 @@ packages:
     peerDependencies:
       crocks: ^0.12.4
     resolution:
-      integrity: sha512-nJVR/Qhz3rSWZnHBq42ossWkztOxLsminY3Xv1zzYQh5yP9aqu9r5XPf3EPaeAXGFkjoyQE4vPYKj+zM+f0JKw==
+      integrity: sha512-sI66nRV+WcpGyYogNGRbos3ZF9B6Sb/UY7Qw9UZz+E+mli+NxU29FQjvm3nmy6/w5KS0vzerqVBwv3rC5Aswlg==
   /@eslint/eslintrc/0.2.2:
     dependencies:
       ajv: 6.12.6
@@ -4895,7 +4895,7 @@ packages:
     version: 0.0.0
   'file:projects/generator.tgz_webpack@5.22.0':
     dependencies:
-      '@epistemology-factory/crocks-ext': 0.0.19_crocks@0.12.4
+      '@epistemology-factory/crocks-ext': 0.0.20_crocks@0.12.4
       '@tsconfig/recommended': 1.0.1
       '@types/crocks': 0.12.0
       '@types/mocha': 8.0.4
@@ -4919,12 +4919,12 @@ packages:
     peerDependencies:
       webpack: '*'
     resolution:
-      integrity: sha512-MM8/AF8Fawk6Fpndk3Z8H1gjDK4yxkQFcugcSVVZGFapVOZXpTZFPrvdfWGHAPtuERdeXYz0cQij6PEqecwBVA==
+      integrity: sha512-FevS+qEF9MmRsYoSiKfest2pXUEplKNDbxpXQhDoMO1ibCCfT5OYn6PB2f69M2BPCSn2OG3p7lAjVhu5dfFj1A==
       tarball: 'file:projects/generator.tgz'
     version: 0.0.0
   'file:projects/http-api-client.tgz_webpack@5.22.0':
     dependencies:
-      '@epistemology-factory/crocks-ext': 0.0.19_crocks@0.12.4
+      '@epistemology-factory/crocks-ext': 0.0.20_crocks@0.12.4
       '@tsconfig/recommended': 1.0.1
       '@types/mocha': 8.0.4
       '@types/node': 14.14.45
@@ -4948,12 +4948,12 @@ packages:
     peerDependencies:
       webpack: '*'
     resolution:
-      integrity: sha512-mK8AvsBDRNiwTFW055fvzbK0pLCfrH1/IOw+UUy8jWQ7EuXqEbt/0Vvs42nV2pG4P9LGIBuIXYfd9xjrYps/1A==
+      integrity: sha512-vPbE40pRj63aOe4rAXQ0yTDN0sSkyw0UfuKQGg+WOtdwQSxJjPBxfUVdJ2YC9vKMum/BBgUisTay5yiEYkL2Sg==
       tarball: 'file:projects/http-api-client.tgz'
     version: 0.0.0
   'file:projects/marshallers.tgz':
     dependencies:
-      '@epistemology-factory/crocks-ext': 0.0.19_crocks@0.12.4
+      '@epistemology-factory/crocks-ext': 0.0.20_crocks@0.12.4
       '@tsconfig/recommended': 1.0.1
       '@types/mocha': 8.0.4
       '@types/node': 14.14.45
@@ -4979,12 +4979,12 @@ packages:
     dev: false
     name: '@rush-temp/marshallers'
     resolution:
-      integrity: sha512-sEPmXHSOwHjYZPzKGNm8duoT97PuExCzOSlLtbry7IH4vt1gZuoqOUeniD70I2t2dUjil8AW9Mw3qAAdsaIkxg==
+      integrity: sha512-FPQugxe1kEd3q4lsvewepmMi64IScVUPETvcG7DuqmqhQkxID5s16fhzlqLW9wsnZt5qJrA/NTZWP6j4TsYJpA==
       tarball: 'file:projects/marshallers.tgz'
     version: 0.0.0
 registry: ''
 specifiers:
-  '@epistemology-factory/crocks-ext': ~0.0.19
+  '@epistemology-factory/crocks-ext': ~0.0.20
   '@rush-temp/axios-http-client': 'file:./projects/axios-http-client.tgz'
   '@rush-temp/example': 'file:./projects/example.tgz'
   '@rush-temp/generator': 'file:./projects/generator.tgz'
