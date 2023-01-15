@@ -43,7 +43,8 @@ describe("partials", function() {
 	});
 
 	describe("scalars", function() {
-		let render
+		const title = "Prop";
+		let render;
 
 		before(function() {
 			render = renderTemplate(hbs.compile(`
@@ -53,7 +54,6 @@ describe("partials", function() {
 
 		it("should render scalar typedef", function() {
 			inBuiltTypes.forEach((type) => {
-				const title = "Prop";
 				const result = render({
 					title,
 					type,
@@ -63,6 +63,22 @@ describe("partials", function() {
 					export type ${title} = ${type};
 				`));
 			});
+		});
+
+		it("should render description if present", function() {
+			const description = "This is a description";
+			const type = "string";
+
+			const result = render({
+				title,
+				type,
+				description
+			});
+
+			assertThat(result, isCode(`
+				/** ${description} */
+				export type ${title} = ${type};
+			`));
 		});
 	});
 
@@ -81,6 +97,19 @@ describe("partials", function() {
 			const result = render(givenObject());
 
 			assertThat(result, isCode(givenInterface()));
+		});
+
+		it("should render description if present", function() {
+			const description = "This is a description";
+			const obj = givenObject();
+			obj.description = description;
+
+			const result = render(obj);
+
+			assertThat(result, isCode(`
+				/** ${description} */
+				${givenInterface()}
+			`));
 		});
 
 		it("should render properties with scalar types", function() {
@@ -156,7 +185,7 @@ describe("partials", function() {
 			])));
 		});
 
-		it("should add description if present", function() {
+		it("should add properties description if present", function() {
 			const description = "This is a description";
 
 			const result = render(givenObject({
@@ -222,6 +251,24 @@ describe("partials", function() {
 		before(function() {
 			render = renderTemplate(hbs.compile(`
 				{{> enum}}
+			`));
+		});
+
+		it("should render description if present", function() {
+			const title = "EnumExample";
+			const description = "This is a description";
+			const enumType = {
+				title,
+				description,
+				type: "string",
+				enum: []
+			};
+
+			const result = render(enumType);
+
+			assertThat(result, isCode(`
+				/** ${description} */
+				export enum ${title} {}
 			`));
 		});
 

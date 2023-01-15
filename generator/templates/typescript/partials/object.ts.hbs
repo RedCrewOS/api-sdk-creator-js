@@ -1,7 +1,8 @@
 {{#if (isObjectType) }}
+{{> description }}
 export interface {{ title }} {
 	{{#each properties as |property name|}}
-		{{#if property.description}}/** {{ property.description }} */{{/if}}
+		{{> description property }}
 		{{ name }}{{#unless property.required}}?{{/unless}}: {{typeRef property }};
 	{{/each}}
 }
