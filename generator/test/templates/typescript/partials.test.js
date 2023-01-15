@@ -42,6 +42,30 @@ describe("partials", function() {
 		});
 	});
 
+	describe("scalars", function() {
+		let render
+
+		before(function() {
+			render = renderTemplate(hbs.compile(`
+				{{> scalar}}
+			`));
+		});
+
+		it("should render scalar typedef", function() {
+			inBuiltTypes.forEach((type) => {
+				const title = "Prop";
+				const result = render({
+					title,
+					type,
+				});
+
+				assertThat(result, isCode(`
+					export type ${title} = ${type};
+				`));
+			});
+		});
+	});
+
 	describe("objects", function() {
 		const TITLE = "Account";
 
@@ -75,7 +99,7 @@ describe("partials", function() {
 						required: true
 					}
 				])));
-			})
+			});
 		});
 
 		it("should render properties with object ref type", function() {
