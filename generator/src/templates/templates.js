@@ -17,10 +17,9 @@ const { applyHandlebarsTo } = require("./wrappers");
 // templatesDir :: String
 const templatesDir = path.resolve(__dirname, "../../templates");
 
-// languageDir :: String -> String -> String
-const languageDir = curry((language, dir) =>
-	`${templatesDir}/${language}/${dir}`
-)
+// languageDir :: String -> String
+const languageDir = (language) =>
+	`${templatesDir}/${language}`
 
 // first :: [ a ] -> a
 const first = (arr) => arr[0]

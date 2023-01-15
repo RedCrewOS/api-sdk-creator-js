@@ -13,7 +13,7 @@ const { registerPartial } = require("./wrappers");
 const addPartials = (language) =>
 	pipe(
 		Async.of,
-		flip(ap, readTemplatesFromDir(registerPartial, languageDir(language, "partials")))
+		flip(ap, readTemplatesFromDir(registerPartial, languageDir(language)))
 	)
 
 module.exports = {
