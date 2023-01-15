@@ -5,6 +5,10 @@ const { assertThat, is } = require("hamjest");
 const { formatTypescript } = require("../../../src/templates/prettier");
 const { inBuiltTypes } = require("../../../src/types");
 const { newHbs } = require("../../../src/templates/hbs");
+const { compile: compileTemplate } = require("../../../src/templates/wrappers");
+
+const compile = (hbs, template) =>
+	compileTemplate(template, hbs)
 
 /*
  * We use a formatter to make comparisons easier as we then don't have to worry about
@@ -21,7 +25,7 @@ describe("partials", function() {
 		let render;
 
 		before(function() {
-			render = renderTemplate(hbs.compile(`
+			render = renderTemplate(compile(hbs, `
 				{{> imports}}
 			`));
 		});
@@ -47,7 +51,7 @@ describe("partials", function() {
 		let render;
 
 		before(function() {
-			render = renderTemplate(hbs.compile(`
+			render = renderTemplate(compile(hbs, `
 				{{> scalar}}
 			`));
 		});
@@ -88,7 +92,7 @@ describe("partials", function() {
 		let render
 
 		before(function() {
-			render = renderTemplate(hbs.compile(`
+			render = renderTemplate(compile(hbs, `
 				{{> object}}
 			`));
 		});
@@ -249,7 +253,7 @@ describe("partials", function() {
 		let render;
 
 		before(function() {
-			render = renderTemplate(hbs.compile(`
+			render = renderTemplate(compile(hbs, `
 				{{> enum}}
 			`));
 		});
