@@ -16,7 +16,7 @@ const {
 const { resolveRefsInComponentsObject } = require("../../src/visitors/references");
 const { missingPropError } = require("../matchers/errors");
 
-describe("References visitor", function() {
+describe("references visitor", function() {
 	describe("resolveRefsInComponentsObject", function() {
 		describe("schemas component", function() {
 			const resourceIdentifier = (

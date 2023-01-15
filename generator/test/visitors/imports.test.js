@@ -15,7 +15,7 @@ const {
 const { resolveImportsInComponentsObject } = require("../../src/visitors/imports");
 const { missingPropError } = require("../matchers/errors");
 
-describe("Imports visitor", function() {
+describe("imports visitor", function() {
 	describe("resolveImportsForTypes", function() {
 		describe("schemas component", function() {
 			it("should return error if schemas not present", function() {
