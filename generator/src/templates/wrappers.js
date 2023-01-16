@@ -7,6 +7,7 @@ const curry = require("crocks/helpers/curry");
 const flip = require("crocks/combinators/flip");
 const reduce = require("crocks/pointfree/reduce");
 const substitution = require("crocks/combinators/substitution");
+const unary = require("crocks/helpers/unary");
 
 // applyHandlebarsTo :: [ (Handlebars -> Handlebars) ] -> Handlebars -> Handlebars
 const applyHandlebarsTo =
@@ -14,7 +15,11 @@ const applyHandlebarsTo =
 
 // compile :: String -> Handlebars -> (a -> String)
 const compile = binary((template, hbs) =>
-	hbs.compile(template)
+	/*
+	 * `hbs.compile` will produce a binary function, however we just want a function that
+	 * takes a single argument.
+	 */
+	unary(hbs.compile(template))
 )
 
 // withHbs :: (Handlerbars -> Unit) -> Handlebars -> Handlebars
