@@ -37,6 +37,8 @@
     "crocks": "~0.12.4",
     "@epistemology-factory/crocks-ext": "~0.0.20",
     "handlebars": "~4.7.7",
-    "prettier": "~2.8.2"
+    "prettier": "~2.8.2",
+    "getopts": "~2.3.0",
+    "commander": "~10.0.0"
   }
 }
