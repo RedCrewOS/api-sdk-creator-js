@@ -12,12 +12,12 @@ const getProp = require("crocks/Maybe/getProp");
 const isSame = require("crocks/predicates/isSame");
 const isString = require("crocks/predicates/isString");
 const map = require("crocks/pointfree/map");
+const mapReduce = require("crocks/helpers/mapReduce");
 const merge = require("crocks/pointfree/merge");
 const mreduce = require("crocks/helpers/mreduce");
 const option = require("crocks/pointfree/option");
 const or = require("crocks/logic/or");
 const pipe = require("crocks/helpers/pipe");
-const reduce = require("crocks/pointfree/reduce");
 const valueOf = require("crocks/pointfree/valueOf");
 
 const { inBuiltTypes } = require("./types");
@@ -35,13 +35,9 @@ const isType =
 const allStringValues =
 	compose(mreduce(All), map(isString))
 
-// isInBuiltTypes :: [ (String -> Boolean) ]
-const isInBuiltTypes =
-	map(isSame, inBuiltTypes)
-
 // isInbuiltType :: String -> Boolean
 const isInbuiltType =
-	reduce(binary(or), constant(false), isInBuiltTypes)
+	mapReduce(isSame, binary(or), constant(false), inBuiltTypes)
 
 const isArrayType = isType("array");
 
