@@ -48,5 +48,6 @@ const readTemplatesFromDir = curry((fn) =>
 
 module.exports = {
 	languageDir,
-	readTemplatesFromDir
+	readTemplatesFromDir,
+	templatesDir
 }

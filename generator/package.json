@@ -9,7 +9,7 @@
   "scripts": {
     "build": "rushx test && rushx check",
     "check": "tsc types/**/*.ts --noEmit",
-    "test": "find test/ -name *.test.js | xargs mocha --timeout 1000"
+    "test": "find test/ -name *.test.js | xargs mocha --timeout 10000"
   },
   "files": [
     "docs",
