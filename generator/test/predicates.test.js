@@ -43,12 +43,22 @@ describe("predicates", function() {
 	});
 
 	describe("compound types", function() {
-		it("should match object type", function() {
-			assertThat(isObjectType({ type: "object" }), is(true));
-		});
+		const types = [
+			Pair("array", isArrayType),
+			Pair("object", isObjectType)
+		];
 
-		it("should match array type", function() {
-			assertThat(isArrayType({ type: "array" }), is(true));
+		types.forEach((type) => {
+			const name = type.fst();
+			const pred = type.snd();
+
+			it(`should match ${name} type from object def`, function() {
+				assertThat(pred({ type: name }), is(true));
+			});
+
+			it(`should match ${name} type from string`, function() {
+				assertThat(pred(name), is(true));
+			});
 		})
 	});
 

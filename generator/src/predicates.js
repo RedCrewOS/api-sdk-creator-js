@@ -9,6 +9,7 @@ const constant = require("crocks/combinators/constant");
 const curry = require("crocks/helpers/curry");
 const fanout = require("crocks/Pair/fanout");
 const getProp = require("crocks/Maybe/getProp");
+const ifElse = require("crocks/logic/ifElse");
 const isSame = require("crocks/predicates/isSame");
 const isString = require("crocks/predicates/isString");
 const map = require("crocks/pointfree/map");
@@ -39,10 +40,19 @@ const allStringValues =
 const isInbuiltType =
 	mapReduce(isSame, binary(or), constant(false), inBuiltTypes)
 
-const isArrayType = isType("array");
+// isCompoundType :: String -> Object | String -> Boolean
+const isCompoundType = (type) =>
+	ifElse(
+		isString,
+		isSame(type),
+		isType(type)
+	)
 
-// isObjectType :: Object -> Boolean
-const isObjectType = isType("object")
+// isArrayType :: Object | String -> Boolean
+const isArrayType = isCompoundType("array");
+
+// isObjectType :: Object | String -> Boolean
+const isObjectType = isCompoundType("object")
 
 // isEnumType :: Object -> Boolean
 const isEnumType =
