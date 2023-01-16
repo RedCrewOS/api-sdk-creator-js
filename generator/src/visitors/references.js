@@ -27,6 +27,7 @@ const maybeProp = require("crocks/Maybe/getProp");
 const merge = require("crocks/pointfree/merge");
 const mreduce = require("crocks/helpers/mreduce");
 const objOf = require("crocks/helpers/objOf");
+const omit = require("crocks/helpers/omit");
 const pipe = require("crocks/helpers/pipe");
 const pipeK = require("crocks/helpers/pipeK");
 const psi = require("crocks/combinators/psi");
@@ -198,10 +199,13 @@ const resolveRefsInObjectType = (schemas) =>
 
 // resolveRefsInCompositeType :: SchemaObject -> SchemaObject -> Result Error SchemaObject
 const resolveRefsInCompositeType = (schemas) =>
-	ifPropPresent("allOf", pipeK(
-		inlineReferencedTypes(schemas),
-		reduceCompositeType
-	))
+	substitution(
+		compose(map, assign, omit([ "allOf" ])),
+		ifPropPresent("allOf", pipeK(
+			inlineReferencedTypes(schemas),
+			reduceCompositeType
+		))
+	)
 
 // resolveRefsInSchemaObject :: SchemaObject -> SchemaObject -> Result Error SchemaObject
 const resolveRefsInSchemaObject = (schemas) =>

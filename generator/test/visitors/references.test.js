@@ -181,11 +181,13 @@ describe("references visitor", function() {
 				});
 
 				it("reduce allOf type defs in objects", async function() {
+					const title = "Account";
 					const oas = {
 						schemas: {
 							"resource-identifier": resourceIdentifier(),
 							provider: provider(),
 							account: {
+								title,
 								allOf: [
 									{
 										$ref: "#/components/schemas/provider"
@@ -208,6 +210,7 @@ describe("references visitor", function() {
 
 					const result = await resolveRefsInComponentsObject(oas).toPromise();
 
+					assertThat(result.schemas.account.title, is(title));
 					assertThat(result.schemas.account.properties, allOf(
 						hasProperties({
 							name: {
