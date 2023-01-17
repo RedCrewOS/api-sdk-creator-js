@@ -9,6 +9,7 @@ const compose = require("crocks/helpers/compose");
 const composeK = require("crocks/helpers/composeK");
 const contramap = require("crocks/pointfree/contramap");
 const extend = require("crocks/pointfree/extend");
+const ifElse = require("crocks/logic/ifElse");
 const fanout = require("crocks/Pair/fanout");
 const filter = require("crocks/pointfree/filter");
 const flip = require("crocks/combinators/flip");
@@ -41,7 +42,7 @@ const { modifyProp, putProp } = require("../props");
 const { sequenceResult } = require("../result");
 const { visitComponentObject } = require("./visitor");
 const { ifArrayType, ifObjectType } = require("../transformers");
-const { isInbuiltType } = require("../predicates");
+const { isInbuiltType, isArrayType } = require("../predicates");
 const { getArrayTypeItemsType } = require("../accessors/array-type");
 
 // filterForCustomTypes :: Filterable f => f String -> f String
@@ -51,11 +52,19 @@ const filterForCustomTypes =
 // filterTypes :: [ String ] -> [ String ]
 const filterTypes = compose(unique, filterForCustomTypes)
 
+// getTypeFromTypeDef :: Object -> Result Error String
+const getTypeFromTypeDef =
+	ifElse(
+		isArrayType,
+		getArrayTypeItemsType,
+		getObjectTypeType
+	)
+
 // getTypesListFromObject :: Object -> Result Error [ String ]
 const getTypesListFromObject =
 	pipe(
 		compose(listToArray, toPairs),
-		sequenceResult(compose(getObjectTypeType, snd)),
+		sequenceResult(compose(getTypeFromTypeDef, snd)),
 		map(filterTypes)
 	)
 

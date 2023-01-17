@@ -85,6 +85,28 @@ describe("imports visitor", function() {
 					})));
 				});
 
+				it("should resolve imports for array properties in object", async function() {
+					oas.schemas["account"] = {
+						title: "Account",
+						type: "object",
+						properties: {
+							ids: {
+								type: "array",
+								items: {
+									type
+								}
+							}
+						}
+					};
+
+					const result = await resolveImportsInComponentsObject(oas).toPromise();
+
+					assertThat(result.schemas.account, hasImports(hasItem({
+						type,
+						location: name
+					})));
+				});
+
 				it("should ignore builtin types for properties in object", async function() {
 					const oas = {
 						schemas: {
