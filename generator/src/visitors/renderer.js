@@ -8,6 +8,7 @@ const chain = require("crocks/pointfree/chain");
 const compose = require("crocks/helpers/compose");
 const concat = require("crocks/pointfree/concat");
 const constant = require("crocks/combinators/constant");
+const contramap = require("crocks/pointfree/contramap");
 const curry = require("crocks/helpers/curry");
 const mreduce = require("crocks/helpers/mreduce");
 const objOf = require("crocks/helpers/objOf");
@@ -64,7 +65,7 @@ const renderTemplate = curry(compose(resultToAsync, tryCatch))
 
 // renderNamedTemplate :: Async Error Object -> String -> a -> Async Error String
 const renderNamedTemplate = curry((templates, name) =>
-	compose(chainLiftA2(renderTemplate, map(pluckProp(name), templates)), Async.of)
+	contramap(Async.of, chainLiftA2(renderTemplate, map(pluckProp(name), templates)))
 )
 
 // renderSchemaObject :: Async Error Object -> (String -> String -> Async Error Unit) -> Pair String SchemaObject -> Async Error Unit
