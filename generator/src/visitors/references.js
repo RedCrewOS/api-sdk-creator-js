@@ -180,7 +180,8 @@ const resolveRefsInObjectTypeProperties = (schemas) =>
 	modifyProp("properties", visitObject(
 		pipeK(
 			resolveObjectTypePropertyRef(schemas),
-			reduceObjectTypePropertyAllOf(schemas)
+			reduceObjectTypePropertyAllOf(schemas),
+			resolveRefsInArrayType(schemas)
 		)
 	))
 

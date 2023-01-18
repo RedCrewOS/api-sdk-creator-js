@@ -150,6 +150,32 @@ describe("references visitor", function() {
 						assertThat(result.schemas.account.properties.id.description, is(description));
 					});
 
+					it("should resolve refs for arrays", async function() {
+						const title = "ResourceIdentifier";
+						const description = "A unique identifier for a resource";
+
+						const result = await resolveRefsInComponentsObject({
+							schemas: {
+								"resource-identifier": resourceIdentifier(title, description),
+								account: {
+									type: "object",
+									properties: {
+										ids: {
+											type: "array",
+											items: {
+												$ref: "#/components/schemas/resource-identifier"
+											}
+										}
+									}
+								}
+							}
+						})
+						.toPromise();
+
+						assertThat(result.schemas.account.properties.ids.items.type, is(title));
+						assertThat(result.schemas.account.properties.ids.items.description, is(description));
+					});
+
 					it("should resolve refs for allOf", async function() {
 						const title = "ResourceIdentifier";
 						const description = "A unique identifier for a resource";
