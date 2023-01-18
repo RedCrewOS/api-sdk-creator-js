@@ -48,88 +48,167 @@ describe("references visitor", function() {
 				return promiseThat(resolveRefsInComponentsObject({}).toPromise(), isRejectedWith(missingPropError("schemas")))
 			});
 
-			describe("objects", function() {
-				it("should resolve refs for properties in objects", async function() {
-					const title = "ResourceIdentifier";
-					const description = "A unique identifier for a resource";
-
-					const result = await resolveRefsInComponentsObject({
-						schemas: {
-							"resource-identifier": resourceIdentifier(title, description),
-							account: {
-								type: "object",
-								properties: {
-									id: {
-										$ref: "#/components/schemas/resource-identifier"
-									}
+			describe("object type", function() {
+				describe("resolving refs for object type composition", function() {
+					it("should inline allOf refs", async function() {
+						const oas = {
+							schemas: {
+								provider: provider(),
+								account: {
+									allOf: [
+										{
+											$ref: "#/components/schemas/provider"
+										}
+									]
 								}
 							}
-						}
-					})
-					.toPromise();
+						};
 
-					assertThat(result.schemas.account.properties.id.type, is(title));
-					assertThat(result.schemas.account.properties.id.description, is(description));
-				});
+						const result = await resolveRefsInComponentsObject(oas).toPromise();
 
-				it("should resolve refs for allOf properties in objects", async function() {
-					const title = "ResourceIdentifier";
-					const description = "A unique identifier for a resource";
+						assertThat(result.schemas.account.type, equalTo(oas.schemas.provider.type));
+						assertThat(result.schemas.account.properties, hasProperty("name", {
+							type: "string",
+							description: "The name of the provider",
+							required: true
+						}));
+						assertThat(result.schemas.account.required, equalTo(oas.schemas.provider.required));
+						assertThat(result.schemas.account.allOf, is(not(defined())))
+					});
 
-					const result = await resolveRefsInComponentsObject({
-						schemas: {
-							"resource-identifier": resourceIdentifier(title, description),
-							account: {
-								type: "object",
-								properties: {
-									id: {
-										allOf: [
-											{
-												$ref: "#/components/schemas/resource-identifier"
-											}
-										]
-									}
-								}
-							}
-						}
-					})
-					.toPromise();
-
-					assertThat(result.schemas.account.properties.id.type, is(title));
-					assertThat(result.schemas.account.properties.id.description, is(description));
-				});
-
-				it("should reduce allOf for properties in objects", async function() {
-					const title = "ResourceIdentifier";
-					const description = "A unique identifier for the account";
-
-					const result = await resolveRefsInComponentsObject({
-						schemas: {
-							"resource-identifier": resourceIdentifier(title),
-							account: {
-								type: "object",
-								properties: {
-									id: {
-										allOf: [
-											{
-												$ref: "#/components/schemas/resource-identifier"
+					it("reduce allOf", async function() {
+						const title = "Account";
+						const oas = {
+							schemas: {
+								"resource-identifier": resourceIdentifier(),
+								provider: provider(),
+								account: {
+									title,
+									allOf: [
+										{
+											$ref: "#/components/schemas/provider"
+										},
+										{
+											type: "object",
+											properties: {
+												id: {
+													$ref: "#/components/schemas/resource-identifier"
+												}
 											},
-											{
-												description
-											}
-										]
+											required: [
+												"id"
+											]
+										}
+									]
+								}
+							}
+						};
+
+						const result = await resolveRefsInComponentsObject(oas).toPromise();
+
+						assertThat(result.schemas.account.title, is(title));
+						assertThat(result.schemas.account.properties, allOf(
+							hasProperties({
+								name: {
+									type: "string",
+									description: "The name of the provider",
+									required: true
+								}
+							}),
+							hasProperty("id", {
+								type: oas.schemas["resource-identifier"].title,
+								description: oas.schemas["resource-identifier"].description,
+								required: true
+							})
+						));
+
+						assertThat(result.schemas.account.required, equalTo([ "id", "name" ]));
+					});
+				});
+
+				describe("resolving refs for object type properties", function() {
+					it("should resolve direct refs", async function() {
+						const title = "ResourceIdentifier";
+						const description = "A unique identifier for a resource";
+
+						const result = await resolveRefsInComponentsObject({
+							schemas: {
+								"resource-identifier": resourceIdentifier(title, description),
+								account: {
+									type: "object",
+									properties: {
+										id: {
+											$ref: "#/components/schemas/resource-identifier"
+										}
 									}
 								}
 							}
-						}
-					})
-					.toPromise();
+						})
+						.toPromise();
 
-					assertThat(result.schemas.account.properties.id.type, is(title));
-					assertThat(result.schemas.account.properties.id.description, is(description));
+						assertThat(result.schemas.account.properties.id.type, is(title));
+						assertThat(result.schemas.account.properties.id.description, is(description));
+					});
+
+					it("should resolve refs for allOf", async function() {
+						const title = "ResourceIdentifier";
+						const description = "A unique identifier for a resource";
+
+						const result = await resolveRefsInComponentsObject({
+							schemas: {
+								"resource-identifier": resourceIdentifier(title, description),
+								account: {
+									type: "object",
+									properties: {
+										id: {
+											allOf: [
+												{
+													$ref: "#/components/schemas/resource-identifier"
+												}
+											]
+										}
+									}
+								}
+							}
+						})
+						.toPromise();
+
+						assertThat(result.schemas.account.properties.id.type, is(title));
+						assertThat(result.schemas.account.properties.id.description, is(description));
+					});
+
+					it("should reduce allOf", async function() {
+						const title = "ResourceIdentifier";
+						const description = "A unique identifier for the account";
+
+						const result = await resolveRefsInComponentsObject({
+							schemas: {
+								"resource-identifier": resourceIdentifier(title),
+								account: {
+									type: "object",
+									properties: {
+										id: {
+											allOf: [
+												{
+													$ref: "#/components/schemas/resource-identifier"
+												},
+												{
+													description
+												}
+											]
+										}
+									}
+								}
+							}
+						})
+						.toPromise();
+
+						assertThat(result.schemas.account.properties.id.type, is(title));
+						assertThat(result.schemas.account.properties.id.description, is(description));
+					});
 				});
 
-				it("should mark required properties in objects", async function() {
+				it("should inline required properties in objects", async function() {
 					const result = await resolveRefsInComponentsObject({
 						schemas: {
 							account: {
@@ -153,84 +232,9 @@ describe("references visitor", function() {
 					assertThat(result.schemas.account.properties.id.required, is(true));
 					assertThat(result.schemas.account.properties.nickname.required, is(false));
 				});
-
-				it("should inline type defs in objects", async function() {
-					const oas = {
-						schemas: {
-							provider: provider(),
-							account: {
-								allOf: [
-									{
-										$ref: "#/components/schemas/provider"
-									}
-								]
-							}
-						}
-					};
-
-					const result = await resolveRefsInComponentsObject(oas).toPromise();
-
-					assertThat(result.schemas.account.type, equalTo(oas.schemas.provider.type));
-					assertThat(result.schemas.account.properties, hasProperty("name", {
-						type: "string",
-						description: "The name of the provider",
-						required: true
-					}));
-					assertThat(result.schemas.account.required, equalTo(oas.schemas.provider.required));
-					assertThat(result.schemas.account.allOf, is(not(defined())))
-				});
-
-				it("reduce allOf type defs in objects", async function() {
-					const title = "Account";
-					const oas = {
-						schemas: {
-							"resource-identifier": resourceIdentifier(),
-							provider: provider(),
-							account: {
-								title,
-								allOf: [
-									{
-										$ref: "#/components/schemas/provider"
-									},
-									{
-										type: "object",
-										properties: {
-											id: {
-												$ref: "#/components/schemas/resource-identifier"
-											}
-										},
-										required: [
-											"id"
-										]
-									}
-								]
-							}
-						}
-					};
-
-					const result = await resolveRefsInComponentsObject(oas).toPromise();
-
-					assertThat(result.schemas.account.title, is(title));
-					assertThat(result.schemas.account.properties, allOf(
-						hasProperties({
-							name: {
-								type: "string",
-								description: "The name of the provider",
-								required: true
-							}
-						}),
-						hasProperty("id", {
-							type: oas.schemas["resource-identifier"].title,
-							description: oas.schemas["resource-identifier"].description,
-							required: true
-						})
-					));
-
-					assertThat(result.schemas.account.required, equalTo([ "id", "name" ]));
-				});
 			});
 
-			describe("arrays", function() {
+			describe("array type", function() {
 				it("should resolve ref for array items", async function() {
 					const oas = {
 						schemas: {
