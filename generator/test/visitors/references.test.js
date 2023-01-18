@@ -150,6 +150,28 @@ describe("references visitor", function() {
 						assertThat(result.schemas.account.properties.id.description, is(description));
 					});
 
+					it("should ignore missing description when resolving direct refs", async function() {
+						const identifier = resourceIdentifier()
+						delete identifier.description;
+
+						const result = await resolveRefsInComponentsObject({
+							schemas: {
+								"resource-identifier": identifier,
+								account: {
+									type: "object",
+									properties: {
+										id: {
+											$ref: "#/components/schemas/resource-identifier"
+										}
+									}
+								}
+							}
+						})
+						.toPromise();
+
+						assertThat(result.schemas.account.properties.id.description, is(not(defined())));
+					});
+
 					it("should resolve refs for arrays", async function() {
 						const title = "ResourceIdentifier";
 						const description = "A unique identifier for a resource";

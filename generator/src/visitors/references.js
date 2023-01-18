@@ -71,7 +71,7 @@ const findProp = (f) =>
 const propExists = (lst) =>
 	compose(either(constant(false), constant(true)), findProp(lst))
 
-// transformProps :: [ Object -> Result Error (Object -> Object) ] -> Object -> Result Error Object
+// transformProps :: [ (Object -> Result Error (Object -> Object)) ] -> Object -> Result Error Object
 const transformProps = (fns) =>
 	compose(reduce(ap, Result.Ok({})), applyFunctor(fns))
 
@@ -166,7 +166,7 @@ const reduceCompositeType =
 const resolveObjectTypePropertyRef =
 	resolveRef(transformProps([
 		compose(map(setProp("type")), getObjectTypeTitle),
-		compose(map(setProp("description")), getObjectTypeDescription)
+		compose(Result.Ok, either(constant(identity), setProp("description")), getObjectTypeDescription)
 	]))
 
 // resolveRefsInArrayTypeItems :: SchemaObject -> SchemaObject -> Result Error SchemaObject

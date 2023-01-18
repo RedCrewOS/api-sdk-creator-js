@@ -1,11 +1,13 @@
 "use strict";
 
+const maybeProp = require("crocks/Maybe/getProp");
+
 const { getProp } = require("@epistemology-factory/crocks-ext/Result");
 
 const { missingProp } = require("../errors");
 
-// getObjectTypeDescription :: Object -> Result Error String
-const getObjectTypeDescription = getProp(missingProp, "description");
+// getObjectTypeDescription :: Object -> Maybe String
+const getObjectTypeDescription = maybeProp("description");
 
 // getObjectTypeProperties :: Object -> Result Error Object
 const getObjectTypeProperties = getProp(missingProp, "properties");
