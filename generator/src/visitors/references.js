@@ -40,10 +40,10 @@ const toPairs = require("crocks/Pair/toPairs");
 
 const { applyFunctor, chainLiftA2 } = require("@epistemology-factory/crocks-ext/helpers");
 const { getProp } = require("@epistemology-factory/crocks-ext/Result");
-const { split } = require("@epistemology-factory/crocks-ext/String");
+const { join, split } = require("@epistemology-factory/crocks-ext/String");
 
 const { unknownType } = require("../errors");
-const { modifyProp } = require("../props");
+const { modifyProp, pluckProp } = require("../props");
 const { sequenceResult } = require("../result");
 const { visitComponentObject, visitObject } = require("./visitor");
 const {
@@ -56,6 +56,9 @@ const { ifArrayType, ifObjectType, ifPropPresent } = require("../transformers");
 
 // last :: [ a ] -> Integer
 const last = (arr) => arr[arr.length - 1]
+
+// sort :: [ a ] -> [ a ]
+const sort = (arr) => arr.sort()
 
 // emptyObjectType :: () -> SchemaObject
 const emptyObjectType = constant({
@@ -135,9 +138,8 @@ const inlineRequiredPropertiesIntoObjectTypeProperties =
 		compose(map(Result.Ok), mapRequiredProperty(inlineRequiredPropertyIntoObjectTypeProperty))
 	)
 
-// inlineReferencedTypes :: SchemaObject -> [ SchemaObject ] -> Result Error [ SchemaObject ]
-const inlineReferencedTypes = (schemas) =>
-	sequenceResult(resolveTypeRef(schemas))
+// inlineReferencedTypes :: (SchemaObject -> Result Error Object) -> [ SchemaObject ] -> Result Error [ SchemaObject ]
+const inlineReferencedTypes = sequenceResult
 
 // resolveRef :: (SchemaObject -> Result Error Object) -> SchemaObject -> SchemaObject -> Result Error Object
 const resolveRef =
@@ -146,10 +148,24 @@ const resolveRef =
 // resolveTypeRef :: SchemaObject -> SchemaObject -> Result Error Object
 const resolveTypeRef =
 	resolveRef(transformProps([
+		compose(map(setProp("type")), getObjectTypeTitle)
+	]))
+
+// resolveObjectTypeRef :: SchemaObject -> SchemaObject -> Result Error Object
+const resolveObjectTypeRef =
+	resolveRef(transformProps([
 		compose(map(setProp("type")), getObjectTypeType),
 		compose(map(setProp("properties")), getObjectTypeProperties),
 		compose(Result.Ok, mapRequiredProperty(setProp("required")))
 	]))
+
+// reduceResolvedRefIntoParent :: String -> (a -> Result Error b) -> Object -> Result Error b
+const reduceResolvedRefIntoParent = curry((prop, fn) =>
+	substitution(
+		compose(map, assign, omit([ prop ])),
+		ifPropPresent(prop, fn)
+	)
+)
 
 // reduceObjectTypePropertyAllOf :: SchemaObject -> SchemaObject -> Result Error Object
 const reduceObjectTypePropertyAllOf = (schemas) =>
@@ -158,9 +174,21 @@ const reduceObjectTypePropertyAllOf = (schemas) =>
 		map(mreduce(Assign))
 	))
 
+// reduceObjectTypePropertyOneOf :: SchemaObject -> SchemaObject -> Result Error Object
+const reduceObjectTypePropertyOneOf = (schemas) =>
+	ifPropPresent("oneOf", pipe(
+		sequenceResult(resolveObjectTypePropertyRef(schemas)),
+		map(reduceToUnionType),
+	))
+
 // reduceCompositeType :: [ SchemaObject ] -> Result Error SchemaObject
 const reduceCompositeType =
 	mapReduce(Result.Ok, chainLiftA2(mergeObjectTypes), Result.Ok(emptyObjectType()))
+
+// TODO: This will only work for Typescript
+// reduceToUnionType :: [ Object ] -> Object
+const reduceToUnionType =
+	compose(objOf("type"), join(" | "), sort, map(pluckProp("type")))
 
 // resolveObjectTypePropertyRef :: SchemaObject -> SchemaObject -> Result Error Object
 const resolveObjectTypePropertyRef =
@@ -181,6 +209,7 @@ const resolveRefsInObjectTypeProperties = (schemas) =>
 		pipeK(
 			resolveObjectTypePropertyRef(schemas),
 			reduceObjectTypePropertyAllOf(schemas),
+			reduceObjectTypePropertyOneOf(schemas),
 			resolveRefsInArrayType(schemas)
 		)
 	))
@@ -200,11 +229,14 @@ const resolveRefsInObjectType = (schemas) =>
 
 // resolveRefsInCompositeType :: SchemaObject -> SchemaObject -> Result Error SchemaObject
 const resolveRefsInCompositeType = (schemas) =>
-	substitution(
-		compose(map, assign, omit([ "allOf" ])),
-		ifPropPresent("allOf", pipeK(
-			inlineReferencedTypes(schemas),
+	pipeK(
+		reduceResolvedRefIntoParent("allOf", pipeK(
+			inlineReferencedTypes(resolveObjectTypeRef(schemas)),
 			reduceCompositeType
+		)),
+		reduceResolvedRefIntoParent("oneOf", pipe(
+			inlineReferencedTypes(resolveTypeRef(schemas)),
+			map(reduceToUnionType),
 		))
 	)
 

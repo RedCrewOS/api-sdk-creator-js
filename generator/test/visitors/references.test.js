@@ -124,6 +124,56 @@ describe("references visitor", function() {
 
 						assertThat(result.schemas.account.required, equalTo([ "id", "name" ]));
 					});
+
+					it("should inline oneOf refs", async function() {
+						const oas = {
+							schemas: {
+								provider: provider(),
+								account: {
+									oneOf: [
+										{
+											$ref: "#/components/schemas/provider"
+										}
+									]
+								}
+							}
+						};
+
+						const result = await resolveRefsInComponentsObject(oas).toPromise();
+						const account = result.schemas.account;
+
+						assertThat(account.type, equalTo(oas.schemas.provider.title));
+						assertThat(account.oneOf, is(not(defined())))
+					});
+
+					it("reduce oneOf", async function() {
+						const title = "Account";
+						const oas = {
+							schemas: {
+								"resource-identifier": resourceIdentifier(),
+								provider: provider(),
+								account: {
+									title,
+									oneOf: [
+										{
+											$ref: "#/components/schemas/provider"
+										},
+										{
+											$ref: "#/components/schemas/resource-identifier"
+										}
+									]
+								}
+							}
+						};
+
+						const result = await resolveRefsInComponentsObject(oas).toPromise();
+						const account = result.schemas.account;
+						const typeA = oas.schemas.provider.title;
+						const typeB = oas.schemas["resource-identifier"].title;
+
+						assertThat(account.title, is(title));
+						assertThat(account.type, is(`${typeA} | ${typeB}`));
+					});
 				});
 
 				describe("resolving refs for object type properties", function() {
@@ -253,6 +303,65 @@ describe("references visitor", function() {
 
 						assertThat(result.schemas.account.properties.id.type, is(title));
 						assertThat(result.schemas.account.properties.id.description, is(description));
+					});
+
+					it("should resolve refs for oneOf", async function() {
+						const resourceId = resourceIdentifier();
+
+						const result = await resolveRefsInComponentsObject({
+							schemas: {
+								"resource-identifier": resourceId,
+								account: {
+									type: "object",
+									properties: {
+										id: {
+											oneOf: [
+												{
+													$ref: "#/components/schemas/resource-identifier"
+												}
+											]
+										}
+									}
+								}
+							}
+						})
+						.toPromise();
+
+						assertThat(result.schemas.account.properties.id.type, is(resourceId.title));
+					});
+
+					it("should reduce oneOf", async function() {
+						const title = "AccountIdentifier";
+						const resourceId = resourceIdentifier();
+
+						const result = await resolveRefsInComponentsObject({
+							schemas: {
+								"resource-identifier": resourceId,
+								"account-identifier": {
+									type: "object",
+									title,
+									properties: {}
+								},
+								account: {
+									type: "object",
+									properties: {
+										id: {
+											oneOf: [
+												{
+													$ref: "#/components/schemas/resource-identifier"
+												},
+												{
+													$ref: "#/components/schemas/account-identifier"
+												}
+											]
+										}
+									}
+								}
+							}
+						})
+						.toPromise();
+
+						assertThat(result.schemas.account.properties.id.type, is(`${title} | ${resourceId.title}`));
 					});
 				});
 
