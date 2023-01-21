@@ -90,12 +90,10 @@ const renderComponentsObject = curry((outdir, language) =>
 	substitution(
 		compose(map, constant),
 		pipeK(
-			pipeK(
-				getProp(missingProp, "schemas"),
-				renderSchemasObject(
-					compileNamedTemplates(newHbs(language), layouts),
-					filesWriter(toFilename(language), outdir)
-				)
+			getProp(missingProp, "schemas"),
+			renderSchemasObject(
+				compileNamedTemplates(newHbs(language), layouts),
+				filesWriter(toFilename(language), outdir)
 			)
 		)
 	)
