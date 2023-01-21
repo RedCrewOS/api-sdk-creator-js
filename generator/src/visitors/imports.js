@@ -7,6 +7,7 @@ const bimap = require("crocks/pointfree/bimap");
 const chain = require("crocks/pointfree/chain");
 const compose = require("crocks/helpers/compose");
 const composeK = require("crocks/helpers/composeK");
+const concat = require("crocks/pointfree/concat");
 const contramap = require("crocks/pointfree/contramap");
 const extend = require("crocks/pointfree/extend");
 const ifElse = require("crocks/logic/ifElse");
@@ -15,8 +16,10 @@ const filter = require("crocks/pointfree/filter");
 const flip = require("crocks/combinators/flip");
 const fromPairs = require("crocks/helpers/fromPairs");
 const identity = require("crocks/combinators/identity");
+const liftA2 = require("crocks/helpers/liftA2");
 const listToArray = require("crocks/List/listToArray");
 const map = require("crocks/pointfree/map");
+const mapReduce = require("crocks/helpers/mapReduce");
 const merge = require("crocks/pointfree/merge");
 const not = require("crocks/logic/not");
 const objOf = require("crocks/helpers/objOf");
@@ -30,6 +33,7 @@ const toPairs = require("crocks/Pair/toPairs");
 
 const { chainLiftA2 } = require("@epistemology-factory/crocks-ext/helpers");
 const { getProp } = require("@epistemology-factory/crocks-ext/Result");
+const { split, trim } = require("@epistemology-factory/crocks-ext/String");
 const { unique } = require("@epistemology-factory/crocks-ext/helpers/lists");
 
 const {
@@ -43,7 +47,7 @@ const { sequenceResult } = require("../result");
 const { visitComponentObject } = require("./visitor");
 const { ifArrayType, ifObjectType } = require("../transformers");
 const { isInbuiltType, isArrayType } = require("../predicates");
-const { getArrayTypeItemsType } = require("../accessors/array-type");
+const { getArrayTypeItems, getArrayTypeItemsType } = require("../accessors/array-type");
 
 // filterForCustomTypes :: Filterable f => f String -> f String
 const filterForCustomTypes =
@@ -52,20 +56,34 @@ const filterForCustomTypes =
 // filterTypes :: [ String ] -> [ String ]
 const filterTypes = compose(unique, filterForCustomTypes)
 
-// getTypeFromTypeDef :: Object -> Result Error String
+// getTypeFromTypeDef :: Object -> Result Error [ String ]
 const getTypeFromTypeDef =
-	ifElse(
-		isArrayType,
-		getArrayTypeItemsType,
-		getObjectTypeType
+	pipe(
+		ifElse(
+			isArrayType,
+			getArrayTypeItemsType,
+			getObjectTypeType
+		),
+		// cater for union types
+		map(compose(map(trim), split("|")))
 	)
+
+// getTypesListFromTypes :: [ String ] -> Result Error [ String ]
+const getTypesListFromTypes =
+	pipe(
+		mapReduce(getTypeFromTypeDef, liftA2(concat), Result.Ok([])),
+		map(filterTypes)
+	)
+
+// getTypesListFromItems :: Object -> Result Error [ String ]
+const getTypesListFromItems =
+	contramap(Array.of, getTypesListFromTypes)
 
 // getTypesListFromObject :: Object -> Result Error [ String ]
 const getTypesListFromObject =
 	pipe(
-		compose(listToArray, toPairs),
-		sequenceResult(compose(getTypeFromTypeDef, snd)),
-		map(filterTypes)
+		compose(listToArray, map(snd), toPairs),
+		getTypesListFromTypes
 	)
 
 // findType :: Object -> String -> Result Error a
@@ -102,9 +120,9 @@ const indexTypes =
 const getImportsForTypes = (imports) =>
 	sequenceResult(findType(imports))
 
-// getImportForItems :: Object -> String -> Result Error [ Object ]
+// getImportForItems :: Object -> Object -> Result Error [ Object ]
 const getImportForItems = (imports) =>
-	compose(getImportsForTypes(imports), filterTypes, Array.of)
+	compose(chain(getImportsForTypes(imports)), getTypesListFromItems)
 
 // getImportsForProperties :: Object -> Object -> Result Error [ Object ]
 const getImportsForProperties = (imports) =>
@@ -123,7 +141,7 @@ const resolveImportsInObjectType = (imports) =>
 // resolveImportsInArrayType :: Object -> SchemaObject -> Result Error Object
 const resolveImportsInArrayType = (imports) =>
 	ifArrayType(setImportsForSchemaObject(
-		composeK(getImportForItems(imports), getArrayTypeItemsType)
+		composeK(getImportForItems(imports), getArrayTypeItems)
 	))
 
 // resolveImportsForScalarTypes :: SchemaObject -> Result Object

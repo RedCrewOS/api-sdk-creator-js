@@ -4,7 +4,9 @@ const {
 	allOf,
 	assertThat,
 	defined,
+	equalTo,
 	hasItem,
+	hasItems,
 	hasProperty,
 	hasSize,
 	isEmpty,
@@ -203,6 +205,42 @@ describe("imports visitor", function() {
 					const result = await resolveImportsInComponentsObject(oas).toPromise();
 
 					assertThat(result.schemas.names, hasEmptyImports());
+				});
+			});
+
+			describe("sum types", function() {
+				const typeA = "AccountIdentifier";
+				const typeB = "ResourceIdentifier";
+				const oas = {
+					schemas: {
+						"resource-identifier": {
+							title: typeB,
+							type: "string"
+						},
+						"account-identifier": {
+							title: typeA,
+							type: "string"
+						}
+					}
+				};
+
+				it("should resolve imports for union types", async function() {
+					oas.schemas["account"] = {
+						title: "Account",
+						type: "object",
+						properties: {
+							id: {
+								type: `${typeA} | ${typeB}`
+							}
+						}
+					};
+
+					const result = await resolveImportsInComponentsObject(oas).toPromise();
+
+					assertThat(result.schemas.account, hasImports(hasItems(
+						hasProperty("type", equalTo(typeA)),
+						hasProperty("type", equalTo(typeB))
+					)));
 				});
 			});
 		});
