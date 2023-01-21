@@ -11,7 +11,7 @@ const { addHelpers } = require("./helpers");
 const { addPartials } = require("./partials");
 const { compile } = require("./wrappers");
 
-// compileTemplate :: Async Error Handlebars -> String -> Async Error (a -> String)
+// compileTemplate :: Async Error Handlebars -> String -> Async Error (a -> Result Error String)
 const compileTemplate = flip(
 	compose(map, compile)
 )

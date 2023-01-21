@@ -4,15 +4,13 @@ const { exec } = require("child_process");
 
 const { compose } = require("crocks");
 
-const { assertThat, instanceOf, is, isRejectedWith, promiseThat } = require("hamjest");
+const { assertThat, equalTo, instanceOf, is, isRejectedWith, promiseThat } = require("hamjest");
 
 const {
-	compileNamedTemplates,
+	compileNamedTemplatesFor,
 	renderComponentsObject,
 	renderNamedTemplate
 } = require("../../src/visitors/renderer");
-const { newHbs } = require("../../src/templates/hbs");
-const { registerPartial } = require("../../src/templates/wrappers");
 
 describe("renderer visitor", function() {
 	const outdir = `${os.tmpdir()}/api-sdk-creator-generator`;
@@ -132,19 +130,19 @@ describe("renderer visitor", function() {
 	});
 
 	describe("rendering templates", function() {
-		// hbs: Async Error Handlebars
-		const hbs = newHbs("typescript")
-			.map(registerPartial("test", "Hello World"));
-
 		it("should render named templates", async function() {
 			const layouts = {
-				layout: "{{> test }}"
+				layout: "{{> scalar }}"
 			}
 
-			const templates = compileNamedTemplates(hbs, layouts);
-			const result = await renderNamedTemplate(templates, "layout", {}).toPromise();
+			const templates = compileNamedTemplatesFor(layouts, "typescript");
+			const result = await renderNamedTemplate(templates, "layout", {
+				title: "ResourceIdentifier",
+				type: "string"
+			})
+			.toPromise();
 
-			assertThat(result, is("Hello World"));
+			assertThat(result.trim(), is(equalTo("export type ResourceIdentifier = string;")));
 		});
 
 		it("should catch error when templates can't be rendered", async function() {
@@ -152,7 +150,7 @@ describe("renderer visitor", function() {
 				layout: "{{> test"
 			}
 
-			const templates = compileNamedTemplates(hbs, layouts);
+			const templates = compileNamedTemplatesFor(layouts, "typescript");
 
 			await promiseThat(
 				renderNamedTemplate(templates, "layout", {}).toPromise(),

@@ -10,6 +10,7 @@ const concat = require("crocks/pointfree/concat");
 const constant = require("crocks/combinators/constant");
 const contramap = require("crocks/pointfree/contramap");
 const curry = require("crocks/helpers/curry");
+const flip = require("crocks/combinators/flip");
 const mreduce = require("crocks/helpers/mreduce");
 const objOf = require("crocks/helpers/objOf");
 const pipe = require("crocks/helpers/pipe");
@@ -19,7 +20,6 @@ const merge = require("crocks/pointfree/merge");
 const resultToAsync = require("crocks/Async/resultToAsync");
 const substitution = require("crocks/combinators/substitution");
 const toPairs = require("crocks/Pair/toPairs");
-const tryCatch = require("crocks/Result/tryCatch");
 
 const { chainLiftA2 } = require("@epistemology-factory/crocks-ext/helpers");
 const { getProp } = require("@epistemology-factory/crocks-ext/Async");
@@ -27,6 +27,7 @@ const { writeToDir } = require("@epistemology-factory/crocks-ext/node/fs");
 
 const { missingProp } = require("../errors");
 const { compileTemplate, newHbs } = require("../templates/hbs");
+const { format } = require("../templates/prettier");
 const { pluckProp } = require("../props");
 
 // layouts :: Object
@@ -43,25 +44,44 @@ const filesWriter = curry((fn, dir) =>
 	compose(writeToDir({ encoding: "utf8" }, dir), fn)
 )
 
-// compileNamedTemplate :: Async Error Handlebars -> Pair String String -> Async Error Object
-const compileNamedTemplate = (hbs) =>
+// formatContent :: (String -> Result Error String) -> (a -> Result Error String) -> a -> Result Error String
+const formatContent = (formatter) =>
+	map(chain(formatter))
+
+// templateCompilerFor :: String -> Async Error (a -> Result Error String)
+const templateCompilerFor = (language) =>
 	pipe(
-		bimap(objOf, compileTemplate(hbs)),
-		merge(map)
+		compileTemplate(newHbs(language)),
+		map(formatContent(format(language)))
 	)
 
-// compileNamedTemplates :: Async Error Handlebars -> Object -> Async Error Object
-const compileNamedTemplates = curry((hbs) =>
+// compileNamedTemplateWith :: (String -> Async Error (a -> Result Error String)) -> Pair String String -> Async Error Object
+const compileNamedTemplateWith = curry((compiler) =>
+	pipe(
+		bimap(objOf, compiler),
+
+		// Pair (a -> Object) (Async Error (b -> Result Error String))
+		merge(map)
+	)
+)
+
+// compileNamedTemplatesWith :: Object -> (String -> Async Error (a -> Result Error String)) -> Async Error Object
+const compileNamedTemplatesWith = flip((compiler) =>
 	pipe(
 		toPairs,
-		map(compileNamedTemplate(hbs)),
+		map(compileNamedTemplateWith(compiler)),
 		Async.all,
 		map(mreduce(Assign))
 	)
 )
 
-// renderTemplate :: (a -> String) -> a -> Async Error String
-const renderTemplate = curry(compose(resultToAsync, tryCatch))
+// compileNamedTemplatesFor :: Object -> String -> Async Error Object
+const compileNamedTemplatesFor = curry((templates) =>
+	compose(compileNamedTemplatesWith(templates), templateCompilerFor)
+)
+
+// renderTemplate :: (a -> Result Error String) -> a -> Async Error String
+const renderTemplate = resultToAsync
 
 // renderNamedTemplate :: Async Error Object -> String -> a -> Async Error String
 const renderNamedTemplate = curry((templates, name) =>
@@ -92,7 +112,7 @@ const renderComponentsObject = curry((outdir, language) =>
 		pipeK(
 			getProp(missingProp, "schemas"),
 			renderSchemasObject(
-				compileNamedTemplates(newHbs(language), layouts),
+				compileNamedTemplatesFor(layouts, language),
 				filesWriter(toFilename(language), outdir)
 			)
 		)
@@ -100,7 +120,7 @@ const renderComponentsObject = curry((outdir, language) =>
 )
 
 module.exports = {
-	compileNamedTemplates,
+	compileNamedTemplatesFor,
 	renderComponentsObject,
 	renderNamedTemplate
 }

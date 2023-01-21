@@ -8,6 +8,7 @@ const { inBuiltTypes } = require("../../../src/types");
 const { newHbs } = require("../../../src/templates/hbs");
 const { compile: compileTemplate } = require("../../../src/templates/wrappers");
 
+// compile (Handlebars, String) -> (a -> Result Error String)
 const compile = (hbs, template) =>
 	compileTemplate(template, hbs)
 
@@ -296,14 +297,21 @@ describe("partials", function() {
 		});
 	});
 
+	// renderTemplate :: (a -> Result Error String) -> a -> String | throws
 	function renderTemplate(template) {
-		return (context) => formatter(template(context))
+		return (context) => template(context)
+			.either(
+				(e) => { throw e },
+				formatter
+			)
 	}
 
+	// isCode :: String -> String | throws
 	function isCode(expected) {
 		return is(formatter(expected));
 	}
 
+	// formatter :: String -> String | throws
 	function formatter(code) {
 		return formatTypescript(code)
 			.either(
