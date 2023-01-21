@@ -7,21 +7,23 @@ const curry = require("crocks/helpers/curry");
 const flip = require("crocks/combinators/flip");
 const objOf = require("crocks/helpers/objOf");
 const pipe = require("crocks/helpers/pipe");
+const tryCatch = require("crocks/Result/tryCatch");
 
 const prettier = require("prettier");
 
-// prettierFormatter :: String -> Object -> String
+// prettierFormatter :: Object -> String -> String
 const prettierFormatter =
-	binary(prettier.format.bind(prettier))
+	flip(binary(prettier.format.bind(prettier)))
 
 // prettierOpts :: Object -> Object
 const prettierOpts =
 	assign({})
 
-// format :: String -> String -> String
+// format :: String -> String -> Result Error String
 const format = curry(pipe(
 	compose(prettierOpts, objOf("parser")),
-	flip(prettierFormatter)
+	prettierFormatter,
+	tryCatch
 ))
 
 const formatTypescript = format("typescript");

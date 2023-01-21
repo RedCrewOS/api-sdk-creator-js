@@ -1,5 +1,6 @@
 "use strict";
 
+const { identity } = require("crocks");
 const { assertThat, is } = require("hamjest");
 
 const { formatTypescript } = require("../../../src/templates/prettier");
@@ -296,11 +297,18 @@ describe("partials", function() {
 	});
 
 	function renderTemplate(template) {
-		return (context) =>
-			formatTypescript(template(context))
+		return (context) => formatter(template(context))
 	}
 
 	function isCode(expected) {
-		return is(formatTypescript(expected));
+		return is(formatter(expected));
+	}
+
+	function formatter(code) {
+		return formatTypescript(code)
+			.either(
+				(e) => { throw e },
+				identity
+			)
 	}
 });
