@@ -28,7 +28,7 @@ const ifInbuiltType = ifType(isInbuiltType)
 // ifObjectType :: (SchemaObject -> Result Error SchemaObject) -> SchemaObject -> Result Error SchemaObject
 const ifObjectType = ifType(isSame("object"))
 
-// ifPropPresent :: String -> (a -> Result Error b) -> Object -> Result Error b
+// ifPropPresent :: String -> (a -> Result Error Object) -> Object -> Result Error Object
 const ifPropPresent = curry((prop, fn) =>
 	substitution(
 		compose(option, Result.Ok),
