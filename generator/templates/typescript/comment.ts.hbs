@@ -1,6 +1,6 @@
 {{#if description~}}
 	{{~#if (isSingleLine description) }}
-		/**{{#each description }} {{ this }} {{/each}}*/
+		/**{{#each description }} {{{ this }}} {{/each}}*/
 	{{else}}
 		{{> blockComment }}
 	{{/if~}}
