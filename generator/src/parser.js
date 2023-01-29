@@ -8,10 +8,12 @@ const { readJSON } = require("@epistemology-factory/crocks-ext/node/fs");
 const { missingProp } = require("./errors");
 const { resolveRefsInComponentsObject } = require("./visitors/references");
 const { resolveImportsInComponentsObject } = require("./visitors/imports");
+const { standardiseComponentsObject } = require("./visitors/standardise");
 
 // parseComponentsObject :: Object -> Async Error ComponentsObject
 const parseComponentsObject =
 	pipeK(getProp(missingProp, "components"), pipeK(
+		standardiseComponentsObject,
 		resolveRefsInComponentsObject,
 		resolveImportsInComponentsObject
 	))

@@ -1,0 +1,7 @@
+{{#if description~}}
+	{{~#if (isSingleLine description) }}
+		/**{{#each description }} {{ this }} {{/each}}*/
+	{{else}}
+		{{> blockComment }}
+	{{/if~}}
+{{~/if~}}

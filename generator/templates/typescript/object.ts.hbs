@@ -1,8 +1,8 @@
 {{#if (isObjectType) }}
-{{> description }}
+{{> blockComment }}
 export interface {{ title }} {
 	{{#each properties as |property name|}}
-		{{> description property }}
+		{{> comment property }}
 		{{ name }}{{#unless property.required}}?{{/unless}}: {{typeRef property }};
 	{{/each}}
 }

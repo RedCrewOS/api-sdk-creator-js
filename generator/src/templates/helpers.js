@@ -16,10 +16,16 @@ const safeLift = require("crocks/Maybe/safeLift");
 const unit = require("crocks/helpers/unit");
 
 const { applyFunctor } = require("@epistemology-factory/crocks-ext/helpers");
+const { length } = require("@epistemology-factory/crocks-ext/helpers/lists");
+const { isLessThanEqualTo } = require("@epistemology-factory/crocks-ext/predicates");
 
 const { applyHandlebarsTo, registerHelper } = require("./wrappers");
 const { isArrayType, isEnumType, isInbuiltType, isObjectType } = require("../predicates");
 const { pluckProp } = require("../props");
+
+// isSingleLine :: [ a ] -> Boolean
+const isSingleLine =
+	compose(isLessThanEqualTo(1), length)
 
 // toArrayRef :: Object -> String
 const toArrayRef =
@@ -68,6 +74,7 @@ const addHelpers =
 		applyHandlebarsTo([
 			registerHelper("isEnumType", predicateHelper(isEnumType)),
 			registerHelper("isObjectType", predicateHelper(isObjectType)),
+			registerHelper("isSingleLine", isSingleLine),
 			registerHelper("typeDef", helper(typeDef)),
 			registerHelper("typeRef", typeRef)
 		]),

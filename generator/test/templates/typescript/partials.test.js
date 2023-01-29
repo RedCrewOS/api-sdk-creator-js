@@ -18,14 +18,13 @@ const compile = (hbs, template) =>
  */
 describe("partials", function() {
 	let hbs;
+	let render;
 
 	before(async function() {
 		hbs = await newHbs("typescript").toPromise();
 	});
 
 	describe("imports", function() {
-		let render;
-
 		before(function() {
 			render = renderTemplate(compile(hbs, `
 				{{> imports}}
@@ -48,9 +47,57 @@ describe("partials", function() {
 		});
 	});
 
+	describe("comments", function() {
+		describe("comment", function() {
+			before(function() {
+				render = renderTemplate(compile(hbs, `
+					{{> comment }}
+				`));
+			});
+
+			it("should render single line comment", function() {
+				const description = "This is a description";
+
+				const result = render({
+					description: [ description ]
+				});
+
+				assertThat(result, isCode(comment(description)));
+			});
+
+			it("should render multiline comment", function() {
+				const line1 = "This is a description";
+				const line2 = "This is more detail";
+
+				const result = render({
+					description: [ line1, line2 ]
+				});
+
+				assertThat(result, isCode(blockComment(line1, line2)));
+			});
+		});
+
+		describe("blockComment", function() {
+			before(function() {
+				render = renderTemplate(compile(hbs, `
+					{{> blockComment }}
+				`));
+			});
+
+			it("should render block comment", function() {
+				const description = "This is a description";
+
+				const result = render({
+					description: [ description ]
+				});
+
+				assertThat(result, isCode(blockComment(description)));
+			})
+		});
+	});
+
 	describe("scalars", function() {
 		const title = "Prop";
-		let render;
 
 		before(function() {
 			render = renderTemplate(compile(hbs, `
@@ -78,11 +125,11 @@ describe("partials", function() {
 			const result = render({
 				title,
 				type,
-				description
+				description: [ description ]
 			});
 
 			assertThat(result, isCode(`
-				/** ${description} */
+				${blockComment(description)}
 				export type ${title} = ${type};
 			`));
 		});
@@ -108,12 +155,12 @@ describe("partials", function() {
 		it("should render description if present", function() {
 			const description = "This is a description";
 			const obj = givenObject();
-			obj.description = description;
+			obj.description = [ description ];
 
 			const result = render(obj);
 
 			assertThat(result, isCode(`
-				/** ${description} */
+				${blockComment(description)}
 				${givenInterface()}
 			`));
 		});
@@ -197,7 +244,7 @@ describe("partials", function() {
 			const result = render(givenObject({
 				prop: {
 					type: TITLE,
-					description,
+					description: [ description ],
 					required: true
 				}
 			}));
@@ -242,7 +289,7 @@ describe("partials", function() {
 			const lines = [];
 
 			if (attr.description) {
-				lines.push(`/** ${attr.description} */`);
+				lines.push(comment(attr.description));
 			}
 
 			lines.push(`${attr.name}${!attr.required ? "?" : ""}: ${attr.type};`);
@@ -252,8 +299,6 @@ describe("partials", function() {
 	});
 
 	describe("enums", function() {
-		let render;
-
 		before(function() {
 			render = renderTemplate(compile(hbs, `
 				{{> enum}}
@@ -265,7 +310,7 @@ describe("partials", function() {
 			const description = "This is a description";
 			const enumType = {
 				title,
-				description,
+				description: [ description ],
 				type: "string",
 				enum: []
 			};
@@ -273,7 +318,7 @@ describe("partials", function() {
 			const result = render(enumType);
 
 			assertThat(result, isCode(`
-				/** ${description} */
+				${blockComment(description)}
 				export enum ${title} {}
 			`));
 		});
@@ -318,5 +363,20 @@ describe("partials", function() {
 				(e) => { throw e },
 				identity
 			)
+	}
+
+	function blockComment(...lines) {
+		const comment = lines
+			.map((line) => `* ${line}`)
+			.join("\n");
+
+		return `
+			/** 
+			 ${comment}
+			 */`
+	}
+
+	function comment(comment) {
+		return `/** ${comment} */`;
 	}
 });

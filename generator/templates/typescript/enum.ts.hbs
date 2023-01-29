@@ -1,5 +1,5 @@
 {{#if (isEnumType)}}
-{{> description }}
+{{> blockComment }}
 export enum {{ title }} {
   {{#each enum }}
 		{{ this }} = "{{ this }}",
