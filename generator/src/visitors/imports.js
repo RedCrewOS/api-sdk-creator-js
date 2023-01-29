@@ -42,10 +42,10 @@ const {
 	getObjectTypeType
 } = require("../accessors/object-type");
 const { unknownType } = require("../errors");
-const { modifyProp, putProp } = require("../props");
+const { putProp } = require("../props");
 const { sequenceResult } = require("../result");
 const { visitComponentObject } = require("./visitor");
-const { ifArrayType, ifObjectType } = require("../transformers");
+const { ifArrayType, ifObjectType, modifyProp } = require("../transformers");
 const { isInbuiltType, isArrayType } = require("../predicates");
 const { getArrayTypeItems, getArrayTypeItemsType } = require("../accessors/array-type");
 

@@ -43,7 +43,7 @@ const { getProp } = require("@epistemology-factory/crocks-ext/Result");
 const { join, split } = require("@epistemology-factory/crocks-ext/String");
 
 const { unknownType } = require("../errors");
-const { modifyProp, pluckProp } = require("../props");
+const { pluckProp } = require("../props");
 const { sequenceResult } = require("../result");
 const { visitComponentObject, visitObject } = require("./visitor");
 const {
@@ -52,7 +52,7 @@ const {
 	getObjectTypeType,
 	getObjectTypeTitle
 } = require("../accessors/object-type");
-const { ifArrayType, ifObjectType, ifPropPresent } = require("../transformers");
+const { ifArrayType, ifObjectType, ifPropPresent, modifyProp } = require("../transformers");
 
 // last :: [ a ] -> Integer
 const last = (arr) => arr[arr.length - 1]
