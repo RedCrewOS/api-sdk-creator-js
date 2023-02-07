@@ -8,6 +8,24 @@ describe("standardise visitor", function() {
 	describe("standardiseComponentsObject", function() {
 		describe("standardiseDocumentation", function() {
 			describe("schemas component", function() {
+				it("should preserve newlines in documentation", async function() {
+					const line1 = "An account in the system";
+					const line2 = "Accounts hold things";
+					const oas = {
+						schemas: {
+							account: {
+								type: "object",
+								description: `\n${line1}\n${line2}\n`,
+								properties: {}
+							}
+						}
+					}
+
+					const result = await standardiseComponentsObject(oas).toPromise();
+
+					verifyDescription(`${line1}\n${line2}`, result.schemas.account.description);
+				});
+
 				describe("object type", function() {
 					it("should parse documentation for object types", async function() {
 						const description = "An account in the system";
@@ -154,9 +172,14 @@ describe("standardise visitor", function() {
 			});
 
 			function verifyDescription(expected, actual) {
+				const lines = expected.split("\n");
+
 				assertThat("Didn't parse to array", Array.isArray(actual), is(true));
-				assertThat("Too many lines", actual.length, is(1));
-				assertThat(actual[0], is(expected));
+				assertThat("Too many lines", actual.length, is(lines.length));
+
+				for (let i = 0; i < lines.length; i++) {
+					assertThat(actual[0], is(lines[0]));
+				}
 			}
 		});
 	});

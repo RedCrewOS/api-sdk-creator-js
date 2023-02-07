@@ -3,21 +3,15 @@
 const Result = require("crocks/Result");
 
 const compose = require("crocks/helpers/compose");
-const filter = require("crocks/pointfree/filter");
-const isEmpty = require("crocks/predicates/isEmpty");
-const not = require("crocks/logic/not");
 const pipe = require("crocks/helpers/pipe");
 const pipeK = require("crocks/helpers/pipeK");
 const resultToAsync = require("crocks/Async/resultToAsync");
 
-const { split } = require("@epistemology-factory/crocks-ext/String");
+const { split, trim } = require("@epistemology-factory/crocks-ext/String");
 
 const { ifArrayType, ifObjectType, modifyProp, modifyPropIfPresent } = require("../transformers");
 const { sequenceResult } = require("../result");
 const { visitObject } = require("./visitor");
-
-// removeEmptyLines :: [ String ] -> [ String ]
-const removeEmptyLines = filter(not(isEmpty))
 
 // splitLines :: String -> [ String ]
 const splitLines = split("\n");
@@ -25,8 +19,8 @@ const splitLines = split("\n");
 // parseDescription :: String -> [ String ]
 const parseDescription =
 	pipe(
-		splitLines,
-		removeEmptyLines
+		trim,
+		splitLines
 	)
 
 // standardiseDocumentation :: SchemaObject -> Result Error SchemaObject
