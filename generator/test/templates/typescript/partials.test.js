@@ -298,6 +298,51 @@ describe("partials", function() {
 		}
 	});
 
+	describe("arrays", function() {
+		const title = "PropList";
+		const type = "array";
+		const itemsType = "Prop";
+
+		const typeDef = {
+			title,
+			type,
+			items: {
+				type: itemsType
+			}
+		};
+
+		let render;
+
+		before(function() {
+			render = renderTemplate(compile(hbs, `
+				{{> array}}
+			`));
+		});
+
+		it("should render array typedef", function() {
+			const result = render(typeDef);
+
+			assertThat(result, isCode(`
+				export type ${title} = ${itemsType}[];
+			`));
+		});
+
+		it("should render description if present", function() {
+			const description = "This is a description";
+			const clone = {
+				...typeDef,
+				description: [ description ]
+			}
+
+			const result = render(clone);
+
+			assertThat(result, isCode(`
+				${blockComment(description)}
+				export type ${title} = ${itemsType}[];
+			`));
+		});
+	});
+
 	describe("enums", function() {
 		before(function() {
 			render = renderTemplate(compile(hbs, `

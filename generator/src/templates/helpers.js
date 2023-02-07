@@ -36,7 +36,8 @@ const mapTypeToPartialName =
 	pipe(
 		compose(mreduce(First), applyFunctor([
 			safeLift(isInbuiltType, constant("scalar")),
-			safeLift(isObjectType, identity)
+			safeLift(isObjectType, identity),
+			safeLift(isArrayType, identity)
 		])),
 		option(constant("unknown-partial"))
 	)
@@ -72,6 +73,7 @@ const predicateHelper = (pred) =>
 const addHelpers =
 	pipe(
 		applyHandlebarsTo([
+			registerHelper("isArrayType", predicateHelper(isArrayType)),
 			registerHelper("isEnumType", predicateHelper(isEnumType)),
 			registerHelper("isObjectType", predicateHelper(isObjectType)),
 			registerHelper("isSingleLine", isSingleLine),

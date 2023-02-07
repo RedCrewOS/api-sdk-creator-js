@@ -1,0 +1,4 @@
+{{#if (isArrayType) }}
+{{> blockComment }}
+export type {{ title }} = {{ items.type }}[];
+{{/if}}
