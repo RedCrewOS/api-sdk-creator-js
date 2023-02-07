@@ -6,6 +6,9 @@ const First = require("crocks/First");
 const compose = require("crocks/helpers/compose");
 const concat = require("crocks/pointfree/concat");
 const constant = require("crocks/combinators/constant");
+const converge = require("crocks/combinators/converge");
+const flip = require("crocks/combinators/flip");
+const getProp = require("crocks/Maybe/getProp");
 const getPathOr = require("crocks/helpers/getPathOr");
 const identity = require("crocks/combinators/identity");
 const ifElse = require("crocks/logic/ifElse");
@@ -23,9 +26,24 @@ const { applyHandlebarsTo, registerHelper } = require("./wrappers");
 const { isArrayType, isEnumType, isInbuiltType, isObjectType } = require("../predicates");
 const { pluckProp } = require("../props");
 
+const typeMappings = {
+	"integer": "number"
+};
+
+// lookupProp :: Object -> String -> Maybe a
+const lookupProp = flip(getProp)
+
 // isSingleLine :: [ a ] -> Boolean
 const isSingleLine =
 	compose(isLessThanEqualTo(1), length)
+
+// mapOASTypeToLanguageType :: String -> String
+const mapOASTypeToLanguageType =
+	converge(
+		option,
+		constant,
+		lookupProp(typeMappings)
+	)
 
 // toArrayRef :: Object -> String
 const toArrayRef =
@@ -77,6 +95,7 @@ const addHelpers =
 			registerHelper("isEnumType", predicateHelper(isEnumType)),
 			registerHelper("isObjectType", predicateHelper(isObjectType)),
 			registerHelper("isSingleLine", isSingleLine),
+			registerHelper("mapType", mapOASTypeToLanguageType),
 			registerHelper("typeDef", helper(typeDef)),
 			registerHelper("typeRef", typeRef)
 		]),

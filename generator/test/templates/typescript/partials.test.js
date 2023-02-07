@@ -113,7 +113,7 @@ describe("partials", function() {
 				});
 
 				assertThat(result, isCode(`
-					export type ${title} = ${type};
+					export type ${title} = ${mappedType(type)};
 				`));
 			});
 		});
@@ -292,7 +292,7 @@ describe("partials", function() {
 				lines.push(comment(attr.description));
 			}
 
-			lines.push(`${attr.name}${!attr.required ? "?" : ""}: ${attr.type};`);
+			lines.push(`${attr.name}${!attr.required ? "?" : ""}: ${mappedType(attr.type)};`);
 
 			return lines.join("\n");
 		}
@@ -423,5 +423,15 @@ describe("partials", function() {
 
 	function comment(comment) {
 		return `/** ${comment} */`;
+	}
+
+	function mappedType(type) {
+		switch(type) {
+			case "integer":
+				return "number";
+
+			default:
+				return type;
+		}
 	}
 });

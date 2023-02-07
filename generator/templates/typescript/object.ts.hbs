@@ -3,7 +3,7 @@
 export interface {{ title }} {
 	{{#each properties as |property name|}}
 		{{> comment property }}
-		{{ name }}{{#unless property.required}}?{{/unless}}: {{typeRef property }};
+		{{ name }}{{#unless property.required}}?{{/unless}}: {{mapType (typeRef property) }};
 
 	{{/each}}
 }
