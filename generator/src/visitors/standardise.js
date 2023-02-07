@@ -13,6 +13,7 @@ const resultToAsync = require("crocks/Async/resultToAsync");
 const { split } = require("@epistemology-factory/crocks-ext/String");
 
 const { ifArrayType, ifObjectType, modifyProp, modifyPropIfPresent } = require("../transformers");
+const { sequenceResult } = require("../result");
 const { visitObject } = require("./visitor");
 
 // removeEmptyLines :: [ String ] -> [ String ]
@@ -38,14 +39,17 @@ const standardiseDocumentationInArrayTypeItems =
 
 // standardiseDocumentationInArrayType :: SchemaObject -> Result Error SchemaObject
 const standardiseDocumentationInArrayType =
-	ifArrayType(
-		standardiseDocumentationInArrayTypeItems
-	)
+	ifArrayType(standardiseDocumentationInArrayTypeItems)
+
+// standardiseDocumentationInCompositeType :: SchemaObject -> Result Error SchemaObject
+const standardiseDocumentationInCompositeType =
+	modifyPropIfPresent("allOf", sequenceResult((x) => standardiseSchemaObject(x)))
 
 // standardiseDocumentationInObjectType :: SchemaObject -> Result Error SchemaObject
 const standardiseDocumentationInObjectType =
 	ifObjectType(modifyProp("properties", visitObject(pipeK(
 		standardiseDocumentation,
+		standardiseDocumentationInCompositeType,
 		standardiseDocumentationInArrayType
 	))))
 
@@ -53,6 +57,7 @@ const standardiseDocumentationInObjectType =
 const standardiseSchemaObject =
 	pipeK(
 		standardiseDocumentation,
+		standardiseDocumentationInCompositeType,
 		standardiseDocumentationInObjectType,
 		standardiseDocumentationInArrayType,
 	)
