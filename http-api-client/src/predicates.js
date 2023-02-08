@@ -1,6 +1,7 @@
 "use strict"
 
 const compose = require("crocks/helpers/compose");
+const curry = require("crocks/helpers/curry");
 const getPath = require("crocks/Maybe/getPath");
 const head = require("crocks/pointfree/head");
 const isSame = require("crocks/predicates/isSame");
@@ -11,6 +12,15 @@ const pipe = require("crocks/helpers/pipe");
 const { split, trim } = require("@epistemology-factory/crocks-ext/String");
 
 const { getHttpResponse } = require("./accessors");
+
+// startsWith :: String -> String -> Boolean
+const startsWith = curry((val, str) =>
+	str.startsWith(val)
+)
+
+// isRelativeUrl :: String -> Boolean
+const isRelativeUrl =
+	startsWith("/")
 
 // isSuccessfulResponse :: HttpResponse -> Boolean
 const isSuccessfulResponse =
@@ -39,6 +49,7 @@ const resultHasContentType = (contentType) =>
 
 module.exports = {
 	hasContentType,
+	isRelativeUrl,
 	isSuccessfulResponse,
 	isSuccessfulResult,
 	resultHasContentType

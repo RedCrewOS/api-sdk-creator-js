@@ -2,7 +2,12 @@
 
 const { assertThat, is } = require("hamjest");
 
-const { hasContentType, isSuccessfulResponse, isSuccessfulResult } = require("../src");
+const {
+	hasContentType,
+	isRelativeUrl,
+	isSuccessfulResponse,
+	isSuccessfulResult
+} = require("../src");
 
 describe("predicates", function() {
 	describe("is successful", function() {
@@ -75,6 +80,16 @@ describe("predicates", function() {
 
 		it("should return false when content type doesn't match", function() {
 			assertThat(hasContentType("application/json")("text/plain"), is(false));
+		});
+	});
+
+	describe("isRelativeUrl", function() {
+		it("should match relative url", function() {
+			assertThat(isRelativeUrl("/foo"), is(true));
+		});
+
+		it("should not match non relative url", function() {
+			assertThat(isRelativeUrl("https://foobar.com"), is(false));
 		});
 	});
 });
