@@ -12,11 +12,9 @@ const setPath = require("crocks/helpers/setPath");
 const subtitution = require("crocks/combinators/substitution");
 
 const { getPath } = require("@epistemology-factory/crocks-ext/Async");
+const { newError } = require("./errors");
 const { join } = require("@epistemology-factory/crocks-ext/String");
 const { prepend } = require("@epistemology-factory/crocks-ext/helpers");
-
-// newError :: String -> Error
-const newError = (message) => new Error(message)
 
 // missingPath :: String -> Error
 const missingPath = compose(newError, prepend("Missing property at "), join("."))
@@ -62,7 +60,7 @@ const collectReadableStreamToString = (stream) => {
 		streamReduce("", stream.getReader())
 			.then(resolve, (err) => {
 				if (typeof err === "string") {
-					return reject(new Error(err));
+					return reject(newError(err));
 				}
 
 				reject(err);
@@ -105,7 +103,7 @@ const collectUnstructuredDataToString = (data) => {
 			return collectReadableStreamToString(data).fork(reject, resolve);
 		}
 
-		reject(new Error("Unknown data type"));
+		reject(newError("Unknown data type"));
 	});
 }
 

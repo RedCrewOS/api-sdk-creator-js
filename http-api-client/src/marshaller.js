@@ -26,12 +26,10 @@ const { join } = require("@epistemology-factory/crocks-ext/String");
 const { prepend } = require("@epistemology-factory/crocks-ext/helpers");
 
 const { resultHasContentType } = require("./predicates");
+const { newError } = require("./errors");
 
 const requestBodyPath = [ "body" ];
 const resultBodyPath = [ "response", "body" ];
-
-// newError :: String -> Error
-const newError = (message) => new Error(message)
 
 // missingPath :: String -> Error
 const missingPath = compose(newError, prepend("Missing property at "), join("."))

@@ -15,6 +15,8 @@ const objOf = require("crocks/helpers/objOf");
 const pipe = require("crocks/helpers/pipe");
 const setProp = require("crocks/helpers/setProp");
 
+const { newError } = require("./errors");
+
 /**
  * Defines the various HTTP request methods (verbs)
  *
@@ -97,7 +99,7 @@ const resolveUrl = curry((base, request) => {
 		map(curry((a, b) => `${a}${b}`)(base)),
 		map(objOf(prop)),
 		map(defaultProps(request)),
-		maybeToAsync(new Error("'url' is missing in request"))
+		maybeToAsync(newError("'url' is missing in request"))
 	)(request)
 });
 

@@ -11,6 +11,8 @@ const pipe = require("crocks/helpers/pipe");
 const safeAfter = require("crocks/Maybe/safeAfter");
 const sequence = require("crocks/pointfree/sequence");
 
+const { newError } = require("./errors");
+
 /**
  * Helper to get the response in a {@link HttpResult}
  *
@@ -41,7 +43,7 @@ const extractHttpBody =
 
 // parseIntValue :: a -> Result Error Integer
 const parseIntValue = (a) =>
-	maybeToResult(new Error(`'${a}' is not a number`), safeAfter(isNumber, parseInt, a))
+	maybeToResult(newError(`'${a}' is not a number`), safeAfter(isNumber, parseInt, a))
 
 /**
  * Tries to take a header value and parse it to an int.
