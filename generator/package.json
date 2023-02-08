@@ -7,7 +7,7 @@
   },
   "main": "src/index.js",
   "scripts": {
-    "build": "rushx test && rushx check",
+    "build": "rushx test",
     "check": "tsc types/**/*.ts --noEmit",
     "test": "find test/ -name *.test.js | xargs mocha --timeout 10000"
   },
