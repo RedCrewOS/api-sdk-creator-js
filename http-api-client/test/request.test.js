@@ -73,15 +73,25 @@ describe("Http Request", function() {
 	});
 
 	describe("resolving url", function() {
-		it("should join path to base", async function() {
-			const base = "http://localhost:3000";
-			const path = "/v1/foo/bar";
+		const base = "http://localhost:3000";
+		const path = "/v1/foo/bar";
 
+		it("should join relative path to base", async function() {
 			const result = await resolveUrl(base, {
 				url: path
 			}).toPromise();
 
 			assertThat(result, hasProperty("url", equalTo(`${base}${path}`)));
+		});
+
+		it("should leave absolute url", async function() {
+			const absoluteUrl = "http://foobar.com";
+
+			const result = await resolveUrl(base, {
+				url: absoluteUrl
+			}).toPromise();
+
+			assertThat(result, hasProperty("url", equalTo(absoluteUrl)));
 		});
 
 		it("should reject if url missing in request", async function() {

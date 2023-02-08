@@ -5,6 +5,8 @@ const Async = require("crocks/Async");
 const assign = require("crocks/helpers/assign");
 const compose = require("crocks/helpers/compose");
 const curry = require("crocks/core/curry");
+const identity = require("crocks/combinators/identity");
+const ifElse = require("crocks/logic/ifElse");
 const flip = require("crocks/combinators/flip");
 const liftA2 = require("crocks/helpers/liftA2");
 const maybePropOr = require("crocks/helpers/getPropOr");
@@ -15,6 +17,7 @@ const substitution = require("crocks/combinators/substitution");
 const { getProp } = require("@epistemology-factory/crocks-ext/Async");
 const { prepend } = require("@epistemology-factory/crocks-ext/helpers");
 
+const { isRelativeUrl } = require("./predicates");
 const { newError } = require("./errors");
 
 // getPropOr :: a -> String -> b -> Async c
@@ -110,11 +113,17 @@ const addHeaders = curry((factory) =>
 /**
  * Resolves a relative URL in a {@link HttpRequest} to an absolute URL.
  *
+ * Leaves absolute URLs unchanged.
+ *
  * Takes a base URL to resolve to, followed by a request.
  */
 // resolveUrl :: String -> HttpRequestPolicy
 const resolveUrl = curry((base) =>
-	modifyRequest("url", map(prepend(base)))
+	modifyRequest("url", map(ifElse(
+		isRelativeUrl,
+		prepend(base),
+		identity
+	)))
 );
 
 module.exports = {
