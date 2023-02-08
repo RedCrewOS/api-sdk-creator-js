@@ -3,19 +3,47 @@
 const Async = require("crocks/Async");
 
 const assign = require("crocks/helpers/assign");
+const compose = require("crocks/helpers/compose");
 const curry = require("crocks/core/curry");
-const defaultProps = require("crocks/helpers/defaultProps");
 const flip = require("crocks/combinators/flip");
-const getProp = require("crocks/Maybe/getProp");
-const getPropOr = require("crocks/helpers/getPropOr");
 const liftA2 = require("crocks/helpers/liftA2");
-const maybeToAsync = require("crocks/Async/maybeToAsync");
+const maybePropOr = require("crocks/helpers/getPropOr");
 const map = require("crocks/pointfree/map");
-const objOf = require("crocks/helpers/objOf");
-const pipe = require("crocks/helpers/pipe");
 const setProp = require("crocks/helpers/setProp");
+const substitution = require("crocks/combinators/substitution");
+
+const { getProp } = require("@epistemology-factory/crocks-ext/Async");
+const { prepend } = require("@epistemology-factory/crocks-ext/helpers");
 
 const { newError } = require("./errors");
+
+// getPropOr :: a -> String -> b -> Async c
+const getPropOr = curry((def, prop) =>
+	compose(Async.Resolved, maybePropOr(def, prop))
+)
+
+// updateProp :: String -> Object -> a
+const updateProp =
+	compose(flip, setProp)
+
+// missingRequestProp :: String -> Error
+const missingRequestProp = (prop) =>
+	newError(`'${prop}' is missing in request`)
+
+// updateRequest :: Functor m => String -> (HttpRequest -> m Error b) -> HttpRequest -> m Error HttpResult
+const updateRequest = curry((prop) =>
+	substitution(compose(map, updateProp(prop)))
+)
+
+// modifyRequest :: String -> (Async Error a -> Async Error b) -> HttpRequest -> Async Error HttpRequest
+const modifyRequest = curry((prop, fn) =>
+	updateRequest(prop, compose(fn, getProp(missingRequestProp, prop)))
+)
+
+// modifyRequestOr :: a -> String -> (Async b -> Async c) -> HttpRequest -> Async Error HttpRequest
+const modifyRequestOr = curry((def, prop, fn) =>
+	updateRequest(prop, compose(fn, getPropOr(def, prop)))
+)
 
 /**
  * Defines the various HTTP request methods (verbs)
@@ -75,15 +103,9 @@ const HttpRequestMethod = {
  * Creates a {@link HttpRequestPolicy} to add headers to a request
  */
 // addHeaders :: RequestHeadersFactory -> HttpRequestPolicy
-const addHeaders = curry((factory, request) => {
-	const prop = "headers";
-
-	return pipe(
-		pipe(getPropOr({}, prop), Async.of),
-		liftA2(assign, factory()),
-		map(flip(setProp(prop))(request))
-	)(request)
-});
+const addHeaders = curry((factory) =>
+	modifyRequestOr({}, "headers", liftA2(assign, factory()))
+)
 
 /**
  * Resolves a relative URL in a {@link HttpRequest} to an absolute URL.
@@ -91,17 +113,9 @@ const addHeaders = curry((factory, request) => {
  * Takes a base URL to resolve to, followed by a request.
  */
 // resolveUrl :: String -> HttpRequestPolicy
-const resolveUrl = curry((base, request) => {
-	const prop = "url";
-
-	return pipe(
-		getProp(prop),
-		map(curry((a, b) => `${a}${b}`)(base)),
-		map(objOf(prop)),
-		map(defaultProps(request)),
-		maybeToAsync(newError("'url' is missing in request"))
-	)(request)
-});
+const resolveUrl = curry((base) =>
+	modifyRequest("url", map(prepend(base)))
+);
 
 module.exports = {
 	HttpRequestMethod,
