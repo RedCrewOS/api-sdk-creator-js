@@ -25,7 +25,8 @@ reduce the effort and complexity required to integrate an application with an AP
   into a Date
 
 More and more developers are expecting a client SDK for an API offered by a company or product
-as part of the overall API product.
+as part of the overall API product. Client SDKs are often needed in distributed systems to 
+avoid every service needing to write a client to dependencies in the system.
 
 Unfortunately writing an SDK manually can be repetitive and time-consuming. The quality of SDKs
 can vary depending on the skills of the developers, and the complexity of the API.
@@ -61,7 +62,7 @@ Sadly most code generators fall into the same pitfalls.
    massive barrier to overcome to upgrade a client application.
    
 6. Inconsistency between language targets. If developers want to have SDKs in multiple languages
-   or with different framkeworks (eg: Spring) the quality of the generated code can very leading
+   or with different frameworks (eg: Spring) the quality of the generated code can very, leading
    to developers having to develop hacky workarounds. Over time the reason for the workarounds
    can become obscured leading a fragile codebase that is hard to maintain and upgrade.
 
