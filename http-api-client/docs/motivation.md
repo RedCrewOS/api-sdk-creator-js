@@ -305,6 +305,7 @@ next tick.
 - [Professor Frisby's Mostly Adequate Guide to Functional Programming](https://mostly-adequate.gitbooks.io/mostly-adequate-guide) - a very popular "open source" text on FP, with an
   [accompanying video tutorial](https://egghead.io/lessons/javascript-unboxing-things-with-foldable).
 - [FP terminology helper](https://everyone-can-code.github.io/fp/) - What is a Functor, Applicative, Monad or Monoid?
+- [ FP jargon buster](https://github.com/hemanth/functional-programming-jargon) - What's a catamorphism?
 - [Things I wish someone had explained about functional programming](https://jrsinclair.com/articles/2019/what-i-wish-someone-had-explained-about-functional-programming/) - some
   good blog posts about how to understand terms used in FP, and how to apply the concepts.
 - [Functional Programming for the Object-Oriented Programmer](https://leanpub.com/fp-oo) - a
@@ -326,6 +327,7 @@ next tick.
    presentation on how to use Monads effectively and push impure behaviour to the "edge" of the program
   - [From Dependency injection to dependency rejection](https://www.youtube.com/watch?v=cxs7oLGrxQ4)
    Dealing with dependencies in FP
+
 ----
 
 <sup>1</sup> As of Postman's 2020 [State of the API](https://www.postman.com/state-of-api/)
